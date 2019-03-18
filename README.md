@@ -1,5 +1,5 @@
-# M7 
+# [M7](https://jakobsudau.github.io/M7/)
 
 Project for the HAW Master Sound Vision: Melody and Chord Generator Live System 
 
-https://jakobsudau.github.io/M7/
+[Magenta Music docs](https://tensorflow.github.io/magenta-js/music/index.html)
