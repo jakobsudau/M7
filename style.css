@@ -1,0 +1,50 @@
+html, body {
+    padding: 0; margin: 0;
+    text-align: center;
+    background: #1dba9d;
+    color: #e0d336;
+}
+
+button {
+    background-color: #e0d336;
+    border: none;
+    color: #ffffff;
+    font-size: 2.8em;
+    padding: 0.5em 1.5em;
+}
+
+button:active {
+   background: #ffffff;
+    color: #e0d336;
+}
+
+button:focus {
+    outline:0;
+}
+
+
+div {
+    font-size: 1.5em;
+}
+
+#play {
+    font-family: monospace;
+    background-color: #e0d336;
+    border: none;
+    color: #ba641d;
+    font-size: 1.8em;
+    padding: 0.5em 1.5em;
+}
+
+#play:active {
+   background: #ffffff;
+}
+
+table {
+    width: 50%;
+}
+
+table.center {
+    margin-left:auto; 
+    margin-right:auto;
+  }

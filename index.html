@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>M7</title>
+    </head>
+    <body>
+
+        <div id="mainContainer">
+            <!-- Dies ist der Code für die Aufgabe-->
+            <button id="button1" class="button">1</button>
+            <button id="button2" class="button">2</button>
+            <button id="button3" class="button">3</button>
+            <button id="button4" class="button">4</button>
+
+            <div>Select a chord sequence:</div>
+            <div id='chords'>
+            <table class="center"><tr>
+                <td><input id='chord1' type='text' value='C'></td>
+                <td><input id='chord2' type='text' value='G'></td>
+                <td><input id='chord3' type='text' value='Am'></td>
+                <td><input id='chord4' type='text' value='F'></td>
+            </tr></table>
+            </div>
+            <br>
+            <input id='play' type='button' value='Play' disabled>
+            <br>
+            <br>
+            <div id='message'>Loading model...</div>
+
+            <script src="https://cdn.jsdelivr.net/npm/@magenta/music@0.0.10"></script>
+            <script src="model.js"></script>
+            <script src="midi.js"></script>
+            <!-------------------------------------->
+        </div>
+    </body>
+</html>
