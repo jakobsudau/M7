@@ -1,51 +1,60 @@
 html, body {
     padding: 0; margin: 0;
     text-align: center;
-    background: #1dba9d;
-    color: #e0d336;
     font-family: monospace;
+}
+
+#mainContainer2 {
+    display: inline-block;
+    text-align: center;
+    border: 2px solid black;
+    font-size: 1.4em;
+    width: 19em;
+    padding: 1em;
+    margin-top: 1em;
+}
+
+#titleDiv {
+    font-size: 2em;
+    margin-bottom: 0.2em;
 }
 
 button {
     font-family: monospace;
-    background-color: #e0d336;
-    border: none;
-    color: #ffffff;
+    border: 2px solid black;
     font-size: 2.5em;
     padding: 0.0em 0.5em;
     margin-bottom: 0.1em;
 }
 
 button:active {
-   background: #ffffff;
-    color: #e0d336;
+    background: #cacaca;
 }
 
-button:focus {
-    outline:0;
+#playNotes {
+    margin-bottom: 0.2em;
 }
 
-div {
-    font-size: 1.4em;
+#selectChords {
+    margin-top: 0.5em;
 }
 
 #play {
     font-family: monospace;
-    background-color: #e0d336;
-    border: none;
-    color: #ffffff;
+    border: 2px solid black;
     font-size: 1.8em;
     padding: 0.3em 1em;
     margin: 0.5em;
+    user-select: none;
 }
 
-#play:active {
-   background: #ffffff;
-   color: #e0d336;
+#play:disabled {
+    border: 2px solid #cacaca;
 }
 
 #midiText {
     font-size: 0.9em;
+    margin-top: 0.8em;
 }
 
 select {
@@ -53,14 +62,18 @@ select {
 }
 
 table {
-    width: 10em;
+    width: 16em;
     border-collapse: collapse;
     table-layout: fixed;
-    margin-bottom: 0.1em;
+    margin-bottom: 0.5em;
 }
 
 #chord1, #chord2, #chord3, #chord4 {
     width: 4em;
+    border: 2px solid black;
+    font-family: monospace;
+    text-align: center;
+    font-size: 0.6em;
 }
 
 table.center {

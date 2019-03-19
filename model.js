@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------------------
+// Note Button Functionality
+// ---------------------------------------------------------------------------
+
 const allFrequencies = [
     8.1757989156,       8.6619572180,       9.1770239974,
     9.7227182413,       10.3008611535,      10.9133822323,
@@ -48,6 +52,8 @@ var octaveShifter = 60;
 for (let i = 0; i < buttons.length; i++) {
     buttons[i].addEventListener('mousedown', function(){startNote(i+octaveShifter, 127)});
     buttons[i].addEventListener('mouseup', function(){stopNote(i+octaveShifter, 66)});
+    buttons[i].addEventListener('keypress', function(){startNote(i+octaveShifter, 127)});
+    buttons[i].addEventListener('keyup', function(){stopNote(i+octaveShifter, 66)});
 }
 
 function startNote(note, velocity) {
@@ -58,9 +64,9 @@ function stopNote(note, velocity) {
     sendMIDIMessage(note, velocity, false);
 }
 
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Chord Generation Functionality
+// ---------------------------------------------------------------------------
 
 // Number of steps to play each chord.
 STEPS_PER_CHORD = 8;
@@ -69,7 +75,7 @@ STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
 // Number of times to repeat chord progression.
 NUM_REPS = 4;
 
-// Set up Improv RNN model and player.
+// Set up Improv RNN model
 const model = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
 var playing = false;
 
