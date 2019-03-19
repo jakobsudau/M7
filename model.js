@@ -92,16 +92,6 @@ var currentChords = undefined;
 
 // Sample over chord progression.
 const playOnce = () => {
-  playing = true;
-  document.getElementById('play').disabled = true;
-  currentChords = [
-      document.getElementById('chord1').value,
-      document.getElementById('chord2').value,
-      document.getElementById('chord3').value,
-      document.getElementById('chord4').value    
-  ];
-  
-
   const chords = currentChords;
   
   // Prime with root note of the first chord.
@@ -225,11 +215,29 @@ model.initialize().then(() => {
 
 // Play when play button is clicked.
 document.getElementById('play').onclick = () => {
-  generating();
-  ready = true;
+  playing = true;
+  document.getElementById('play').disabled = true;
+  currentChords = [
+      document.getElementById('chord1').value,
+      document.getElementById('chord2').value,
+      document.getElementById('chord3').value,
+      document.getElementById('chord4').value    
+  ];
+  playOnce();
+
+
+  // generating();
+  // ready = true;
 }
+
 const  generating = () => {
-  modelWorker.postMessage("generateSequence");
+  modelWorker.postMessage(["generate",model]);
+  modelWorker.onmessage = function(e) {
+    if (e.data[0] == "done") {
+      var seq = e.data[1];
+      // do something with the generated sequence
+    }
+  };
   //playOnce();
 }
 
@@ -242,4 +250,4 @@ document.getElementById('chord4').oninput = checkChords;
 const audioContext = new AudioContext();
 const metronome = new Metronome(audioContext);
 metronome.init(metronome);
-metronome.playMetronome(metronome);
+//metronome.playMetronome(metronome);
