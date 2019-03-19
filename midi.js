@@ -64,6 +64,7 @@ if (navigator.requestMIDIAccess) {
     function sendMIDIMessage(note, velocity, startOrstop) {
         var message;
         if (startOrstop) {
+            // [0xF8] for midi clock
             message = [0x90, note, velocityHexArray[velocity]];
         } else {
             message = [0x80, note, velocityHexArray[velocity]];
@@ -74,7 +75,8 @@ if (navigator.requestMIDIAccess) {
 
     function playSeq(seq) {
         console.log("playing midi sequence...");
-        const player = new mm.MIDIPlayer();
+        const callback = new MetronomeCallback();
+        const player = new mm.MIDIPlayer(callback);
         player.requestMIDIAccess().then(() => {
             // For example, use only the first port. If you omit this,
             // a message will be sent to all ports.
