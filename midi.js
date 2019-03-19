@@ -10,6 +10,7 @@ const velocityHexArray = [
 ];
 const availableOutputs = [];
 const el = document.querySelector('select');
+const player = new mm.MIDIPlayer();
 
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {
@@ -76,26 +77,13 @@ if (navigator.requestMIDIAccess) {
     function playSeq(seq) {
         console.log("playing midi sequence...");
         const callback = new MetronomeCallback();
-        const player = new mm.MIDIPlayer();
-        const metronomePlayer = new mm.MIDIPlayer(callback);
+        ready = true;
+        
         player.requestMIDIAccess().then(() => {
             // For example, use only the first port. If you omit this,
             // a message will be sent to all ports.
-            const seqMetro = { 
-                quantizationInfo: {stepsPerQuarter: 4},
-                notes: [
-                  { pitch: 80, quantizedStartStep: 0, quantizedEndStep: 1},
-                  { pitch: 80, quantizedStartStep: 1, quantizedEndStep: 2},
-                  { pitch: 80, quantizedStartStep: 2, quantizedEndStep: 3},
-                  { pitch: 80, quantizedStartStep: 3, quantizedEndStep: 4},
-                ],
-                totalQuantizedSteps: 1
-              };   
-            
             
             player.outputs = [availableOutputs[el.selectedIndex]];
-            metronomePlayer.outputs = [availableOutputs[el.selectedIndex]];
-            //metronomePlayer.start(seqMetro);
             player.start(seq).then(() => {
                 playing = false;
                 document.getElementById('message').innerText = 'Change chords and play again!';

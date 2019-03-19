@@ -50,7 +50,7 @@ const buttons = document.getElementsByClassName("button");
 var octaveShifter = 60;
 
 for (let i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener('mousedown', function(){startNote(i+octaveShifter, 127)});
+    buttons[i].addEventListener('mousedown', function(){startNote(i+octaveShifter, 127);});
     buttons[i].addEventListener('mouseup', function(){stopNote(i+octaveShifter, 66)});
     buttons[i].addEventListener('keypress', function(){startNote(i+octaveShifter, 127)});
     buttons[i].addEventListener('keyup', function(){stopNote(i+octaveShifter, 66)});
@@ -67,6 +67,14 @@ function stopNote(note, velocity) {
 // ---------------------------------------------------------------------------
 // Chord Generation Functionality
 // ---------------------------------------------------------------------------
+var ready = false;
+const modelWorker = new Worker("modelworker.js");
+modelWorker.onmessage = function(e) {if (e.data == "tick") {}};
+const seq = { 
+  quantizationInfo: {stepsPerQuarter: 4},
+  notes: [],
+  totalQuantizedSteps: 1
+};  
 
 // Number of steps to play each chord.
 STEPS_PER_CHORD = 8;
@@ -84,15 +92,20 @@ var currentChords = undefined;
 
 // Sample over chord progression.
 const playOnce = () => {
+  playing = true;
+  document.getElementById('play').disabled = true;
+  currentChords = [
+      document.getElementById('chord1').value,
+      document.getElementById('chord2').value,
+      document.getElementById('chord3').value,
+      document.getElementById('chord4').value    
+  ];
+  
+
   const chords = currentChords;
   
   // Prime with root note of the first chord.
   const root = mm.chords.ChordSymbols.root(chords[0]);
-  const seq = { 
-    quantizationInfo: {stepsPerQuarter: 4},
-    notes: [],
-    totalQuantizedSteps: 1
-  };  
   
   document.getElementById('message').innerText = 'Improvising over: ' + chords;
   model.continueSequence(seq, STEPS_PER_PROG + (NUM_REPS-1)*STEPS_PER_PROG - 1, 0.9, chords)
@@ -139,9 +152,9 @@ const playOnce = () => {
     
       // Set total sequence length.
       seq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
-    
+
       // Play it!
-      playSeq(seq);
+      //playSeq(seq);
     })
 }  
 
@@ -212,16 +225,12 @@ model.initialize().then(() => {
 
 // Play when play button is clicked.
 document.getElementById('play').onclick = () => {
-  playing = true;
-  document.getElementById('play').disabled = true;
-  currentChords = [
-    document.getElementById('chord1').value,
-    document.getElementById('chord2').value,
-    document.getElementById('chord3').value,
-    document.getElementById('chord4').value    
-  ];
-  
-  playOnce();
+  generating();
+  ready = true;
+}
+const  generating = () => {
+  modelWorker.postMessage("generateSequence");
+  //playOnce();
 }
 
 // Check chords for validity when changed.
@@ -229,3 +238,8 @@ document.getElementById('chord1').oninput = checkChords;
 document.getElementById('chord2').oninput = checkChords;
 document.getElementById('chord3').oninput = checkChords;
 document.getElementById('chord4').oninput = checkChords;
+
+const audioContext = new AudioContext();
+const metronome = new Metronome(audioContext);
+metronome.init(metronome);
+metronome.playMetronome(metronome);
