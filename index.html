@@ -13,6 +13,7 @@
             <button id="button3" class="button">3</button>
             <button id="button4" class="button">4</button>
 
+            
             <div>Select a chord sequence:</div>
             <div id='chords'>
             <table class="center"><tr>
@@ -21,14 +22,15 @@
                 <td><input id='chord3' type='text' value='Am'></td>
                 <td><input id='chord4' type='text' value='F'></td>
             </tr></table>
-            </div>
-            <br>
-            <input id='play' type='button' value='Play' disabled>
-            <br>
-            <br>
-            <div id='message'>Loading model...</div>
 
-            <script src="https://cdn.jsdelivr.net/npm/@magenta/music@0.0.10"></script>
+            <div id='midiText'>Choose your MIDI out:</div>
+            <select id="midiBusSelect"></select>
+            </div>
+            <input id='play' type='button' value='Play' disabled>
+            <div id='message'>Loading model...</div>
+            
+
+            <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
             <script src="model.js"></script>
             <script src="midi.js"></script>
             <!-------------------------------------->

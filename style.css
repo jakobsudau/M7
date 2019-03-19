@@ -3,14 +3,17 @@ html, body {
     text-align: center;
     background: #1dba9d;
     color: #e0d336;
+    font-family: monospace;
 }
 
 button {
+    font-family: monospace;
     background-color: #e0d336;
     border: none;
     color: #ffffff;
-    font-size: 2.8em;
-    padding: 0.5em 1.5em;
+    font-size: 2.5em;
+    padding: 0.0em 0.5em;
+    margin-bottom: 0.1em;
 }
 
 button:active {
@@ -22,26 +25,42 @@ button:focus {
     outline:0;
 }
 
-
 div {
-    font-size: 1.5em;
+    font-size: 1.4em;
 }
 
 #play {
     font-family: monospace;
     background-color: #e0d336;
     border: none;
-    color: #ba641d;
+    color: #ffffff;
     font-size: 1.8em;
-    padding: 0.5em 1.5em;
+    padding: 0.3em 1em;
+    margin: 0.5em;
 }
 
 #play:active {
    background: #ffffff;
+   color: #e0d336;
+}
+
+#midiText {
+    font-size: 0.9em;
+}
+
+select {
+    margin: 0.5em;
 }
 
 table {
-    width: 50%;
+    width: 10em;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 0.1em;
+}
+
+#chord1, #chord2, #chord3, #chord4 {
+    width: 4em;
 }
 
 table.center {

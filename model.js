@@ -1,4 +1,4 @@
-var allFrequencies = [
+const allFrequencies = [
     8.1757989156,       8.6619572180,       9.1770239974,
     9.7227182413,       10.3008611535,      10.9133822323,
     11.5623257097,      12.2498573744,      12.9782717994,
@@ -42,7 +42,7 @@ var allFrequencies = [
     8372.018089619156,  8869.844191259906,  9397.272573357044,
     9956.06347910659,   10548.081821211836, 11175.303405856126,
     11839.8215267723,   12543.853951415975];
-var buttons = document.getElementsByClassName("button");
+const buttons = document.getElementsByClassName("button");
 var octaveShifter = 60;
 
 for (let i = 0; i < buttons.length; i++) {
@@ -71,7 +71,6 @@ NUM_REPS = 4;
 
 // Set up Improv RNN model and player.
 const model = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
-const player = new mm.Player();
 var playing = false;
 
 // Current chords being played.
@@ -136,11 +135,7 @@ const playOnce = () => {
       seq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
     
       // Play it!
-      player.start(seq, 120).then(() => {
-        playing = false;
-        document.getElementById('message').innerText = 'Change chords and play again!';
-        checkChords();
-      });
+      playSeq(seq);
     })
 }  
 
@@ -220,8 +215,6 @@ document.getElementById('play').onclick = () => {
     document.getElementById('chord4').value    
   ];
   
-  mm.Player.tone.context.resume();
-  player.stop();
   playOnce();
 }
 
