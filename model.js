@@ -16,7 +16,7 @@ class SequenceModel {
         // worker
         const that = this;
         this.modelWorker = new Worker("modelWorker.js");
-        this.modelWorker.onmessage = function(e) {if (e.data == "tick") {that.generating();}};
+        this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {that.generatingDone();}};
     }
 
     initialize() {
@@ -28,85 +28,87 @@ class SequenceModel {
     }
 
     generatingDone() {
-      this.modelWorker.postMessage(["generate",model]);
-      this.modelWorker.onmessage = function(e) {
-        if (e.data[0] == "done") {
-			console.log("generating done!");
-          	var seq = e.data[1];
-          	// do something with the generated sequence
-        }
-      };
+		console.log("generating done!");
+    //   this.modelWorker.postMessage(["generate",model]);
+    //   this.modelWorker.onmessage = function(e) {
+    //     if (e.data[0] == "done") {
+	// 		console.log("generating done!");
+    //       	var seq = e.data[1];
+    //       	// do something with the generated sequence
+    //     }
+    //   };
     }
 
     generateSequence(chordsTemp, that) {
+		
+		this.modelWorker.postMessage(["generate"]);
 
-      return new Promise(function(resolve, reject) {
-        that.playing = true;
-        document.getElementById('play').disabled = true;
-        that.currentChords = chordsTemp;
+		return new Promise(function(resolve, reject) {
+			that.playing = true;
+			document.getElementById('play').disabled = true;
+			that.currentChords = chordsTemp;
 
-        const chords = that.currentChords;
-        let seq = { 
-			notes: [],
-			quantizationInfo: {stepsPerQuarter: 4},
-			totalQuantizedSteps: 1,
-        }; 
-        
-        // Prime with root note of the first chord.
-        const root = mm.chords.ChordSymbols.root(chords[0]);
-        
-        document.getElementById('message').innerText = 'Improvising over: ' + chords;
-        that.model.continueSequence(seq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
-          
-		// Add the continuation to the original.
-		contSeq.notes.forEach((note) => {
-		note.quantizedStartStep += 1;
-		note.quantizedEndStep += 1;
-		seq.notes.push(note);
-		});
-            
-		const roots = chords.map(mm.chords.ChordSymbols.root);
-
-		for (var i=0; i<that.NUM_REPS; i++) { 
-			// Add the bass progression.
-			seq.notes.push({
-				instrument: 1,
-				program: 32,
-				pitch: 36 + roots[0],
-				quantizedStartStep: i*that.STEPS_PER_PROG,
-				quantizedEndStep: i*that.STEPS_PER_PROG + that.STEPS_PER_CHORD
+			const chords = that.currentChords;
+			let seq = { 
+				notes: [],
+				quantizationInfo: {stepsPerQuarter: 4},
+				totalQuantizedSteps: 1,
+			}; 
+			
+			// Prime with root note of the first chord.
+			const root = mm.chords.ChordSymbols.root(chords[0]);
+			
+			document.getElementById('message').innerText = 'Improvising over: ' + chords;
+			that.model.continueSequence(seq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
+			
+			// Add the continuation to the original.
+			contSeq.notes.forEach((note) => {
+			note.quantizedStartStep += 1;
+			note.quantizedEndStep += 1;
+			seq.notes.push(note);
 			});
-			seq.notes.push({
-				instrument: 1,
-				program: 32,
-				pitch: 36 + roots[1],
-				quantizedStartStep: i*that.STEPS_PER_PROG + that.STEPS_PER_CHORD,
-				quantizedEndStep: i*that.STEPS_PER_PROG + 2*that.STEPS_PER_CHORD
+				
+			const roots = chords.map(mm.chords.ChordSymbols.root);
+
+			for (var i=0; i<that.NUM_REPS; i++) { 
+				// Add the bass progression.
+				seq.notes.push({
+					instrument: 1,
+					program: 32,
+					pitch: 36 + roots[0],
+					quantizedStartStep: i*that.STEPS_PER_PROG,
+					quantizedEndStep: i*that.STEPS_PER_PROG + that.STEPS_PER_CHORD
 				});
-			seq.notes.push({
-				instrument: 1,
-				program: 32,
-				pitch: 36 + roots[2],
-				quantizedStartStep: i*that.STEPS_PER_PROG + 2*that.STEPS_PER_CHORD,
-				quantizedEndStep: i*that.STEPS_PER_PROG + 3*that.STEPS_PER_CHORD
-			});
-			seq.notes.push({
-				instrument: 1,
-				program: 32,
-				pitch: 36 + roots[3],
-				quantizedStartStep: i*that.STEPS_PER_PROG + 3*that.STEPS_PER_CHORD,
-				quantizedEndStep: i*that.STEPS_PER_PROG + 4*that.STEPS_PER_CHORD
-			});        
-		}
-          
-          // Set total sequence length.
-          seq.totalQuantizedSteps = that.STEPS_PER_PROG * that.NUM_REPS;
-          console.log(seq.totalQuantizedSteps);
+				seq.notes.push({
+					instrument: 1,
+					program: 32,
+					pitch: 36 + roots[1],
+					quantizedStartStep: i*that.STEPS_PER_PROG + that.STEPS_PER_CHORD,
+					quantizedEndStep: i*that.STEPS_PER_PROG + 2*that.STEPS_PER_CHORD
+					});
+				seq.notes.push({
+					instrument: 1,
+					program: 32,
+					pitch: 36 + roots[2],
+					quantizedStartStep: i*that.STEPS_PER_PROG + 2*that.STEPS_PER_CHORD,
+					quantizedEndStep: i*that.STEPS_PER_PROG + 3*that.STEPS_PER_CHORD
+				});
+				seq.notes.push({
+					instrument: 1,
+					program: 32,
+					pitch: 36 + roots[3],
+					quantizedStartStep: i*that.STEPS_PER_PROG + 3*that.STEPS_PER_CHORD,
+					quantizedEndStep: i*that.STEPS_PER_PROG + 4*that.STEPS_PER_CHORD
+				});        
+			}
+			
+			// Set total sequence length.
+			seq.totalQuantizedSteps = that.STEPS_PER_PROG * that.NUM_REPS;
 
-        // Play it!
-        resolve(seq);
-        })
-      });
+			// Play it!
+			resolve(seq);
+			})
+		});
     }
 
     checkChords() {

@@ -8,7 +8,7 @@ self.onmessage=function(e){
           };  
 
         // generate a sequence here (which takes time)
-        e.data[1].continueSequence(seq, /*something, chords*/);
+        // e.data[1].continueSequence(seq, /*something, chords*/);
 
         // once done, post the generated sequence back to main thread
         postMessage(["done", seq]);
