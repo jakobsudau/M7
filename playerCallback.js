@@ -1,4 +1,4 @@
-class MetronomeCallback extends mm.BasePlayerCallback {
+class PlayerCallback extends mm.BasePlayerCallback {
     constructor() {
         super();
     }

@@ -9,9 +9,11 @@ class Metronome {
         this.tempo = 120;
         this.currentQuaterNote = 0;
         this.audioCtx = context;
+        this.gain = this.audioCtx.createGain();
+        this.mute = true;
     }
 
-    playMetronome(){
+    startStop(){
         this.isPlaying = !this.isPlaying;
 
         if (this.isPlaying) {    //start playing
@@ -32,6 +34,16 @@ class Metronome {
         }
     }
 
+    muteUnmute() {
+        console.log(this.mute);
+        if (this.mute) {
+            this.gain.gain.value = 1;
+        } else {
+            this.gain.gain.value = 0;
+        }
+        this.mute = !this.mute;
+    }
+
     nextNote() {                                    //Advance current note and time by a quater note...
         var secondsPerBeat = 60.0 / this.tempo;    //Notice this picks up the CURRENT tempo value to calculate beat length.
         this.nextNoteTime += secondsPerBeat;           //Add beat length to last beat time
@@ -42,7 +54,7 @@ class Metronome {
 
     scheduleNote(beatNumber, time) {    //create an oscillator
         var osc = this.audioCtx.createOscillator();
-        osc.connect( this.audioCtx.destination );
+        osc.connect(this.gain);
         if (beatNumber % 16 == 0){               //beat 0 = high pitch
             osc.frequency.value = 880.0;
         }else{                                    //other notes = low pitch
@@ -64,8 +76,10 @@ class Metronome {
     }
 
     initialize() {
-        let that = this;
-        this.timerWorker = new Worker("metronomeworker.js");
+        this.gain.connect(this.audioCtx.destination);
+        const that = this;
+        this.gain.gain.value = 0
+        this.timerWorker = new Worker("metronomeWorker.js");
         this.timerWorker.onmessage = function(e) {if (e.data == "tick") {that.scheduler(that);}};
         this.timerWorker.postMessage({"interval":this.lookahead});
     }

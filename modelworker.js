@@ -1,5 +1,6 @@
 self.onmessage=function(e){
 	if (e.data[0] == "generate") {
+		console.log("generating...");
         const seq = { 
             quantizationInfo: {stepsPerQuarter: 4},
             notes: [],

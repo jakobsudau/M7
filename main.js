@@ -9,10 +9,10 @@ class App {
         this.model = new SequenceModel();
         this.metronome = new Metronome(this.context);
         this.player = new mm.MIDIPlayer();
-        this.isClickOn = false;
 
         this.model.initialize();
         this.metronome.initialize();
+        this.metronome.startStop();
     }
 
     startNote(note, velocity) {
@@ -24,8 +24,8 @@ class App {
     }
 
     startStopClick() {
-        this.isClickOn = !this.isClickOn;
-        this.metronome.playMetronome();
+        this.metronome.muteUnmute();
+        return this.metronome.mute;
     }
 
     playSequence(chords) {
@@ -63,7 +63,11 @@ if (navigator.requestMIDIAccess) {
         }
 
         document.getElementById("click").addEventListener('click', function(){
-            main.startStopClick();
+            if (main.startStopClick()) {
+                document.getElementById("click").style.background = "white";
+            } else {
+                document.getElementById("click").style.background = "lightgrey";
+            }
         });
 
         // eventlistener for the play model button
