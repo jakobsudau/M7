@@ -14,6 +14,10 @@ Useful Links:
 
 [Magenta demos](https://github.com/tensorflow/magenta-demos)
 
+[MagentaMusic.js demos](https://tensorflow.github.io/magenta-js/music/demos/)
+
+[MagentaMusic.js demos repository](https://github.com/tensorflow/magenta-js/tree/master/music/demos)
+
 [Magenta studio](https://github.com/tensorflow/magenta-studio)
 
 [performance RNN Demo](https://magenta.tensorflow.org/demos/performance_rnn/index.html#2|0,0,1,0,0,1,0,0,0,1,0,0|1,1,1,1,1,1,1,1,1,1,1,1|1,1,1,1,1,1,1,1,1,1,1,1|false)

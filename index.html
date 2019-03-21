@@ -14,7 +14,6 @@
             <button id="button1" class="button">1</button>
             <button id="button2" class="button">2</button>
             <button id="button3" class="button">3</button>
-            <button id="button4" class="button">4</button>
 
             
             <div id="selectChords">Select a chord sequence:</div>
@@ -29,17 +28,26 @@
             <div id='midiText'>Choose your MIDI out:</div>
             <select id="midiBusSelect"></select>
             </div>
-            <input id='play' type='button' value='Play' disabled>
+            
+            <button id="click">Click</button>
+            <button id="play" disabled>Play</button>
+            
             <div id='message'>Loading model...</div>
             
 
             <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
-            <script src="metronome.js"></script>
-            <script src="metronomeworker.js"></script>
-            <script src="metronomeCallback.js"></script>
+
+            <script src="midi.js"></script>
+
             <script src="model.js"></script>
             <script src="modelworker.js"></script>
-            <script src="midi.js"></script>
+
+            <script src="metronome.js"></script>
+            <script src="metronomeworker.js"></script>
+
+            <script src="metronomeCallback.js"></script>
+
+            <script src="main.js"></script>
             <!-------------------------------------->
         </div>
         </div>
