@@ -1,7 +1,7 @@
-var timerID=null;
-var interval=100;
-
 self.onmessage=function(e){
+	let timerID=null;
+	let interval=100;
+
 	if (e.data=="start") {
         console.log("starting");
 		timerID=setInterval(function(){postMessage("tick");},interval)

@@ -35,7 +35,6 @@ class Metronome {
     }
 
     muteUnmute() {
-        console.log(this.mute);
         if (this.mute) {
             this.gain.gain.value = 1;
         } else {

@@ -1,16 +1,9 @@
-self.onmessage=function(e){
-	if (e.data[0] == "generate") {
-		console.log("generating...");
-        const seq = { 
-            quantizationInfo: {stepsPerQuarter: 4},
-            notes: [],
-            totalQuantizedSteps: 1
-          };  
+//const modelTest = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
 
-        // generate a sequence here (which takes time)
-        // e.data[1].continueSequence(seq, /*something, chords*/);
-
-        // once done, post the generated sequence back to main thread
-        postMessage(["done", seq]);
+self.onmessage = function(e){
+	if (e.data=="initialize") {
+		console.log("modelWorker initializing...");
+		// importScripts('https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0')
+		postMessage("initializeDone");
 	}
 };

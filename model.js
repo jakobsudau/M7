@@ -16,16 +16,24 @@ class SequenceModel {
         // worker
         const that = this;
         this.modelWorker = new Worker("modelWorker.js");
-        this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {that.generatingDone();}};
-    }
+				this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {that.generatingDone();}};
+				this.modelWorker.onmessage = function(e) {if (e.data == "initializeDone") {that.initializeDone();}};    
+		}
 
     initialize() {
+			this.modelWorker.postMessage(["initialize"]);
         // Initialize model then start playing.
         this.model.initialize().then(() => {
             document.getElementById('message').innerText = 'Done loading model.'
             document.getElementById('play').disabled = false;
         });
-    }
+		}
+		
+		initializeDone() {
+			console.log("initialize done!");
+			document.getElementById('message').innerText = 'Done loading model.'
+      document.getElementById('play').disabled = false;
+			}
 
     generatingDone() {
 		console.log("generating done!");
