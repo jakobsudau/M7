@@ -14,10 +14,9 @@ class SequenceModel {
         this.currentChords = undefined;
 
         // worker
-        const that = this;
         this.modelWorker = new Worker("modelWorker.js");
-				this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {that.generatingDone();}};
-				this.modelWorker.onmessage = function(e) {if (e.data == "initializeDone") {that.initializeDone();}};    
+				this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {this.generatingDone();}}.bind(this);
+				this.modelWorker.onmessage = function(e) {if (e.data == "initializeDone") {this.initializeDone();}}.bind(this);    
 		}
 
     initialize() {

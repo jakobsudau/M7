@@ -7,12 +7,11 @@ class App {
         this.context = new AudioContext();
         this.midi = new Midi(midiAccess);
         this.model = new SequenceModel();
-        this.metronome = new Metronome(this.context);
+        this.metronome = new Metronome(this.context, this.midi);
         this.player = new mm.MIDIPlayer();
 
         this.model.initialize();
         this.metronome.initialize();
-        this.metronome.startStop();
     }
 
     startNote(note, velocity) {
@@ -24,26 +23,24 @@ class App {
     }
 
     startStopClick() {
-        this.metronome.muteUnmute();
-        return this.metronome.mute;
+        this.metronome.startStop();
+        return this.metronome.isPlaying;
     }
 
     playSequence(chords) {
-        let that = this;
         this.model.generateSequence(chords, this.model).then(function(seq){
             console.log("playing midi sequence...");
             
-            that.player.requestMIDIAccess().then(() => {
-                that.player.outputs = [that.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-                that.player.start(seq).then(() => {
+            this.player.requestMIDIAccess().then(() => {
+                this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
+                this.player.start(seq).then(() => {
                     document.getElementById('message').innerText = 'Change chords and play again!';
-                    that.model.checkChords();
+                    this.model.checkChords();
                 });
             }); 
-        });
+        }.bind(this));
     }
 }
-
 
 // ---------------------------------------------------------------------------
 // Start
@@ -64,9 +61,9 @@ if (navigator.requestMIDIAccess) {
 
         document.getElementById("click").addEventListener('click', function(){
             if (main.startStopClick()) {
-                document.getElementById("click").style.background = "white";
-            } else {
                 document.getElementById("click").style.background = "lightgrey";
+            } else {
+                document.getElementById("click").style.background = "white";
             }
         });
 

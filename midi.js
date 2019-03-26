@@ -11,6 +11,7 @@ class Midi {
         this.midiAccess = midiAccess;        
         this.availableOutputs = [];
         this.selectedOutput = null;
+        this.selectedClockOutput = null;
 
         const inputs = midiAccess.inputs.values();
         // loop through all inputs and listen for midi messages
@@ -25,24 +26,32 @@ class Midi {
         }
 
         this.selectedOutput = this.availableOutputs[0];
+        this.selectedClockOutput = this.availableOutputs[0];
 
         // Populate the <select>
-        const el = document.querySelector('select');
-        el.innerHTML = this.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        el.addEventListener("change", function() {
-            this.selectedOutput = this.availableOutputs[el.selectedIndex];
-        });
+        const midiList = document.getElementById('midiBusSelect');
+        const clockList = document.getElementById('midiClockBusSelect');
+        midiList.innerHTML = this.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
+        clockList.innerHTML = this.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
+        midiList.addEventListener("change", function() {this.selectedOutput = this.availableOutputs[midiList.selectedIndex];}.bind(this));
+        clockList.addEventListener("change", function() {this.selectedClockOutput = this.availableOutputs[midiList.selectedIndex];}.bind(this));
     }
 
     sendMIDIMessage(note, velocity, startOrstop) {
         var message;
         if (startOrstop) {
-            // [0xF8] for midi clock
+            // [0xFA] midi clock start
+            // [0xF8] midi clock advance
+            // [0xFC] midi clock stop
             message = [0x90, note, this.velocityHexArray[velocity]];
         } else {
             message = [0x80, note, this.velocityHexArray[velocity]];
         }
         this.midiAccess.outputs.get(this.selectedOutput.id).send(message);  // omitting the timestamp means send immediately.
+    }
+
+    sendClockMessage(message) {
+        this.midiAccess.outputs.get(this.selectedOutput.id).send(message);
     }
 
     onMIDIMessage(event) {
