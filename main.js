@@ -28,8 +28,11 @@ class App {
     }
 
     playSequence(chords) {
+        console.log("generating midi sequence...");
+        const time = Date.now();
         this.model.generateSequence(chords, this.model).then(function(seq){
             console.log("playing midi sequence...");
+            console.log("it took: " + ((Date.now() - time)/1000) + "s");
             
             this.player.requestMIDIAccess().then(() => {
                 this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.

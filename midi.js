@@ -12,11 +12,43 @@ class Midi {
         this.availableOutputs = [];
         this.selectedOutput = null;
         this.selectedClockOutput = null;
+        this.ppqCounter = 0;
 
         const inputs = midiAccess.inputs.values();
+        const that = this;
         // loop through all inputs and listen for midi messages
         for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
-            input.value.onmidimessage = this.onMIDIMessage;
+            input.value.onmidimessage = function(e) {
+                // event.data is an array
+                // event.data[0] = on (144 = 0x90) / off (128 = 0x80) / controlChange (176 = 0xb0)  / pitchBend (224 = 0xf4) / ...
+                // event.data[1] = midi note
+                // event.data[2] = velocity
+                switch(e.data[0]) {
+                    case 144:
+                        // your function startNote(note, velocity)
+                        //startNote(event.data[1], event.data[2]);
+                        break;
+                    case 128:
+                        // your function stopNote(note, velocity)
+                        //stopNote(event.data[1], event.data[2]);
+                        break;
+                    case 176:
+                        // your function controlChange(controllerNr, value)
+                        //controlChange(event.data[1], event.data[2]);
+                        break;
+                    case 224:
+                        // your function pitchBend(LSB, HSB)
+                        //pitchBend(event.data[1], event.data[2]);
+                        break;
+                    case 0xF8:
+                        that.ppqCounter++;
+                        if (that.ppqCounter == 23) {
+                            console.log("midi clock tick");
+                            that.ppqCounter = 0;
+                        }
+                        break;
+                }
+            };
         }
         
         const outputs = midiAccess.outputs.values();
@@ -52,31 +84,5 @@ class Midi {
 
     sendClockMessage(message) {
         this.midiAccess.outputs.get(this.selectedOutput.id).send(message);
-    }
-
-    onMIDIMessage(event) {
-        // event.data is an array
-        // event.data[0] = on (144 = 0x90) / off (128 = 0x80) / controlChange (176 = 0xb0)  / pitchBend (224 = 0xf4) / ...
-        // event.data[1] = midi note
-        // event.data[2] = velocity
-
-        switch(event.data[0]) {
-            case 144:
-                // your function startNote(note, velocity)
-                //startNote(event.data[1], event.data[2]);
-                break;
-            case 128:
-                // your function stopNote(note, velocity)
-                //stopNote(event.data[1], event.data[2]);
-                break;
-            case 176:
-                // your function controlChange(controllerNr, value)
-                //controlChange(event.data[1], event.data[2]);
-                break;
-            case 224:
-                // your function pitchBend(LSB, HSB)
-                //pitchBend(event.data[1], event.data[2]);
-                break;
-        }
     }
 }
