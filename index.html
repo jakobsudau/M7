@@ -1,51 +1,65 @@
+<!doctype html>
 <html>
-  <head>
-    <title>M7</title>
-    <link rel="stylesheet" href="css/style.css">
-  </head>
-  <body>
-    <div id="mainContainer">
-      <div id="mainContainer2">
-      <!-- Dies ist der Code für die Aufgabe-->
-      <div id="titleDiv">M7 Project</div>
-      <div id="playNotes">Play some notes:</div>
-      <button id="button1" class="button">1</button>
-      <button id="button2" class="button">2</button>
-      <button id="button3" class="button">3</button>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>M7</title>
+    </head>
+    <body>
 
-      
-      <div id="selectChords">Select a chord sequence:</div>
-      <div id='chords'>
-      <table class="center"><tr>
-          <td><input id='chord1' type='text' value='C'></td>
-          <td><input id='chord2' type='text' value='G'></td>
-          <td><input id='chord3' type='text' value='Am'></td>
-          <td><input id='chord4' type='text' value='F'></td>
-      </tr></table>
+        <div id="mainContainer">
+            <div id="mainContainer2">
+            <!-- Dies ist der Code für die Aufgabe-->
+            <div id="titleDiv">M7 Project</div>
+            <div id="playNotes">Play some notes:</div>
+            <button id="button1" class="button">1</button>
+            <button id="button2" class="button">2</button>
+            <button id="button3" class="button">3</button>
 
-      <div id='midiText'>Choose your MIDI Out:</div>
-      <select id="midiBusSelect"></select>
+            
+            <div id="selectChords">Select a chord sequence:</div>
+            <div id='chords'>
+            <table class="center"><tr>
+                <td><input id='chord1' type='text' value='C'></td>
+                <td><input id='chord2' type='text' value='G'></td>
+                <td><input id='chord3' type='text' value='Am'></td>
+                <td><input id='chord4' type='text' value='F'></td>
+            </tr></table>
 
-      <div id='midiClockText'>Choose your MIDI Clock Out:</div>
-      <select id="midiClockBusSelect"></select>
-      </div>
+            <div id='midiText'>Choose your MIDI Out:</div>
+            <select id="midiBusSelect"></select>
 
-      
-      
-      <button id="click">Click</button>
-      <button id="play" disabled>Play</button>
-      
-      <div id='message'>Loading model...</div>
-      
-      <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
-      <!-- <script src="index.js" type="text/javascript"></script> -->
-      <script src="midi.js"></script>
-      <script src="metronome.js"></script>
-      <script src="metronomeWorker.js"></script>
+            <div id='midiClockText'>Choose your MIDI Clock Out:</div>
+            <select id="midiClockBusSelect"></select>
+            </div>
 
-      <script src="model.js"></script>
-      <script src="modelWorker.js"></script>
-      <script src="playerCallback.js"></script>
-      <script src="main.js"></script>
-  </body>
+            
+            
+            <button id="click">Click</button>
+            <button id="play" disabled>Play</button>
+            
+            <div id='message'>Loading model...</div>
+
+            <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
+
+            <script src="midi.js"></script>
+
+            <script src="model.js"></script>
+            <script src="modelWorker.js"></script>
+
+            <script src="metronome.js"></script>
+            <script src="metronomeWorker.js"></script>
+
+            <script src="playerCallback.js"></script>
+
+            <script src="main.js"></script>
+            <!-------------------------------------->
+        </div>
+            
+        <div class="embed-container">
+                <div id="loadingDiv">Präsentation laden<br></div>
+                <iframe id="presFrame" src="https://www.icloud.com/keynote/0z8Xaltd0fVnv0tIB2pE8Gfww?embed=true" width="600em" height="385em" frameborder="0" allowfullscreen="1" referrer="no-referrer"></iframe>
+        </div>
+        </div>
+
+    </body>
 </html>
