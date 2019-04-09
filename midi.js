@@ -13,6 +13,8 @@ class Midi {
         this.selectedOutput = null;
         this.selectedClockOutput = null;
         this.ppqCounter = 0;
+        this.beatCoutner = 0;
+        this.mainThreadBusy = false;
 
         const inputs = midiAccess.inputs.values();
         const that = this;
@@ -41,11 +43,26 @@ class Midi {
                         //pitchBend(event.data[1], event.data[2]);
                         break;
                     case 0xF8:
+                        // MIDI Clock tick
                         that.ppqCounter++;
                         if (that.ppqCounter == 23) {
-                            console.log("midi clock tick");
+                            that.beatCoutner++;
                             that.ppqCounter = 0;
+                            if (!that.mainThreadBusy) {
+                                console.log("midi clock tick: " + that.beatCoutner);
+                            }
                         }
+                        if (that.beatCoutner == 4) {
+                            that.beatCoutner = 0;
+                        }
+                        break;
+                    case 0xFA:
+                        // MIDI Clock start
+                        that.beatCoutner = 0;
+                        break;
+                    case 0xFC:
+                        // MIDI Clock stop
+                        that.beatCoutner = 0;
                         break;
                 }
             };

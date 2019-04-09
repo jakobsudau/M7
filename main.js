@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // Main app
 // ---------------------------------------------------------------------------
-
+//import * as mm from "@magenta/music";
 class App {
     constructor(midiAccess) {
         this.context = new AudioContext();
@@ -29,14 +29,17 @@ class App {
 
     playSequence(chords) {
         console.log("generating midi sequence...");
+        this.midi.mainThreadBusy = true;
         const time = Date.now();
         this.model.generateSequence(chords, this.model).then(function(seq){
+            this.midi.mainThreadBusy = false;
             console.log("playing midi sequence...");
             console.log("it took: " + ((Date.now() - time)/1000) + "s");
             
             this.player.requestMIDIAccess().then(() => {
                 this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
                 this.player.start(seq).then(() => {
+                    document.getElementById('play').disabled = false;
                     document.getElementById('message').innerText = 'Change chords and play again!';
                     this.model.checkChords();
                 });
@@ -80,6 +83,12 @@ if (navigator.requestMIDIAccess) {
             ];
             main.playSequence(chords);
         });
+
+        // Check chords for validity when changed.
+        document.getElementById('chord1').oninput = main.model.checkChords;
+        document.getElementById('chord2').oninput = main.model.checkChords;
+        document.getElementById('chord3').oninput = main.model.checkChords;
+        document.getElementById('chord4').oninput = main.model.checkChords; 
     });
 } else {
     alert("No MIDI support in your browser.");

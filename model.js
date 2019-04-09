@@ -164,8 +164,8 @@ class SequenceModel {
 			document.getElementById('chord4').style.color = 'red';
 			allGood = false;
 		}
-          
-		var changed = false;
+					
+		let changed = false;
 		if (this.currentChords) {
 			if (chords[0] !== this.currentChords[0]) {changed = true;}
 			if (chords[1] !== this.currentChords[1]) {changed = true;}
@@ -175,6 +175,6 @@ class SequenceModel {
 		else {
 			changed = true;
 		}
-		document.getElementById('play').disabled = !allGood || (!changed && this.playing);
+		//document.getElementById('play').disabled = !allGood || (!changed && this.playing);
     }
 }
