@@ -18,6 +18,22 @@ class Metronome {
         this.startTime = 0;
         this.tempo = 60 / this.bpm / 24;
         this.currentTime = 0;
+        
+        this.once = true;
+        this.generatedSeq = null
+        this.sequenceQueue = false;
+        this.player = new mm.MIDIPlayer();
+    }
+
+    playSequence(seq) {
+        this.player.requestMIDIAccess().then(() => {
+            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
+            this.player.start(seq).then(() => {
+                document.getElementById('play').disabled = false;
+                document.getElementById('message').innerText = 'Change chords and play again!';
+                this.model.checkChords();
+            });
+        }); 
     }
 
     startStop(){
@@ -35,28 +51,43 @@ class Metronome {
             }
             
             this.nextNoteTime = this.audioContext.currentTime+(quatersPerSecond-quatersPerSecond);
+            // this.once = true;
+            // this.midi.sendMIDIClockMessage("start");
             this.timerWorker.postMessage("start");
         } else {
+            // this.once = false;
+            // this.midi.sendMIDIClockMessage("stop");
             this.timerWorker.postMessage("stop");
         }
     }
 
-    nextNote() {                                    //Advance current note and time by a quater note...
-        const secondsPerBeat = 60.0 / this.bpm;           //Notice this picks up the CURRENT bpm value to calculate beat length.
-        this.nextNoteTime += secondsPerBeat;            //Add beat length to last beat time 
+    nextNote() {                                            //Advance current note and time by a quater note...
+        const secondsPerBeat = 60.0 / this.bpm;             //Notice this picks up the CURRENT bpm value to calculate beat length.
+        this.nextNoteTime += secondsPerBeat;                //Add beat length to last beat time 
         this.currentTime = this.audioContext.currentTime;
-        this.currentQuaterNote++;                                //Advance the beat number, wrap to zero
+        this.currentQuaterNote++;                           //Advance the beat number, wrap to zero
         if (this.currentQuaterNote == 4) {this.currentQuaterNote = 0;}
     }
 
     scheduleNote(beatNumber, time, data) {    //create an oscillator
         const timeDifference = (Date.now() - data)/1000;
-        console.log("time difference to worker event: " + timeDifference);
+        console.log("time difference to worker event: " + timeDifference + "s");
+
+        // if (this.once) {
+        //     this.midi.sendMIDIClockMessage("tick");
+        //     this.once = false;
+        // }
+
+        if (this.sequenceQueue) {
+            this.playSequence(this.generatedSeq);
+            this.sequenceQueue = false;
+        }
+
         if (timeDifference > 0.001) {
             console.log("Too big!!!");
         } else {
-            if (!this.midi.mainThreadBusy) {
-                var osc = this.audioContext.createOscillator();
+            // this.midi.sendMIDIClockMessage("tick");
+            let osc = this.audioContext.createOscillator();
             osc.connect(this.gain);
             if (beatNumber % 16 == 0){               //beat 0 = high pitch 880
                 osc.frequency.value = 440.0;
@@ -65,7 +96,6 @@ class Metronome {
             }
             osc.start(time);
             osc.stop(time + this.noteLength);
-            }
         }
         // console.log(this.currentQuaterNote);
         // console.log("it took: " + ((this.audioContext.currentTime - this.currentTime)/1000) + "s");
@@ -88,49 +118,49 @@ class Metronome {
     
     
     //------------------------------------------------------------------------------------------------------------------------------------
-    play() {
-        if (this.isPlaying) {
-            //toggle icon to arrow
-            this.isPlaying = false;
-            this.stop();
-        }
-        else {
-            this.playPressed = true;
-            this.isPlaying = true;
-            //toggle icon to square
-            this.nextClockTime = 0;
-            this.tempo = 60 / this.bpm / 24;
-            this.startTime = this.audioContext.currentTime + 0.005;
-            this.scheduleClock();
-        }
-    }
+//     play() {
+//         if (this.isPlaying) {
+//             //toggle icon to arrow
+//             this.isPlaying = false;
+//             this.stop();
+//         }
+//         else {
+//             this.playPressed = true;
+//             this.isPlaying = true;
+//             //toggle icon to square
+//             this.nextClockTime = 0;
+//             this.tempo = 60 / this.bpm / 24;
+//             this.startTime = this.audioContext.currentTime + 0.005;
+//             this.scheduleClock();
+//         }
+//     }
 
-    //Stops the MIDI clock
-    stop() {
-        this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFC]);
-        window.clearTimeout(timerID);
-    }
+//     //Stops the MIDI clock
+//     stop() {
+//         this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFC]);
+//         window.clearTimeout(timerID);
+//     }
 
-    //schedules when the next clock should fire
-    scheduleClock() {
-        const currentTime = this.audioContext.currentTime;
-        currentTime -= this.startTime;
+//     //schedules when the next clock should fire
+//     scheduleClock() {
+//         const currentTime = this.audioContext.currentTime;
+//         currentTime -= this.startTime;
 
-        while (this.nextClockTime < currentTime + this.scheduleAheadTime) {
-            if (this.playPressed) {
-                setTimeout(function() {
-                    //send midi clock start only the first beat! 
-                    //timeout needed to avoid quick first pulse
-                    this.playPressed = false;
-                    this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFA]);
-                    this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
-                }.bind(this), currentTime + this.nextClockTime);
-            }
+//         while (this.nextClockTime < currentTime + this.scheduleAheadTime) {
+//             if (this.playPressed) {
+//                 setTimeout(function() {
+//                     //send midi clock start only the first beat! 
+//                     //timeout needed to avoid quick first pulse
+//                     this.playPressed = false;
+//                     this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFA]);
+//                     this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
+//                 }.bind(this), currentTime + this.nextClockTime);
+//             }
             
-            this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
-            this.nextClockTime += this.tempo;
+//             this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
+//             this.nextClockTime += this.tempo;
 
-        }
-        timerID = setTimeout(function(){this.scheduleClock();}.bind(this), 0);
-    }
+//         }
+//         timerID = setTimeout(function(){this.scheduleClock();}.bind(this), 0);
+//     }
 }

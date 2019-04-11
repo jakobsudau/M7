@@ -9,6 +9,7 @@ class App {
         this.model = new SequenceModel();
         this.metronome = new Metronome(this.context, this.midi);
         this.player = new mm.MIDIPlayer();
+        this.generatedSeq = null;
 
         this.model.initialize();
         this.metronome.initialize();
@@ -27,24 +28,25 @@ class App {
         return this.metronome.isPlaying;
     }
 
-    playSequence(chords) {
+    generateSequence(chords) {
         console.log("generating midi sequence...");
-        this.midi.mainThreadBusy = true;
         const time = Date.now();
         this.model.generateSequence(chords, this.model).then(function(seq){
-            this.midi.mainThreadBusy = false;
-            console.log("playing midi sequence...");
-            console.log("it took: " + ((Date.now() - time)/1000) + "s");
-            
-            this.player.requestMIDIAccess().then(() => {
-                this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-                this.player.start(seq).then(() => {
-                    document.getElementById('play').disabled = false;
-                    document.getElementById('message').innerText = 'Change chords and play again!';
-                    this.model.checkChords();
-                });
-            }); 
+            console.log("generating took: " + ((Date.now() - time)/1000) + "s");
+            this.metronome.generatedSeq = seq;
+            this.metronome.sequenceQueue = true;
         }.bind(this));
+    }
+
+    playSequence(seq) {
+        this.player.requestMIDIAccess().then(() => {
+            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
+            this.player.start(this.generatedSeq).then(() => {
+                document.getElementById('play').disabled = false;
+                document.getElementById('message').innerText = 'Change chords and play again!';
+                this.model.checkChords();
+            });
+        }); 
     }
 }
 
@@ -81,7 +83,7 @@ if (navigator.requestMIDIAccess) {
                 document.getElementById('chord3').value,
                 document.getElementById('chord4').value    
             ];
-            main.playSequence(chords);
+            main.generateSequence(chords);
         });
 
         // Check chords for validity when changed.

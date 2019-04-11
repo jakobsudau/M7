@@ -14,12 +14,11 @@ class Midi {
         this.selectedClockOutput = null;
         this.ppqCounter = 0;
         this.beatCoutner = 0;
-        this.mainThreadBusy = false;
 
         const inputs = midiAccess.inputs.values();
         const that = this;
         // loop through all inputs and listen for midi messages
-        for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+        for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
             input.value.onmidimessage = function(e) {
                 // event.data is an array
                 // event.data[0] = on (144 = 0x90) / off (128 = 0x80) / controlChange (176 = 0xb0)  / pitchBend (224 = 0xf4) / ...
@@ -44,25 +43,25 @@ class Midi {
                         break;
                     case 0xF8:
                         // MIDI Clock tick
-                        that.ppqCounter++;
-                        if (that.ppqCounter == 23) {
-                            that.beatCoutner++;
-                            that.ppqCounter = 0;
-                            if (!that.mainThreadBusy) {
-                                console.log("midi clock tick: " + that.beatCoutner);
-                            }
-                        }
-                        if (that.beatCoutner == 4) {
-                            that.beatCoutner = 0;
-                        }
+                        // that.ppqCounter++;
+                        // if (that.ppqCounter == 23) {
+                        //     that.beatCoutner++;
+                        //     that.ppqCounter = 0;
+                        //     if (!that.mainThreadBusy) {
+                        //         console.log("midi clock tick: " + that.beatCoutner);
+                        //     }
+                        // }
+                        // if (that.beatCoutner == 4) {
+                        //     that.beatCoutner = 0;
+                        // }
                         break;
                     case 0xFA:
                         // MIDI Clock start
-                        that.beatCoutner = 0;
+                        // that.beatCoutner = 0;
                         break;
                     case 0xFC:
                         // MIDI Clock stop
-                        that.beatCoutner = 0;
+                        // that.beatCoutner = 0;
                         break;
                 }
             };
@@ -87,11 +86,11 @@ class Midi {
     }
 
     sendMIDIMessage(note, velocity, startOrstop) {
-        var message;
+        let message;
+        // [0xFA] midi clock start
+        // [0xF8] midi clock advance
+        // [0xFC] midi clock stop
         if (startOrstop) {
-            // [0xFA] midi clock start
-            // [0xF8] midi clock advance
-            // [0xFC] midi clock stop
             message = [0x90, note, this.velocityHexArray[velocity]];
         } else {
             message = [0x80, note, this.velocityHexArray[velocity]];
@@ -99,7 +98,19 @@ class Midi {
         this.midiAccess.outputs.get(this.selectedOutput.id).send(message);  // omitting the timestamp means send immediately.
     }
 
-    sendClockMessage(message) {
-        this.midiAccess.outputs.get(this.selectedOutput.id).send(message);
+    sendMIDIClockMessage(command) {
+        let message;
+        switch (command) {
+            case "start": // [0xFA] midi clock start
+                message = [0xFA];
+                break;
+            case "stop": // [0xFC] midi clock stop
+                message = [0xFC];
+                break;
+            case "tick": // [0xF8] midi clock tick
+                message = [0xF8];
+                break;
+        }
+        this.midiAccess.outputs.get(this.selectedClockOutput.id).send(message);  // omitting the timestamp means send immediately.
     }
 }

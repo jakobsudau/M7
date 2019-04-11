@@ -3,7 +3,6 @@ var interval=100;
 
 self.onmessage=function(e){
 	if (e.data=="start") {
-		console.log("starting");
 		timerID=setInterval(function(){postMessage({"tick":Date.now()});},interval)
 	}
 	else if (e.data.interval) {
@@ -16,7 +15,6 @@ self.onmessage=function(e){
 		}
 	}
 	else if (e.data=="stop") {
-        console.log("stopping");
 		clearInterval(timerID);
 		timerID=null;
 	}
