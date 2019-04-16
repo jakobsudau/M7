@@ -1,5 +1,5 @@
 class Metronome {
-    constructor(context, midi) {
+    constructor(midi) {
         this.isPlaying = false;      //Are we currently playing?
         this.lookahead = 24.0;       //How frequently to call scheduling function (in milliseconds)
         this.scheduleAheadTime = 0.1;//How far ahead to schedule audio (sec), this is calculated from lookahead, and overlaps with next interval (in case the timer is late)
@@ -8,8 +8,8 @@ class Metronome {
         this.timerWorker = null;     //The Web Worker used to fire timer messages
         this.bpm = 120;
         this.currentQuaterNote = 0;
-        this.audioContext = context;
-        this.gain = this.audioContext.createGain();
+        this.audioContext = new AudioContext();
+        this.gainNode = this.audioContext.createGain();
         this.midi = midi;
         this.playPressed = false;
 
@@ -23,17 +23,29 @@ class Metronome {
         this.generatedSeq = null
         this.sequenceQueue = false;
         this.player = new mm.MIDIPlayer();
+        this.isLooping = false;
+        this.sequenceFinished = true;
+        this.callCounter = 0;
+        this.callLength = 2;
     }
 
     playSequence(seq) {
         this.player.requestMIDIAccess().then(() => {
+            this.sequenceFinished = false;
             this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
             this.player.start(seq).then(() => {
-                document.getElementById('play').disabled = false;
-                document.getElementById('message').innerText = 'Change chords and play again!';
-                this.model.checkChords();
+                this.sequenceFinished = true;
+                if (!this.isLooing) {
+                    document.getElementById('play').disabled = false;
+                    document.getElementById('message').innerText = 'Change chords and play again!';
+                    //this.model.checkChords();
+                }
             });
         }); 
+    }
+
+    loop() {
+        this.isLooping = !this.isLooping;
     }
 
     startStop(){
@@ -78,19 +90,32 @@ class Metronome {
         //     this.once = false;
         // }
 
-        if (this.sequenceQueue) {
-            this.playSequence(this.generatedSeq);
-            this.sequenceQueue = false;
-        }
-
         if (timeDifference > 0.001) {
             console.log("Too big!!!");
         } else {
             // this.midi.sendMIDIClockMessage("tick");
             let osc = this.audioContext.createOscillator();
-            osc.connect(this.gain);
+            osc.connect(this.gainNode);
             if (beatNumber % 16 == 0){               //beat 0 = high pitch 880
-                osc.frequency.value = 440.0;
+                if (this.sequenceQueue && this.sequenceFinished) {
+                    this.playSequence(this.generatedSeq);
+                    if (!this.isLooping) {
+                        this.sequenceQueue = false;
+                    }
+                }
+                osc.frequency.value = 880.0;
+                if (!this.sequenceFinished) {
+                    this.callCounter++
+                    if (this.callCounter == 4) {
+                        this.callCounter = 0;
+                        this.callLength--;
+                        console.log(this.callLength);
+                        if (this.callLength == 0) {
+                            console.log("call length: " + this.callLength);
+                        }
+                    }
+                }
+                console.log(this.callCounter);
             }else{                                    //other notes = low pitch 440
                 osc.frequency.value = 440.0;
             }
@@ -109,58 +134,10 @@ class Metronome {
     }
 
     initialize() {
-        this.gain.connect(this.audioContext.destination);
-        this.gain.gain.value = 0.8;
+        this.gainNode.connect(this.audioContext.destination);
+        this.gainNode.gain.value = 0.8;
         this.timerWorker = new Worker("metronomeWorker.js");
         this.timerWorker.onmessage = function(e) {if (e.data.tick) {this.scheduler(e.data.tick);}}.bind(this);
         this.timerWorker.postMessage({"interval":this.lookahead});
     }
-    
-    
-    //------------------------------------------------------------------------------------------------------------------------------------
-//     play() {
-//         if (this.isPlaying) {
-//             //toggle icon to arrow
-//             this.isPlaying = false;
-//             this.stop();
-//         }
-//         else {
-//             this.playPressed = true;
-//             this.isPlaying = true;
-//             //toggle icon to square
-//             this.nextClockTime = 0;
-//             this.tempo = 60 / this.bpm / 24;
-//             this.startTime = this.audioContext.currentTime + 0.005;
-//             this.scheduleClock();
-//         }
-//     }
-
-//     //Stops the MIDI clock
-//     stop() {
-//         this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFC]);
-//         window.clearTimeout(timerID);
-//     }
-
-//     //schedules when the next clock should fire
-//     scheduleClock() {
-//         const currentTime = this.audioContext.currentTime;
-//         currentTime -= this.startTime;
-
-//         while (this.nextClockTime < currentTime + this.scheduleAheadTime) {
-//             if (this.playPressed) {
-//                 setTimeout(function() {
-//                     //send midi clock start only the first beat! 
-//                     //timeout needed to avoid quick first pulse
-//                     this.playPressed = false;
-//                     this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xFA]);
-//                     this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
-//                 }.bind(this), currentTime + this.nextClockTime);
-//             }
-            
-//             this.midi.midiAccess.outputs.get(this.midi.selectedClockOutput.id).send([0xF8]);
-//             this.nextClockTime += this.tempo;
-
-//         }
-//         timerID = setTimeout(function(){this.scheduleClock();}.bind(this), 0);
-//     }
 }

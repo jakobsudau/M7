@@ -4,10 +4,9 @@
 //import * as mm from "@magenta/music";
 class App {
     constructor(midiAccess) {
-        this.context = new AudioContext();
         this.midi = new Midi(midiAccess);
         this.model = new SequenceModel();
-        this.metronome = new Metronome(this.context, this.midi);
+        this.metronome = new Metronome(this.midi);
         this.player = new mm.MIDIPlayer();
         this.generatedSeq = null;
 
@@ -28,6 +27,20 @@ class App {
         return this.metronome.isPlaying;
     }
 
+    changeCallResponseLength(length, isCall) {
+        if (!isCall) {this.model.NUM_REPS = length};
+    }
+
+    startStopLoop() {
+        this.metronome.loop();
+        console.log(this.metronome.isLooping);
+        return this.metronome.isLooping;
+    }
+
+    changeClickVolume(volume) {
+        this.metronome.gainNode.gain.value = volume;
+    }
+
     generateSequence(chords) {
         console.log("generating midi sequence...");
         const time = Date.now();
@@ -43,6 +56,7 @@ class App {
             this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
             this.player.start(this.generatedSeq).then(() => {
                 document.getElementById('play').disabled = false;
+                document.getElementById('generate').disabled = false;
                 document.getElementById('message').innerText = 'Change chords and play again!';
                 this.model.checkChords();
             });
@@ -67,6 +81,7 @@ if (navigator.requestMIDIAccess) {
             buttons[i].addEventListener('keyup', function(){main.stopNote(i+60, 66)});
         }
 
+        // click functionality
         document.getElementById("click").addEventListener('click', function(){
             if (main.startStopClick()) {
                 document.getElementById("click").style.background = "lightgrey";
@@ -75,8 +90,17 @@ if (navigator.requestMIDIAccess) {
             }
         });
 
-        // eventlistener for the play model button
-        document.getElementById("play").addEventListener('click', function(){
+        // loop functionality
+        document.getElementById("loop").addEventListener('click', function(){
+            if (main.startStopLoop()) {
+                document.getElementById("loop").style.background = "lightgrey";
+            } else {
+                document.getElementById("loop").style.background = "white";
+            }
+        });
+
+        // eventlistener for the generate and play model button
+        document.getElementById("generate").addEventListener('click', function(){
             const chords = [
                 document.getElementById('chord1').value,
                 document.getElementById('chord2').value,
@@ -86,11 +110,29 @@ if (navigator.requestMIDIAccess) {
             main.generateSequence(chords);
         });
 
-        // Check chords for validity when changed.
+        document.getElementById("play").addEventListener('click', function(){main.playSequence();});
+
+        // Check chords for validity when changed
         document.getElementById('chord1').oninput = main.model.checkChords;
         document.getElementById('chord2').oninput = main.model.checkChords;
         document.getElementById('chord3').oninput = main.model.checkChords;
         document.getElementById('chord4').oninput = main.model.checkChords; 
+
+        // Click volume control
+        document.getElementById('clickVolumeSlider').addEventListener("input", function (e) {
+            main.changeClickVolume(this.value/100);
+        });
+
+        // call and response lengths
+        let radioButtons = document.getElementsByClassName("radioButton");
+        for (var i=0; i<(radioButtons.length/2); i++) {
+            radioButtons[i].addEventListener("change", function(e){
+                main.changeCallResponseLength(this.value, false);
+            });
+            radioButtons[i+3].addEventListener("change", function(e){
+                main.changeCallResponseLength(this.value, false);
+            });
+          } 
     });
 } else {
     alert("No MIDI support in your browser.");

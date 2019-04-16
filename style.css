@@ -1,4 +1,4 @@
-html, body {
+ html, body {
     padding: 0; margin: 0;
     text-align: center;
     font-family: monospace;
@@ -6,7 +6,6 @@ html, body {
 
 #mainContainer2 {
     display: inline-block;
-    text-align: center;
     border: 2px solid black;
     font-size: 1.4em;
     width: 19em;
@@ -18,7 +17,7 @@ html, body {
     font-size: 2em;
     margin-bottom: 0.2em;
 }
-
+ 
 button {
     font-family: monospace;
     border: 2px solid black;
@@ -39,6 +38,19 @@ button:active {
     margin-top: 0.5em;
 }
 
+.container {
+    border: 2px solid black;
+    margin-bottom: 1em;
+}
+
+#callContainer, #responseContainer {
+    height: 3em;
+    width: 8.4em;
+    display: inline-block;
+    border: 2px solid black;
+    margin-bottom: 1em;
+}
+
 #click {
     font-size: 1.3em;
     padding: 0.3em 1em;
@@ -46,10 +58,18 @@ button:active {
     user-select: none;
 }
 
-#play {
+#play, #generate {
     font-size: 1.5em;
     padding: 0.3em 1em;
-    margin: 0.2em 2em 0.5em 2em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    user-select: none;
+}
+
+#loop {
+    font-size: 1.5em;
+    padding: 0.3em 1em;
+    margin-bottom: 0.5em;
     user-select: none;
 }
 
@@ -67,7 +87,7 @@ select {
 }
 
 table {
-    width: 16em;
+    width: 18em;
     border-collapse: collapse;
     table-layout: fixed;
     margin-bottom: 0.5em;
@@ -84,4 +104,4 @@ table {
 table.center {
     margin-left:auto; 
     margin-right:auto;
-  }
+  } 

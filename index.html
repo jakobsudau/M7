@@ -8,53 +8,68 @@
 
         <div id="mainContainer">
             <div id="mainContainer2">
-            <!-- Dies ist der Code für die Aufgabe-->
-            <div id="titleDiv">M7 Project</div>
-            <div id="playNotes">Play some notes:</div>
-            <button id="button1" class="button">1</button>
-            <button id="button2" class="button">2</button>
-            <button id="button3" class="button">3</button>
+                <div id="titleDiv">M7 Project</div>
+                <div id="playNotes">Play some notes:</div>
+                <button id="button1" class="button">1</button>
+                <button id="button2" class="button">2</button>
+                <button id="button3" class="button">3</button>
 
-            
-            <div id="selectChords">Select a chord sequence:</div>
-            <div id='chords'>
-            <table class="center"><tr>
-                <td><input id='chord1' type='text' value='C'></td>
-                <td><input id='chord2' type='text' value='G'></td>
-                <td><input id='chord3' type='text' value='Am'></td>
-                <td><input id='chord4' type='text' value='F'></td>
-            </tr></table>
+                
+                <div id="selectChords">Select a chord sequence:</div>
 
-            <div id='midiText'>Choose your MIDI Out:</div>
-            <select id="midiBusSelect"></select>
+                <div id='chords'>
+                    <table class="center"><tr>
+                        <td><input id='chord1' type='text' value='C'></td>
+                        <td><input id='chord2' type='text' value='G'></td>
+                        <td><input id='chord3' type='text' value='Am'></td>
+                        <td><input id='chord4' type='text' value='F'></td>
+                    </tr></table>
 
-            <div id='midiClockText'>Choose your MIDI Clock Out:</div>
-            <select id="midiClockBusSelect"></select>
+                    <div id='midiText'>Choose your MIDI Out:</div>
+                    <select id="midiBusSelect"></select>
+
+                    <div id='midiClockText'>Choose your MIDI Clock Out:</div>
+                    <select id="midiClockBusSelect"></select>
+                </div>
+
+                <div id="clickContainer" class="container">
+                    <input type="range" min="1" max="100" value="80" class="slider" id="clickVolumeSlider">
+                    <button id="click">Click</button>
+                </div>
+
+                <div id="playContainer" class="container">
+                    <button id="generate" disabled>Generate</button>
+                    <button id="play" disabled>Play</button>
+                    
+                    <div id="callContainer">
+                        <div>Call Bars</div>
+                        <div id="callOptionsContainer">
+                            <input type="radio" class="radioButton" name="callOption" value=2>2
+                            <input type="radio" class="radioButton" name="callOption" value=4 checked="checked">4
+                            <input type="radio" class="radioButton" name="callOption" value=8>8
+                        </div>
+                    </div>
+                    <div id="responseContainer">
+                        <div>Response Bars</div>
+                        <div id="responseOptionsContainer"></div>
+                            <input type="radio" class="radioButton" name="responseOption" value=2>2
+                            <input type="radio" class="radioButton" name="responseOption" value=4 checked="checked">4
+                            <input type="radio" class="radioButton" name="responseOption" value=8>8
+                        </div>
+                        <button id="loop">Loop</button>
+                    </div>
+                    <div id='message'>Loading model...</div>    
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
+                <script src="midi.js"></script>
+                <script src="model.js"></script>
+                <script src="modelWorker.js"></script>
+                <script src="metronome.js"></script>
+                <script src="metronomeWorker.js"></script>
+                <script src="playerCallback.js"></script>
+                <script src="main.js"></script>
             </div>
-
-            
-            
-            <button id="click">Click</button>
-            <button id="play" disabled>Play</button>
-            
-            <div id='message'>Loading model...</div>
-
-            <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0"></script>
-
-            <script src="midi.js"></script>
-
-            <script src="model.js"></script>
-            <script src="modelWorker.js"></script>
-
-            <script src="metronome.js"></script>
-            <script src="metronomeWorker.js"></script>
-
-            <script src="playerCallback.js"></script>
-
-            <script src="main.js"></script>
-            <!-------------------------------------->
         </div>
-        </div>
-
     </body>
 </html>

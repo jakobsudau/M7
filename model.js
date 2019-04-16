@@ -31,7 +31,8 @@ class SequenceModel {
 		initializeDone() {
 			console.log("initialize done!");
 			document.getElementById('message').innerText = 'Done loading model.'
-      document.getElementById('play').disabled = false;
+			document.getElementById('play').disabled = false;
+			document.getElementById('generate').disabled = false;
 			}
 
     generatingDone() {
