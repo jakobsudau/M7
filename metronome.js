@@ -1,5 +1,5 @@
 class Metronome {
-    constructor(midi) {
+    constructor(midi, model) {
         this.isPlaying = false;      //Are we currently playing?
         this.lookahead = 24.0;       //How frequently to call scheduling function (in milliseconds)
         this.scheduleAheadTime = 0.1;//How far ahead to schedule audio (sec), this is calculated from lookahead, and overlaps with next interval (in case the timer is late)
@@ -12,6 +12,7 @@ class Metronome {
         this.gainNode = this.audioContext.createGain();
         this.midi = midi;
         this.playPressed = false;
+        this.model = model;
 
         this.tempo = 120;
         this.nextClockTime = 0.0; // when the next note is due.
@@ -23,22 +24,25 @@ class Metronome {
         this.generatedSeq = null
         this.sequenceQueue = false;
         this.player = new mm.MIDIPlayer();
+        this.playerLooped = new mm.MIDIPlayer();
         this.isLooping = false;
         this.sequenceFinished = true;
         this.callCounter = 0;
-        this.callLength = 2;
+        this.callLength = 4;
     }
 
-    playSequence(seq) {
-        this.player.requestMIDIAccess().then(() => {
+    playSequence(seq, player) {
+        player.requestMIDIAccess().then(() => {
+            document.getElementById('play').disabled = true;
             this.sequenceFinished = false;
-            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-            this.player.start(seq).then(() => {
+            player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
+            player.start(seq).then(() => {
                 this.sequenceFinished = true;
+                console.log("from playSequence, setting sequenceFinished to " + this.sequenceFinished);
                 if (!this.isLooing) {
                     document.getElementById('play').disabled = false;
                     document.getElementById('message').innerText = 'Change chords and play again!';
-                    //this.model.checkChords();
+                    this.model.checkChords();
                 }
             });
         }); 
@@ -96,26 +100,26 @@ class Metronome {
             // this.midi.sendMIDIClockMessage("tick");
             let osc = this.audioContext.createOscillator();
             osc.connect(this.gainNode);
-            if (beatNumber % 16 == 0){               //beat 0 = high pitch 880
+            if (beatNumber % 16 == 0){               // beat 0 = high pitch 880
+                
+                // if there is still a sequence in queue and nothing is playing right now, play the currently generated sequence
                 if (this.sequenceQueue && this.sequenceFinished) {
-                    this.playSequence(this.generatedSeq);
+                    console.log("playing sequence");
+                    this.playSequence(this.generatedSeq, this.player);
                     if (!this.isLooping) {
                         this.sequenceQueue = false;
                     }
                 }
-                osc.frequency.value = 880.0;
+                
                 if (!this.sequenceFinished) {
                     this.callCounter++
-                    if (this.callCounter == 4) {
+                    if (this.callCounter == (this.callLength*2)) {
                         this.callCounter = 0;
-                        this.callLength--;
-                        console.log(this.callLength);
-                        if (this.callLength == 0) {
-                            console.log("call length: " + this.callLength);
-                        }
+                        console.log("sequence should be over now, if loop is enabled start again now");
                     }
                 }
-                console.log(this.callCounter);
+
+                osc.frequency.value = 880.0;
             }else{                                    //other notes = low pitch 440
                 osc.frequency.value = 440.0;
             }

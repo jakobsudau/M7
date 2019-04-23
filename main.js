@@ -6,12 +6,19 @@ class App {
     constructor(midiAccess) {
         this.midi = new Midi(midiAccess);
         this.model = new SequenceModel();
-        this.metronome = new Metronome(this.midi);
-        this.player = new mm.MIDIPlayer();
-        this.generatedSeq = null;
+        this.metronome = new Metronome(this.midi, this.model);
 
-        this.model.initialize();
+        this.model.initialize().then(function() {
+            this.model.generateSequence(["C", "Am", "G", "F"], this.model).then(function(seq){
+                console.log("initialized");
+                document.getElementById('play').disabled = false;
+			    document.getElementById('generate').disabled = false;
+                document.getElementById('message').innerText = 'Done loading model.'
+            }.bind(this));
+        }.bind(this));
         this.metronome.initialize();
+
+        
     }
 
     startNote(note, velocity) {
@@ -28,12 +35,14 @@ class App {
     }
 
     changeCallResponseLength(length, isCall) {
-        if (!isCall) {this.model.NUM_REPS = length};
+        if (!isCall) {
+            this.model.NUM_REPS = length;
+            this.midi.callLength = length;
+        };
     }
 
     startStopLoop() {
         this.metronome.loop();
-        console.log(this.metronome.isLooping);
         return this.metronome.isLooping;
     }
 
@@ -47,20 +56,15 @@ class App {
         this.model.generateSequence(chords, this.model).then(function(seq){
             console.log("generating took: " + ((Date.now() - time)/1000) + "s");
             this.metronome.generatedSeq = seq;
-            this.metronome.sequenceQueue = true;
+            if (this.metronome.isPlaying) {this.playSequence();}
         }.bind(this));
     }
 
-    playSequence(seq) {
-        this.player.requestMIDIAccess().then(() => {
-            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-            this.player.start(this.generatedSeq).then(() => {
-                document.getElementById('play').disabled = false;
-                document.getElementById('generate').disabled = false;
-                document.getElementById('message').innerText = 'Change chords and play again!';
-                this.model.checkChords();
-            });
-        }); 
+    playSequence() {
+        this.metronome.sequenceQueue = true;
+        if (!this.metronome.isPlaying) {
+            this.metronome.playSequence(this.metronome.generatedSeq, this.metronome.player);
+        }
     }
 }
 

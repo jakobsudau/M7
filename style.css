@@ -73,7 +73,7 @@ button:active {
     user-select: none;
 }
 
-#play:disabled {
+#play:disabled, #generate:disabled {
     border: 2px solid #cacaca;
 }
 

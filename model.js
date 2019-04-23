@@ -15,37 +15,17 @@ class SequenceModel {
 
         // worker
         this.modelWorker = new Worker("modelWorker.js");
-				this.modelWorker.onmessage = function(e) {if (e.data[0] == "done") {this.generatingDone();}}.bind(this);
-				this.modelWorker.onmessage = function(e) {if (e.data == "initializeDone") {this.initializeDone();}}.bind(this);    
 		}
 
-    initialize() {
-			this.modelWorker.postMessage(["initialize"]);
-        // Initialize model then start playing.
-        this.model.initialize().then(() => {
-            document.getElementById('message').innerText = 'Done loading model.'
-            document.getElementById('play').disabled = false;
-        });
+		initialize() {
+			return new Promise((resolve, reject) => {
+				this.modelWorker.postMessage(["initialize"]);
+				
+				this.model.initialize().then(() => {
+					resolve("done");
+				});
+			})
 		}
-		
-		initializeDone() {
-			console.log("initialize done!");
-			document.getElementById('message').innerText = 'Done loading model.'
-			document.getElementById('play').disabled = false;
-			document.getElementById('generate').disabled = false;
-			}
-
-    generatingDone() {
-		console.log("generating done!");
-    //   this.modelWorker.postMessage(["generate",model]);
-    //   this.modelWorker.onmessage = function(e) {
-    //     if (e.data[0] == "done") {
-	// 		console.log("generating done!");
-    //       	var seq = e.data[1];
-    //       	// do something with the generated sequence
-    //     }
-    //   };
-    }
 
     generateSequence(chordsTemp, that) {
 		
@@ -115,6 +95,7 @@ class SequenceModel {
 
 			// Play it!
 			resolve(seq);
+			document.getElementById('play').disabled = false;
 			})
 		});
     }
