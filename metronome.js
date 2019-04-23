@@ -20,36 +20,33 @@ class Metronome {
         this.tempo = 60 / this.bpm / 24;
         this.currentTime = 0;
         
-        this.once = true;
+        // this.once = true;
         this.generatedSeq = null
         this.sequenceQueue = false;
         this.player = new mm.MIDIPlayer();
-        this.playerLooped = new mm.MIDIPlayer();
-        this.isLooping = false;
+        this.looping = false;
         this.sequenceFinished = true;
         this.callCounter = 0;
         this.callLength = 4;
     }
 
-    playSequence(seq, player) {
-        player.requestMIDIAccess().then(() => {
+    playSequence(seq) {
+        console.log(this.looping);
+        this.player.requestMIDIAccess().then(() => {
             document.getElementById('play').disabled = true;
             this.sequenceFinished = false;
-            player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-            player.start(seq).then(() => {
+            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
+            this.player.start(seq).then(() => {
                 this.sequenceFinished = true;
-                console.log("from playSequence, setting sequenceFinished to " + this.sequenceFinished);
-                if (!this.isLooing) {
+                if (this.looping) {
+                    this.playSequence(this.generatedSeq, this.player);
+                } else {
                     document.getElementById('play').disabled = false;
                     document.getElementById('message').innerText = 'Change chords and play again!';
                     this.model.checkChords();
                 }
             });
         }); 
-    }
-
-    loop() {
-        this.isLooping = !this.isLooping;
     }
 
     startStop(){
@@ -105,8 +102,8 @@ class Metronome {
                 // if there is still a sequence in queue and nothing is playing right now, play the currently generated sequence
                 if (this.sequenceQueue && this.sequenceFinished) {
                     console.log("playing sequence");
-                    this.playSequence(this.generatedSeq, this.player);
-                    if (!this.isLooping) {
+                    this.playSequence(this.generatedSeq);
+                    if (!this.looping) {
                         this.sequenceQueue = false;
                     }
                 }

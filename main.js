@@ -42,8 +42,8 @@ class App {
     }
 
     startStopLoop() {
-        this.metronome.loop();
-        return this.metronome.isLooping;
+        this.metronome.looping = !this.metronome.looping;
+        return this.metronome.looping;
     }
 
     changeClickVolume(volume) {
@@ -63,7 +63,7 @@ class App {
     playSequence() {
         this.metronome.sequenceQueue = true;
         if (!this.metronome.isPlaying) {
-            this.metronome.playSequence(this.metronome.generatedSeq, this.metronome.player);
+            this.metronome.playSequence(this.metronome.generatedSeq);
         }
     }
 }
