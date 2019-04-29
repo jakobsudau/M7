@@ -75,14 +75,6 @@ class Midi {
 
         this.selectedOutput = this.availableOutputs[0];
         this.selectedClockOutput = this.availableOutputs[0];
-
-        // Populate the <select>
-        const midiList = document.getElementById('midiBusSelect');
-        const clockList = document.getElementById('midiClockBusSelect');
-        midiList.innerHTML = this.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        clockList.innerHTML = this.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        midiList.addEventListener("change", function() {this.selectedOutput = this.availableOutputs[midiList.selectedIndex];}.bind(this));
-        clockList.addEventListener("change", function() {this.selectedClockOutput = this.availableOutputs[midiList.selectedIndex];}.bind(this));
     }
 
     sendMIDIMessage(note, velocity, startOrstop) {

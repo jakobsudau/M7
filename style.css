@@ -1,16 +1,17 @@
- html, body {
+html, body {
     padding: 0; margin: 0;
-    text-align: center;
-    font-family: monospace;
+    text-align: center;   
 }
 
-#mainContainer2 {
+#mainContainer2, #generatorModuleContainer {
+    float: left;
+    font-family: monospace;
     display: inline-block;
     border: 2px solid black;
     font-size: 1.4em;
     width: 19em;
     padding: 1em;
-    margin-top: 1em;
+    margin: 1em;
 }
 
 #titleDiv {
@@ -21,8 +22,10 @@
 button {
     font-family: monospace;
     border: 2px solid black;
-    font-size: 2.5em;
+    font-size: 2em;
     padding: 0.0em 0.5em;
+    margin-left: 0.15em;
+    margin-right: 0.15em;
     margin-bottom: 0.1em;
 }
 
@@ -43,12 +46,22 @@ button:active {
     margin-bottom: 1em;
 }
 
-#callContainer, #responseContainer {
+#midiClockContainer, #midiOutContainer { 
+    padding-top: 0.5em;;
+}
+
+#midiText, #midiClockText {
+    font-size: 0.9em;
+}
+
+#callContainer, #responseContainer, #midiClockContainer, #midiOutContainer {
     height: 3em;
     width: 8.4em;
     display: inline-block;
     border: 2px solid black;
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
 }
 
 #click {
@@ -75,11 +88,6 @@ button:active {
 
 #play:disabled, #generate:disabled {
     border: 2px solid #cacaca;
-}
-
-#midiText {
-    font-size: 0.9em;
-    margin-top: 0.8em;
 }
 
 select {
