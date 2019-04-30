@@ -105,6 +105,9 @@ class MainModule {
         titleDiv.id = "titleDiv";
         titleDiv.innerHTML = "Main Module";
 
+        let buttonDiv = document.createElement("div");
+        buttonDiv.id = "buttonDiv";
+
         let buttonAdd = document.createElement("button");
         buttonAdd.id = "buttonAdd";
         buttonAdd.innerHTML = "+";
@@ -164,18 +167,15 @@ class MainModule {
         midiText.id = "midiText";
         midiText.innerHTML = "MIDI Out";
 
-        let midiBusSelect = document.createElement("select");
-        midiBusSelect.id = "midiBusSelect";
+        // let midiClockContainer = document.createElement("div");
+        // midiClockContainer.id = "midiClockContainer";
 
-        let midiClockContainer = document.createElement("div");
-        midiClockContainer.id = "midiClockContainer";
+        // let midiClockText = document.createElement("div");
+        // midiClockText.id = "midiClockText";
+        // midiClockText.innerHTML = "MIDI Clock Out";
 
-        let midiClockText = document.createElement("div");
-        midiClockText.id = "midiClockText";
-        midiClockText.innerHTML = "MIDI Clock Out";
-
-        let midiClockBusSelect = document.createElement("select");
-        midiClockBusSelect.id = "midiClockBusSelect";
+        // let midiClockBusSelect = document.createElement("select");
+        // midiClockBusSelect.id = "midiClockBusSelect";
 
         let clickContainer = document.createElement("div");
         clickContainer.id = "clickContainer";
@@ -214,15 +214,16 @@ class MainModule {
         clickContainer.appendChild(clickVolumeSlider);
         clickContainer.appendChild(click);
 
-        mainModuleContainer.appendChild(midiClockContainer);
-        midiClockContainer.appendChild(midiClockText);
-        midiClockContainer.appendChild(midiClockBusSelect);
+        // mainModuleContainer.appendChild(midiClockContainer);
+        // midiClockContainer.appendChild(midiClockText);
+        // midiClockContainer.appendChild(midiClockBusSelect);
 
-        mainModuleContainer.appendChild(buttonStop);
-        mainModuleContainer.appendChild(buttonPlayAll);
-        mainModuleContainer.appendChild(buttonAdd);
+        buttonDiv.appendChild(buttonStop);
+        buttonDiv.appendChild(buttonPlayAll);
+        buttonDiv.appendChild(buttonAdd);
+
+        mainModuleContainer.appendChild(buttonDiv);
         
-
         document.getElementById("mainContainer").appendChild(mainModuleContainer);
 
         let that = this;
@@ -247,8 +248,8 @@ class MainModule {
         chord4.addEventListener('input', function(){that.checkChords()}); 
 
         // Populate the MidiOut and MidiClockOut lists
-        midiClockBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiBusSelect.selectedIndex];});
+        // midiClockBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
+        // midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiClockBusSelect.selectedIndex];});
 
         // click functionality
         click.addEventListener('click', function(){

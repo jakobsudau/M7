@@ -92,6 +92,8 @@ class GeneratorModule {
         generatorModuleTitleDiv.id = "generatorTitleDiv";
         generatorModuleTitleDiv.innerHTML = "Generator " + this.id;
 
+        let generatorButtonDiv = document.createElement("div");
+        generatorButtonDiv.id = "generatorButtonDiv";
 
         let playContainer = document.createElement("div");
         playContainer.id = "playContainer";
@@ -224,9 +226,11 @@ class GeneratorModule {
         this.generatorModuleContainer.appendChild(barsContainer);
         this.generatorModuleContainer.appendChild(midiOutContainer);
         this.generatorModuleContainer.appendChild(this.messageDiv);
-        this.generatorModuleContainer.appendChild(this.generateButton);
-        this.generatorModuleContainer.appendChild(this.playButton);
-        this.generatorModuleContainer.appendChild(loop);
+        
+        generatorButtonDiv.appendChild(this.generateButton);
+        generatorButtonDiv.appendChild(this.playButton);
+        generatorButtonDiv.appendChild(loop);
+        this.generatorModuleContainer.appendChild(generatorButtonDiv);
         this.generatorModuleContainer.appendChild(deleteButton);
 
         document.getElementById("mainContainer").appendChild(this.generatorModuleContainer);
