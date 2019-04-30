@@ -1,15 +1,11 @@
-html, body {
-    padding: 0; margin: 0;
-    text-align: center;   
-}
-
-#mainContainer2, #generatorModuleContainer {
+#mainModuleContainer, #generatorModuleContainer {
+    position: relative;
     float: left;
     font-family: monospace;
-    display: inline-block;
     border: 2px solid black;
     font-size: 1.4em;
     width: 19em;
+    height: 18em;
     padding: 1em;
     margin: 1em;
 }
@@ -18,12 +14,26 @@ html, body {
     font-size: 2em;
     margin-bottom: 0.2em;
 }
+
+#generatorTitleDiv {
+    font-size: 1.7em;
+    margin-bottom: 0.2em;
+}
+
+#delete {
+    font-size: 1em;
+    margin-top: 0.3em;
+    margin-right: 0.3em;
+    position:absolute;
+    top:0;
+    right:0;
+    background: rgb(255, 141, 141);
+}
  
 button {
     font-family: monospace;
     border: 2px solid black;
     font-size: 2em;
-    padding: 0.0em 0.5em;
     margin-left: 0.15em;
     margin-right: 0.15em;
     margin-bottom: 0.1em;
@@ -31,6 +41,16 @@ button {
 
 button:active {
     background: #cacaca;
+}
+
+#buttonAdd {
+    font-size: 1.5em;
+}
+
+#buttonStop, #buttonPlayAll {
+    font-size: 1.5em;
+    padding-top: 0.1em;
+    margin-left: 0.2em;
 }
 
 #playNotes {
@@ -54,7 +74,17 @@ button:active {
     font-size: 0.9em;
 }
 
-#callContainer, #responseContainer, #midiClockContainer, #midiOutContainer {
+#midiClockContainer, #midiOutContainer { 
+    height: 3em;
+    display: inline-block;
+    border: 2px solid black;
+}
+
+select {
+    width: 12.5em;
+}
+
+#inputBarsContainer, #outputBarsContainer {
     height: 3em;
     width: 8.4em;
     display: inline-block;
@@ -95,7 +125,7 @@ select {
 }
 
 table {
-    width: 18em;
+    width: 19em;
     border-collapse: collapse;
     table-layout: fixed;
     margin-bottom: 0.5em;
@@ -108,8 +138,3 @@ table {
     text-align: center;
     font-size: 0.9em;
 }
-
-table.center {
-    margin-left:auto; 
-    margin-right:auto;
-  } 

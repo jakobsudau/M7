@@ -33,7 +33,7 @@ class SequenceModel {
 
 		return new Promise(function(resolve, reject) {
 			that.playing = true;
-			document.getElementById('play').disabled = true;
+			// document.getElementById('play').disabled = true;
 			that.currentChords = chordsTemp;
 
 			const chords = that.currentChords;
@@ -46,7 +46,7 @@ class SequenceModel {
 			// Prime with root note of the first chord.
 			const root = mm.chords.ChordSymbols.root(chords[0]);
 			
-			document.getElementById('message').innerText = 'Improvising over: ' + chords;
+			// document.getElementById('message').innerText = 'Improvising over: ' + chords;
 			that.model.continueSequence(seq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
 			
 			// Add the continuation to the original.
@@ -95,68 +95,8 @@ class SequenceModel {
 
 			// Play it!
 			resolve(seq);
-			document.getElementById('play').disabled = false;
+			// document.getElementById('play').disabled = false;
 			})
 		});
-    }
-
-    checkChords() {
-        const chords = [
-            document.getElementById('chord1').value,
-            document.getElementById('chord2').value,
-            document.getElementById('chord3').value,
-            document.getElementById('chord4').value
-          ]; 
-         
-		const isGood = (chord) => {
-		if (!chord) {
-			return false;
-		}
-		try {
-			mm.chords.ChordSymbols.pitches(chord);
-			return true;
-		}
-		catch(e) {
-			return false;
-		}
-		}
-          
-		var allGood = true;
-		if (isGood(chords[0])) {
-			document.getElementById('chord1').style.color = 'black';
-		} else {
-			document.getElementById('chord1').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[1])) {
-			document.getElementById('chord2').style.color = 'black';
-		} else {
-			document.getElementById('chord2').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[2])) {
-			document.getElementById('chord3').style.color = 'black';
-		} else {
-			document.getElementById('chord3').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[3])) {
-			document.getElementById('chord4').style.color = 'black';
-		} else {
-			document.getElementById('chord4').style.color = 'red';
-			allGood = false;
-		}
-					
-		let changed = false;
-		if (this.currentChords) {
-			if (chords[0] !== this.currentChords[0]) {changed = true;}
-			if (chords[1] !== this.currentChords[1]) {changed = true;}
-			if (chords[2] !== this.currentChords[2]) {changed = true;}
-			if (chords[3] !== this.currentChords[3]) {changed = true;}  
-		}
-		else {
-			changed = true;
-		}
-		//document.getElementById('play').disabled = !allGood || (!changed && this.playing);
     }
 }

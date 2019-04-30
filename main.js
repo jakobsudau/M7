@@ -1,34 +1,15 @@
 // ---------------------------------------------------------------------------
-// Generator Module Class
+// Main Module Class
 // ---------------------------------------------------------------------------
 
-class GeneratorModule {
+class MainModule {
     constructor(midiAccess) {
-        this.model = new SequenceModel();
+        this.generators = new Map();
+        this.generatorCounter = 0;
         this.midi = new Midi(midiAccess);
-        
-        this.createUIElements();
-        
-        this.metronome = new Metronome(this.midi, this.model);
-        
-
-        this.model.initialize().then(function() {
-            this.model.generateSequence(["C", "Am", "G", "F"], this.model).then(function(seq){
-                console.log("initialized");
-                document.getElementById('play').disabled = false;
-			    document.getElementById('generate').disabled = false;
-                document.getElementById('message').innerText = 'Done loading model.'
-            }.bind(this));
-        }.bind(this));
+        this.metronome = new Metronome();
         this.metronome.initialize();
-    }
-
-    startNote(note, velocity) {
-        this.midi.sendMIDIMessage(note, velocity, true);
-    }
-    
-    stopNote(note, velocity) {
-        this.midi.sendMIDIMessage(note, velocity, false);
+        this.createUIElements();    
     }
 
     startStopClick() {
@@ -36,72 +17,108 @@ class GeneratorModule {
         return this.metronome.isPlaying;
     }
 
-    changeCallResponseLength(length, isCall) {
-        if (!isCall) {
-            this.model.NUM_REPS = length;
-            this.midi.callLength = length;
-        };
-    }
-
-    startStopLoop() {
-        this.metronome.looping = !this.metronome.looping;
-        return this.metronome.looping;
-    }
-
     changeClickVolume(volume) {
         this.metronome.gainNode.gain.value = volume;
     }
 
-    generateSequence(chords) {
-        console.log("generating midi sequence...");
-        const time = Date.now();
-        this.model.generateSequence(chords, this.model).then(function(seq){
-            console.log("generating took: " + ((Date.now() - time)/1000) + "s");
-            this.metronome.generatedSeq = seq;
-            if (this.metronome.isPlaying) {this.playSequence();}
-        }.bind(this));
+    addModule() {
+        const generator = new GeneratorModule(this, this.generatorCounter);
+        this.generators.set(this.generatorCounter, generator);
+        this.generatorCounter++;
     }
 
-    playSequence() {
-        this.metronome.sequenceQueue = true;
-        if (!this.metronome.isPlaying) {
-            this.metronome.playSequence(this.metronome.generatedSeq);
-        }
+    deleteModule(id) {
+        this.generators.delete(id);
+    }
+
+    playAll() {
+        this.generators.forEach((value,key) => {
+            value.playGeneratedSequence();
+        });
+    }
+
+    checkChords() {
+        const chords = [
+            document.getElementById('chord1').value,
+            document.getElementById('chord2').value,
+            document.getElementById('chord3').value,
+            document.getElementById('chord4').value
+          ]; 
+         
+		const isGood = (chord) => {
+		if (!chord) {
+			return false;
+		}
+		try {
+			mm.chords.ChordSymbols.pitches(chord);
+			return true;
+		}
+		catch(e) {
+			return false;
+		}
+		}
+          
+		var allGood = true;
+		if (isGood(chords[0])) {
+			document.getElementById('chord1').style.color = 'black';
+		} else {
+			document.getElementById('chord1').style.color = 'red';
+			allGood = false;
+		}
+		if (isGood(chords[1])) {
+			document.getElementById('chord2').style.color = 'black';
+		} else {
+			document.getElementById('chord2').style.color = 'red';
+			allGood = false;
+		}
+		if (isGood(chords[2])) {
+			document.getElementById('chord3').style.color = 'black';
+		} else {
+			document.getElementById('chord3').style.color = 'red';
+			allGood = false;
+		}
+		if (isGood(chords[3])) {
+			document.getElementById('chord4').style.color = 'black';
+		} else {
+			document.getElementById('chord4').style.color = 'red';
+			allGood = false;
+		}
+					
+		let changed = false;
+		if (this.currentChords) {
+			if (chords[0] !== this.currentChords[0]) {changed = true;}
+			if (chords[1] !== this.currentChords[1]) {changed = true;}
+			if (chords[2] !== this.currentChords[2]) {changed = true;}
+			if (chords[3] !== this.currentChords[3]) {changed = true;}  
+		}
+		else {
+			changed = true;
+		}
+		//document.getElementById('play').disabled = !allGood || (!changed && this.playing);
     }
 
     createUIElements() {
-        let mainContainer2 = document.createElement("div");
-        mainContainer2.id = "mainContainer2";
-
-        let generatorModuleContainer = document.createElement("div");
-        generatorModuleContainer.id = "generatorModuleContainer";
+        let mainModuleContainer = document.createElement("div");
+        mainModuleContainer.id = "mainModuleContainer";
 
         let titleDiv = document.createElement("div");
         titleDiv.id = "titleDiv";
         titleDiv.innerHTML = "Main Module";
 
-        let generatorModuleTitleDiv = document.createElement("div");
-        generatorModuleTitleDiv.id = "titleDiv";
-        generatorModuleTitleDiv.innerHTML = "Generate Module";
+        let buttonAdd = document.createElement("button");
+        buttonAdd.id = "buttonAdd";
+        buttonAdd.innerHTML = "+";
 
-        let playNotes = document.createElement("div");
-        playNotes.id = "playNotes";
-        playNotes.innerHTML = "Play some notes:";
+        let buttonStop = document.createElement("button");
+        buttonStop.id = "buttonStop";
+        buttonStop.innerHTML = "◾";
 
-        let button1 = document.createElement("button");
-        button1.id = "button1";
-        button1.className = "button";
-        button1.innerHTML = "1";
+        let buttonPlayAll = document.createElement("button");
+        buttonPlayAll.id = "buttonPlayAll";
+        buttonPlayAll.innerHTML = "►";
 
-        let button2 = document.createElement("button");
-        button2.id = "button2";
-        button2.className = "button";
-        button2.innerHTML = "2";
-
-        let button3 = document.createElement("button");
-        button3.id = "button3";
-        button3.className = "button";
-        button3.innerHTML = "3";
+        let chordDiv = document.createElement("div");
+        chordDiv.id = "chordDiv";
 
         let selectChords = document.createElement("div");
         selectChords.id = "selectChords";
@@ -176,105 +193,12 @@ class GeneratorModule {
         click.id = "click";
         click.innerHTML = "Click";
 
-        let playContainer = document.createElement("div");
-        playContainer.id = "playContainer";
-        playContainer.className = "container";
+        mainModuleContainer.appendChild(titleDiv);
+        mainModuleContainer.appendChild(chordDiv);
 
-        let generate = document.createElement("button");
-        generate.id = "generate";
-        generate.innerHTML = "Generate";
-        generate.disabled = true;
+        chordDiv.appendChild(selectChords);
+        chordDiv.appendChild(chords);
 
-
-        let play = document.createElement("button");
-        play.id = "play";
-        play.innerHTML = "Play";
-        play.disabled = true;
-
-        let callContainer = document.createElement("div");
-        callContainer.id = "callContainer";
-
-        let callContainerText = document.createElement("div");
-        callContainerText.innerHTML = "Call Bars";
-
-        let callOptionsContainer = document.createElement("div");
-        callOptionsContainer.id = "callOptionsContainer";
-
-        let callOption1 = document.createElement("input");
-        callOption1.className = "radioButton";
-        callOption1.name = "callOption";
-        callOption1.type = "radio";
-        callOption1.value = "2";
-
-        let callOption2 = document.createElement("input");
-        callOption2.className = "radioButton";
-        callOption2.name = "callOption";
-        callOption2.type = "radio";
-        callOption2.value = "4";
-        callOption2.checked = "checked";
-
-        let callOption3 = document.createElement("input");
-        callOption3.className = "radioButton";
-        callOption3.name = "callOption";
-        callOption3.type = "radio";
-        callOption3.value = "8";
-
-        let responseContainer = document.createElement("div");
-        responseContainer.id = "responseContainer";
-
-        let responseContainerText = document.createElement("div");
-        responseContainerText.innerHTML = "Response Bars";
-
-        let responseOptionsContainer = document.createElement("div");
-        responseOptionsContainer.id = "responseOptionsContainer";
-
-        let responseOption1 = document.createElement("input");
-        responseOption1.className = "radioButton";
-        responseOption1.name = "responseOption";
-        responseOption1.type = "radio";
-        responseOption1.value = "2";
-
-        let responseOption2 = document.createElement("input");
-        responseOption2.className = "radioButton";
-        responseOption2.name = "responseOption";
-        responseOption2.type = "radio";
-        responseOption2.value = "4";
-        responseOption2.checked = "checked";
-
-        let responseOption3 = document.createElement("input");
-        responseOption3.className = "radioButton";
-        responseOption3.name = "responseOption";
-        responseOption3.type = "radio";
-        responseOption3.value = "8";
-
-        const responseoption1Text = document.createTextNode("2");
-        const responseoption2Text = document.createTextNode("4");
-        const responseoption3Text = document.createTextNode("8");
-
-        const calloption1Text = document.createTextNode("2");
-        const calloption2Text = document.createTextNode("4");
-        const calloption3Text = document.createTextNode("8");
-
-        let loop = document.createElement("button");
-        loop.id = "loop";
-        loop.innerHTML = "Loop";
-
-        let message = document.createElement("div");
-        message.id = "message";
-        message.innerHTML = "Loading model...";
-
-        mainContainer.appendChild(mainContainer2);
-        mainContainer.appendChild(generatorModuleContainer);
-        
-
-        mainContainer2.appendChild(titleDiv);
-        mainContainer2.appendChild(playNotes);
-        mainContainer2.appendChild(button1);
-        mainContainer2.appendChild(button2);
-        mainContainer2.appendChild(button3);
-        mainContainer2.appendChild(selectChords);
-
-        mainContainer2.appendChild(chords);
         chords.appendChild(table);
         table.appendChild(tableTr);
         tableTr.appendChild(tableTd1);
@@ -286,61 +210,45 @@ class GeneratorModule {
         tableTd3.appendChild(chord3);
         tableTd4.appendChild(chord4);
 
-        chords.appendChild(midiOutContainer);
-        midiOutContainer.appendChild(midiText);
-        midiOutContainer.appendChild(midiBusSelect);
-
-        chords.appendChild(midiClockContainer);
-        midiClockContainer.appendChild(midiClockText);
-        midiClockContainer.appendChild(midiClockBusSelect);
-
-        mainContainer2.appendChild(clickContainer);
+        mainModuleContainer.appendChild(clickContainer);
         clickContainer.appendChild(clickVolumeSlider);
         clickContainer.appendChild(click);
 
-        generatorModuleContainer.appendChild(generatorModuleTitleDiv);
-        generatorModuleContainer.appendChild(playContainer);
+        mainModuleContainer.appendChild(midiClockContainer);
+        midiClockContainer.appendChild(midiClockText);
+        midiClockContainer.appendChild(midiClockBusSelect);
+
+        mainModuleContainer.appendChild(buttonStop);
+        mainModuleContainer.appendChild(buttonPlayAll);
+        mainModuleContainer.appendChild(buttonAdd);
         
-        playContainer.appendChild(generate);
-        playContainer.appendChild(play);
 
-        playContainer.appendChild(callContainer);
-        callContainer.appendChild(callContainerText);
-        callContainer.appendChild(callOptionsContainer);
-        callOptionsContainer.appendChild(callOption1);
-        callOptionsContainer.appendChild(calloption1Text);
-        callOptionsContainer.appendChild(callOption2);
-        callOptionsContainer.appendChild(calloption2Text);
-        callOptionsContainer.appendChild(callOption3);
-        callOptionsContainer.appendChild(calloption3Text);        
-        
-        playContainer.appendChild(responseContainer);
-        responseContainer.appendChild(responseContainerText);
-        responseContainer.appendChild(responseOptionsContainer);
-        responseOptionsContainer.appendChild(responseOption1);
-        responseOptionsContainer.appendChild(responseoption1Text);
-        responseOptionsContainer.appendChild(responseOption2);
-        responseOptionsContainer.appendChild(responseoption2Text);
-        responseOptionsContainer.appendChild(responseOption3);
-        responseOptionsContainer.appendChild(responseoption3Text);
-
-        playContainer.appendChild(loop);
-
-        generatorModuleContainer.appendChild(message);
-
-        //document.body.insertBefore(mainContainer, document.body.childNodes[0]);
-        document.getElementById("mainContainer").appendChild(mainContainer2);
+        document.getElementById("mainContainer").appendChild(mainModuleContainer);
 
         let that = this;
 
-        // creating eventlisteners for the note buttons
-        const buttons = document.getElementsByClassName("button");
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].addEventListener('mousedown', function(){that.startNote(i+60, 100)});
-            buttons[i].addEventListener('mouseup', function(){that.stopNote(i+60, 66)});
-            buttons[i].addEventListener('keypress', function(){that.startNote(i+60, 100)});
-            buttons[i].addEventListener('keyup', function(){that.stopNote(i+60, 66)});
-        }
+        // add button functionality
+        buttonAdd.addEventListener('click', function(){that.addModule();});
+
+        // stop button functionality
+        buttonStop.addEventListener('click', function(){
+            that.metronome.player.stop();
+         });
+
+         // stop button functionality
+        buttonPlayAll.addEventListener('click', function(){
+            that.playAll();
+         });
+
+        // Check chords for validity when changed
+        chord1.addEventListener('input', function(){that.checkChords()});
+        chord2.addEventListener('input', function(){that.checkChords()});
+        chord3.addEventListener('input', function(){that.checkChords()});
+        chord4.addEventListener('input', function(){that.checkChords()}); 
+
+        // Populate the MidiOut and MidiClockOut lists
+        midiClockBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
+        midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiBusSelect.selectedIndex];});
 
         // click functionality
         click.addEventListener('click', function(){
@@ -351,55 +259,10 @@ class GeneratorModule {
             }
         });
 
-        // loop functionality
-        loop.addEventListener('click', function(){
-            if (that.startStopLoop()) {
-                loop.style.background = "lightgrey";
-            } else {
-                loop.style.background = "white";
-            }
-        });
-
-        // eventlistener for the generate and play model button
-        generate.addEventListener('click', function(){
-            const chordValues = [
-                chord1.value,
-                chord2.value,
-                chord3.value,
-                chord4.value    
-            ];
-            that.generateSequence(chordValues);
-        });
-
-        play.addEventListener('click', function(){that.playSequence();});
-
-        // Check chords for validity when changed
-        chord1.oninput = this.model.checkChords;
-        chord2.oninput = this.model.checkChords;
-        chord3.oninput = this.model.checkChords;
-        chord4.oninput = this.model.checkChords; 
-
         // Click volume control
         clickVolumeSlider.addEventListener("input", function (e) {
             that.changeClickVolume(this.value/100);
         });
-
-        // call and response lengths
-        let radioButtons = document.getElementsByClassName("radioButton");
-        for (var i=0; i<(radioButtons.length/2); i++) {
-            radioButtons[i].addEventListener("change", function(e){
-                that.changeCallResponseLength(this.value, false);
-            });
-            radioButtons[i+3].addEventListener("change", function(e){
-                that.changeCallResponseLength(this.value, false);
-            });
-          } 
-
-        // Populate the <select>
-        midiBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        midiClockBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        midiBusSelect.addEventListener("change", function() {that.midi.selectedOutput = that.midi.availableOutputs[midiBusSelect.selectedIndex];});
-        midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiBusSelect.selectedIndex];});
     }
 }
 
@@ -409,7 +272,7 @@ class GeneratorModule {
 
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {
-        const main = new GeneratorModule(midiAccess);
+        const main = new MainModule(midiAccess);
     });
 } else {
     alert("No MIDI support in your browser.");

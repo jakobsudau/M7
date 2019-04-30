@@ -1,5 +1,5 @@
 class Metronome {
-    constructor(midi, model) {
+    constructor() {
         this.isPlaying = false;      //Are we currently playing?
         this.lookahead = 24.0;       //How frequently to call scheduling function (in milliseconds)
         this.scheduleAheadTime = 0.1;//How far ahead to schedule audio (sec), this is calculated from lookahead, and overlaps with next interval (in case the timer is late)
@@ -10,9 +10,6 @@ class Metronome {
         this.currentQuaterNote = 0;
         this.audioContext = new AudioContext();
         this.gainNode = this.audioContext.createGain();
-        this.midi = midi;
-        this.playPressed = false;
-        this.model = model;
 
         this.tempo = 120;
         this.nextClockTime = 0.0; // when the next note is due.
@@ -21,29 +18,38 @@ class Metronome {
         this.currentTime = 0;
         
         // this.once = true;
-        this.generatedSeq = null
+        this.generatedSeq = null;
         this.sequenceQueue = false;
         this.player = new mm.MIDIPlayer();
         this.looping = false;
         this.sequenceFinished = true;
-        this.callCounter = 0;
-        this.callLength = 4;
+        this.inputBarCounter = 0;
+        this.inputBars = 4;
+
+        this.generatedSequences = new Map();
     }
 
-    playSequence(seq) {
-        console.log(this.looping);
+    playSequence(id) {
         this.player.requestMIDIAccess().then(() => {
             document.getElementById('play').disabled = true;
             this.sequenceFinished = false;
-            this.player.outputs = [this.midi.selectedOutput]; // If you omit this, a message will be sent to all ports.
-            this.player.start(seq).then(() => {
-                this.sequenceFinished = true;
-                if (this.looping) {
-                    this.playSequence(this.generatedSeq, this.player);
-                } else {
-                    document.getElementById('play').disabled = false;
-                    document.getElementById('message').innerText = 'Change chords and play again!';
-                    this.model.checkChords();
+            this.generatedSequences.forEach((value,key) => {
+
+                if (id == key) {
+                    const seq = value[0];
+                    const output = value[1];
+                    const looped = value[2];
+
+                    this.player.outputs = [output]; // If you omit this, a message will be sent to all ports.
+                    this.player.start(seq).then(() => {
+                        this.sequenceFinished = true;
+                        if (looped) {
+                            this.playSequence();
+                        } else {
+                            document.getElementById('play').disabled = false;
+                            document.getElementById('message').innerText = 'Change chords and play again!';
+                        }
+                    });
                 }
             });
         }); 
@@ -97,27 +103,27 @@ class Metronome {
             // this.midi.sendMIDIClockMessage("tick");
             let osc = this.audioContext.createOscillator();
             osc.connect(this.gainNode);
-            if (beatNumber % 16 == 0){               // beat 0 = high pitch 880
+            if (beatNumber % 16 == 0){
                 
                 // if there is still a sequence in queue and nothing is playing right now, play the currently generated sequence
                 if (this.sequenceQueue && this.sequenceFinished) {
                     console.log("playing sequence");
-                    this.playSequence(this.generatedSeq);
+                    this.playSequence();
                     if (!this.looping) {
                         this.sequenceQueue = false;
                     }
                 }
                 
                 if (!this.sequenceFinished) {
-                    this.callCounter++
-                    if (this.callCounter == (this.callLength*2)) {
-                        this.callCounter = 0;
+                    this.inputBarCounter++
+                    if (this.inputBarCounter == (this.inputBars*2)) {
+                        this.inputBarCounter = 0;
                         console.log("sequence should be over now, if loop is enabled start again now");
                     }
                 }
 
                 osc.frequency.value = 880.0;
-            }else{                                    //other notes = low pitch 440
+            }else{ 
                 osc.frequency.value = 440.0;
             }
             osc.start(time);
