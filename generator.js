@@ -16,6 +16,7 @@ class GeneratorModule {
         this.generatorModuleContainer = null;
         this.id = id;
         this.selectedOutput = this.mainModule.midi.availableOutputs[0];
+        this.inQueue = false;
 
         this.createUIElements();
 
@@ -44,6 +45,7 @@ class GeneratorModule {
 
     startStopLoop() {
         this.looping = !this.looping;
+        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping]);
         return this.looping;
     }
 
@@ -58,11 +60,11 @@ class GeneratorModule {
     }
 
     playGeneratedSequence() {
-        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping]);
-        this.mainModule.metronome.sequenceQueue = true;
+        this.inQueue = true;
+        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping, this.inQueue]);
 
         if (!this.mainModule.metronome.isPlaying) {
-            this.mainModule.metronome.playSequence(this.id);
+            this.mainModule.metronome.playSequence(this.id, false);
         }
     }
 

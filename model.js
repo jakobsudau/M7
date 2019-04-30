@@ -33,7 +33,6 @@ class SequenceModel {
 
 		return new Promise(function(resolve, reject) {
 			that.playing = true;
-			// document.getElementById('play').disabled = true;
 			that.currentChords = chordsTemp;
 
 			const chords = that.currentChords;
@@ -46,7 +45,6 @@ class SequenceModel {
 			// Prime with root note of the first chord.
 			const root = mm.chords.ChordSymbols.root(chords[0]);
 			
-			// document.getElementById('message').innerText = 'Improvising over: ' + chords;
 			that.model.continueSequence(seq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
 			
 			// Add the continuation to the original.
@@ -95,7 +93,6 @@ class SequenceModel {
 
 			// Play it!
 			resolve(seq);
-			// document.getElementById('play').disabled = false;
 			})
 		});
     }
