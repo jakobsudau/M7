@@ -22,14 +22,13 @@ class GeneratorModule {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
             totalQuantizedSteps: (32 * this.inputBars),
-        }; 
-
-        console.log(this.inputSequence);
+        };
+        this.inputStartTime = Date.now();
 
         this.createUIElements();
 
         this.model.initialize().then(function() {
-            this.model.generateSequence(["C", "Am", "G", "F"], this.model).then(function(seq){
+            this.model.generateSequence(["C", "Am", "G", "F"], this.inputSequence, this.model).then(function(seq){
                 console.log("initialized");
                 this.playButton.disabled = false;
 			    this.generateButton.disabled = false;
@@ -59,6 +58,9 @@ class GeneratorModule {
 
     startStopListening() {
         this.listening = !this.listening;
+        this.inputStartTime = Date.now();
+        if (this.listening == true) {this.inputSequence.notes = [];}
+        if (this.listening == false) {console.log(this.inputSequence);}
         return this.listening;
     }
 
@@ -66,12 +68,29 @@ class GeneratorModule {
         console.log("note: " + note);
         console.log("velocity: " + velocity);
         console.log("isStart: " + isStart);
+        
+        const currentTime = Date.now();
+        const bpm = 120;
+        const stepsPerQuater = 4;
+        const secondsPerQuater = 60 / bpm;
+        const timeStep = secondsPerQuater / stepsPerQuater;
+        const playedAt = ((currentTime - this.inputStartTime)/1000); // in seconds
+        const playedAtQuantized = (playedAt-(playedAt%timeStep))/timeStep; // rounded
+
+        
+        console.log("played at: " + playedAt + "s");
+        if (isStart) {
+            this.inputSequence.notes.push({pitch: note, quantizedStartStep: playedAtQuantized, quantizedEndStep: 0});
+        } else {
+              const index = this.inputSequence.notes.findIndex(x => x.pitch === note);
+              this.inputSequence.notes[index].quantizedEndStep = playedAtQuantized;
+        }
     }
 
     generateSequence(chords) {
         console.log("generating midi sequence...");
         const time = Date.now();
-        this.model.generateSequence(chords, this.model).then(function(seq){
+        this.model.generateSequence(chords, this.inputSequence, this.model).then(function(seq){
             console.log("generating took: " + ((Date.now() - time)/1000) + "s");
             this.generatedSeq = seq;
             console.log(seq);
@@ -104,6 +123,10 @@ class GeneratorModule {
         delete this.generatorModuleContainer;
         delete this.id;
         delete this.selectedOutput;
+        delete this.inQueue;
+        delete this.listening;
+        delete this.inputSequence;
+        delete this.inputStartTime;
     }
 
     createUIElements() {

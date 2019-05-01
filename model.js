@@ -27,7 +27,7 @@ class SequenceModel {
 			})
 		}
 
-    generateSequence(chordsTemp, that) {
+    generateSequence(chordsTemp, inputSeq, that) {
 		
 		this.modelWorker.postMessage(["generate"]);
 
@@ -45,7 +45,7 @@ class SequenceModel {
 			// Prime with root note of the first chord.
 			const root = mm.chords.ChordSymbols.root(chords[0]);
 			
-			that.model.continueSequence(seq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
+			that.model.continueSequence(inputSeq, that.STEPS_PER_PROG + (that.NUM_REPS-1)*that.STEPS_PER_PROG - 1, 0.9, chords).then((contSeq) => {
 			
 			// Add the continuation to the original.
 			contSeq.notes.forEach((note) => {
