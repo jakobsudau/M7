@@ -6,7 +6,7 @@ class MainModule {
     constructor(midiAccess) {
         this.generators = new Map();
         this.generatorCounter = 0;
-        this.midi = new Midi(midiAccess);
+        this.midi = new Midi(midiAccess, this);
         this.metronome = new Metronome();
         this.metronome.initialize();
         this.createUIElements();    
@@ -15,6 +15,14 @@ class MainModule {
     startStopClick() {
         this.metronome.startStop();
         return this.metronome.isPlaying;
+    }
+
+    startStopNote(note, velocity, isStart) {
+        this.generators.forEach((value,key) => {
+            if (value.listening) {
+                value.startStopNote(note, velocity, isStart);
+            }
+        });
     }
 
     changeClickVolume(volume) {

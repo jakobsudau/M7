@@ -1,5 +1,5 @@
 class Midi {
-    constructor(midiAccess) {
+    constructor(midiAccess, mainModule) {
         this.velocityHexArray = [0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf,
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
             0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
@@ -14,6 +14,7 @@ class Midi {
         this.selectedClockOutput = null;
         this.ppqCounter = 0;
         this.beatCoutner = 0;
+        this.mainModule = mainModule;
 
         const inputs = midiAccess.inputs.values();
         const that = this;
@@ -28,10 +29,12 @@ class Midi {
                     case 144:
                         // your function startNote(note, velocity)
                         //startNote(event.data[1], event.data[2]);
+                        that.mainModule.startStopNote(event.data[1], event.data[2], true);
                         break;
                     case 128:
                         // your function stopNote(note, velocity)
                         //stopNote(event.data[1], event.data[2]);
+                        that.mainModule.startStopNote(event.data[1], event.data[2], false);
                         break;
                     case 176:
                         // your function controlChange(controllerNr, value)

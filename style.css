@@ -7,7 +7,7 @@
     width: 19em;
     height: 18em;
     padding: 1em;
-    margin: 1em;
+    margin: 0.96em;
 }
 
 #titleDiv, #generatorTitleDiv {
@@ -43,14 +43,14 @@ button:active {
     font-weight: bold;
 }
 
-
-#play, #generate, #buttonAdd, #buttonStop, #buttonPlayAll, #loop {
+#play, #generate, #buttonAdd, #buttonStop, #buttonPlayAll, #loop, #listen {
     font-size: 1.5em;
     padding: 0.3em 1em;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
     user-select: none;
     height: 2.1em;
+    width: 3em;
 }
 
 #play:disabled, #generate:disabled {
@@ -121,9 +121,17 @@ select {
     position: absolute;
     left: -0.1em;
     bottom: -0.1em;
-    width: 20.95em;
+    width: 21.05em;
     border: 2px solid black;
     text-align: center;
+}
+
+#buttonDiv {
+    left: -0.15em;
+}
+
+#generatorButtonDiv {
+    width: 21em;
 }
 
 select {
@@ -149,3 +157,92 @@ table {
     margin-top: 1em;
     text-align: center;
 }
+
+
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 40%;
+    margin: 3.9px 0;
+  }
+  input[type=range]:focus {
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6.2px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #848484;
+    border-radius: 25px;
+    border: 1.2px solid #562425;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
+    border: 0px solid #000000;
+    height: 14px;
+    width: 7px;
+    border-radius: 0px;
+    background: #211817;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -5.1px;
+  }
+  input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #919191;
+  }
+  input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 6.2px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #848484;
+    border-radius: 25px;
+    border: 1.2px solid #562425;
+  }
+  input[type=range]::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
+    border: 0px solid #000000;
+    height: 14px;
+    width: 7px;
+    border-radius: 0px;
+    background: #211817;
+    cursor: pointer;
+  }
+  input[type=range]::-ms-track {
+    width: 100%;
+    height: 6.2px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  input[type=range]::-ms-fill-lower {
+    background: #777777;
+    border: 1.2px solid #562425;
+    border-radius: 50px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  }
+  input[type=range]::-ms-fill-upper {
+    background: #848484;
+    border: 1.2px solid #562425;
+    border-radius: 50px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  }
+  input[type=range]::-ms-thumb {
+    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
+    border: 0px solid #000000;
+    height: 14px;
+    width: 7px;
+    border-radius: 0px;
+    background: #211817;
+    cursor: pointer;
+    height: 6.2px;
+  }
+  input[type=range]:focus::-ms-fill-lower {
+    background: #848484;
+  }
+  input[type=range]:focus::-ms-fill-upper {
+    background: #919191;
+  }
+  

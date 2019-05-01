@@ -17,6 +17,14 @@ class GeneratorModule {
         this.id = id;
         this.selectedOutput = this.mainModule.midi.availableOutputs[0];
         this.inQueue = false;
+        this.listening = false;
+        this.inputSequence = { 
+            notes: [],
+            quantizationInfo: {stepsPerQuarter: 4},
+            totalQuantizedSteps: (32 * this.inputBars),
+        }; 
+
+        console.log(this.inputSequence);
 
         this.createUIElements();
 
@@ -49,12 +57,24 @@ class GeneratorModule {
         return this.looping;
     }
 
+    startStopListening() {
+        this.listening = !this.listening;
+        return this.listening;
+    }
+
+    startStopNote(note, velocity, isStart) {
+        console.log("note: " + note);
+        console.log("velocity: " + velocity);
+        console.log("isStart: " + isStart);
+    }
+
     generateSequence(chords) {
         console.log("generating midi sequence...");
         const time = Date.now();
         this.model.generateSequence(chords, this.model).then(function(seq){
             console.log("generating took: " + ((Date.now() - time)/1000) + "s");
             this.generatedSeq = seq;
+            console.log(seq);
             if (this.mainModule.metronome.isPlaying) {this.playGeneratedSequence();}
         }.bind(this));
     }
@@ -103,7 +123,7 @@ class GeneratorModule {
 
         this.generateButton = document.createElement("button");
         this.generateButton.id = "generate";
-        this.generateButton.innerHTML = "new";
+        this.generateButton.innerHTML = "g";
         this.generateButton.disabled = true;
 
         this.playButton = document.createElement("button");
@@ -114,6 +134,10 @@ class GeneratorModule {
         let loop = document.createElement("button");
         loop.id = "loop";
         loop.innerHTML = "↻";
+
+        let listen = document.createElement("button");
+        listen.id = "listen";
+        listen.innerHTML = "●";
 
         let deleteButton = document.createElement("button");
         deleteButton.id = "delete";
@@ -232,6 +256,7 @@ class GeneratorModule {
         generatorButtonDiv.appendChild(this.generateButton);
         generatorButtonDiv.appendChild(this.playButton);
         generatorButtonDiv.appendChild(loop);
+        generatorButtonDiv.appendChild(listen);
         this.generatorModuleContainer.appendChild(generatorButtonDiv);
         this.generatorModuleContainer.appendChild(deleteButton);
 
@@ -251,6 +276,17 @@ class GeneratorModule {
                 loop.style.background = "lightgrey";
             } else {
                 loop.style.background = "white";
+            }
+        });
+
+        // loop functionality
+        listen.addEventListener('click', function(){
+            if (that.startStopListening()) {
+                listen.style.background = "lightgrey";
+                listen.style.color = "rgb(216, 49, 49)";
+            } else {
+                listen.style.background = "white";
+                listen.style.color = "black";
             }
         });
 
