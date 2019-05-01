@@ -33,10 +33,12 @@ class MainModule {
         const generator = new GeneratorModule(this, this.generatorCounter);
         this.generators.set(this.generatorCounter, generator);
         this.generatorCounter++;
+        this.metronome.players.push(new mm.MIDIPlayer());
     }
 
     deleteModule(id) {
         this.generators.delete(id);
+        this.metronome.players.pop();
     }
 
     playAll() {
@@ -66,27 +68,28 @@ class MainModule {
 		}
 		}
           
-		var allGood = true;
+        var allGood = true;
+        const darkMode = "white"; // dark mode (light mode = "black")
 		if (isGood(chords[0])) {
-			document.getElementById('chord1').style.color = 'black';
+			document.getElementById('chord1').style.color = darkMode;
 		} else {
 			document.getElementById('chord1').style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[1])) {
-			document.getElementById('chord2').style.color = 'black';
+			document.getElementById('chord2').style.color = darkMode;
 		} else {
 			document.getElementById('chord2').style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[2])) {
-			document.getElementById('chord3').style.color = 'black';
+			document.getElementById('chord3').style.color = darkMode;
 		} else {
 			document.getElementById('chord3').style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[3])) {
-			document.getElementById('chord4').style.color = 'black';
+			document.getElementById('chord4').style.color = darkMode;
 		} else {
 			document.getElementById('chord4').style.color = 'red';
 			allGood = false;
@@ -122,7 +125,7 @@ class MainModule {
 
         let buttonStop = document.createElement("button");
         buttonStop.id = "buttonStop";
-        buttonStop.innerHTML = "◾";
+        buttonStop.innerHTML = "■";
 
         let buttonPlayAll = document.createElement("button");
         buttonPlayAll.id = "buttonPlayAll";
@@ -262,9 +265,11 @@ class MainModule {
         // click functionality
         click.addEventListener('click', function(){
             if (that.startStopClick()) {
-                click.style.background = "lightgrey";
+                // click.style.background = "lightgrey";
+                click.style.background = "rgb(87, 87, 87)"; // dark mode
             } else {
-                click.style.background = "white";
+                // click.style.background = "white";
+                click.style.background = "rgb(38, 38, 38)"; // dark mode
             }
         });
 

@@ -53,7 +53,7 @@ class GeneratorModule {
 
     startStopLoop() {
         this.looping = !this.looping;
-        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping]);
+        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping, this.inQueue, this.playButton, this.messageDiv]);
         return this.looping;
     }
 
@@ -81,7 +81,7 @@ class GeneratorModule {
 
     playGeneratedSequence() {
         this.inQueue = true;
-        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping, this.inQueue]);
+        this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping, this.inQueue, this.playButton, this.messageDiv]);
 
         if (!this.mainModule.metronome.isPlaying) {
             this.mainModule.metronome.playSequence(this.id, false);
@@ -273,20 +273,26 @@ class GeneratorModule {
         // loop functionality
         loop.addEventListener('click', function(){
             if (that.startStopLoop()) {
-                loop.style.background = "lightgrey";
+                // loop.style.background = "lightgrey";
+                loop.style.background = "rgb(87, 87, 87)"; // dark mode
             } else {
-                loop.style.background = "white";
+                // loop.style.background = "white";
+                loop.style.background = "rgb(38, 38, 38)"; // dark mode
             }
         });
 
-        // loop functionality
+        // listen for input functionality
         listen.addEventListener('click', function(){
             if (that.startStopListening()) {
-                listen.style.background = "lightgrey";
-                listen.style.color = "rgb(216, 49, 49)";
+                // listen.style.background = "lightgrey";
+                // listen.style.color = "rgb(216, 49, 49)";
+                listen.style.background = "rgb(87, 87, 87)"; // dark mode
+                listen.style.color = "rgb(185, 19, 19)"; // dark mode
             } else {
-                listen.style.background = "white";
-                listen.style.color = "black";
+                // listen.style.background = "white";
+                // listen.style.color = "black";
+                listen.style.background = "rgb(38, 38, 38)"; // dark mode
+                listen.style.color = "white"; // dark mode
             }
         });
 

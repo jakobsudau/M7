@@ -1,3 +1,16 @@
+@media (prefers-color-scheme: dark) {
+    /* Overrides for Dark Mode. */
+    body {
+        color: white;
+        background: rgb(56, 56, 56);
+    }
+
+    #mainModuleContainer, #generatorModuleContainer {
+        color: white;
+        border: 2px solid white;
+    }
+}
+
 #mainModuleContainer, #generatorModuleContainer {
     position: relative;
     float: left;
@@ -158,12 +171,10 @@ table {
     text-align: center;
 }
 
-
-
+/* ------------- Slider Styling ------------- */
 input[type=range] {
     -webkit-appearance: none;
     width: 40%;
-    margin: 3.9px 0;
   }
   input[type=range]:focus {
     outline: none;
@@ -172,13 +183,11 @@ input[type=range] {
     width: 100%;
     height: 6.2px;
     cursor: pointer;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
     background: #848484;
-    border-radius: 25px;
+    border-radius: 0px;
     border: 1.2px solid #562425;
   }
   input[type=range]::-webkit-slider-thumb {
-    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
     border: 0px solid #000000;
     height: 14px;
     width: 7px;
@@ -188,61 +197,43 @@ input[type=range] {
     -webkit-appearance: none;
     margin-top: -5.1px;
   }
-  input[type=range]:focus::-webkit-slider-runnable-track {
-    background: #919191;
+ 
+  /* ------------- Dark Mode ------------- */
+body, button, #chord1, #chord2, #chord3, #chord4 {
+    background: rgb(38, 38, 38);
+}
+
+body, #mainModuleContainer, #generatorModuleContainer, button, #chord1, #chord2, #chord3, #chord4 {
+    color: white;
+}
+
+#midiClockContainer, #midiOutContainer, #inputBarsContainer, #outputBarsContainer, #clickContainer, #buttonDiv, #generatorButtonDiv, #mainModuleContainer, #generatorModuleContainer, #chord1, #chord2, #chord3, #chord4, button { 
+    border: 2px solid white;
+}
+
+#titleDiv, #generatorTitleDiv {
+    border-bottom: 2px solid white;
+}
+
+#delete {
+    background: rgb(110, 50, 50);
+}
+
+button:active {
+    background: #4b4b4b;
+}
+
+#play:disabled, #generate:disabled {
+    border: 2px solid #4b4b4b;
+    color: rgb(87, 87, 87);
+}
+
+/* ------------- Slider Styling Dark Mode ------------- */
+  input[type=range]::-webkit-slider-runnable-track {
+    background: rgb(87, 87, 87);
+    border: 1.2px solid #cecece;
   }
-  input[type=range]::-moz-range-track {
-    width: 100%;
-    height: 6.2px;
-    cursor: pointer;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-    background: #848484;
-    border-radius: 25px;
-    border: 1.2px solid #562425;
+  input[type=range]::-webkit-slider-thumb {
+    border: 1px solid #cecece;
+    background: rgb(87, 87, 87);
   }
-  input[type=range]::-moz-range-thumb {
-    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
-    border: 0px solid #000000;
-    height: 14px;
-    width: 7px;
-    border-radius: 0px;
-    background: #211817;
-    cursor: pointer;
-  }
-  input[type=range]::-ms-track {
-    width: 100%;
-    height: 6.2px;
-    cursor: pointer;
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-  }
-  input[type=range]::-ms-fill-lower {
-    background: #777777;
-    border: 1.2px solid #562425;
-    border-radius: 50px;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  }
-  input[type=range]::-ms-fill-upper {
-    background: #848484;
-    border: 1.2px solid #562425;
-    border-radius: 50px;
-    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-  }
-  input[type=range]::-ms-thumb {
-    box-shadow: 1px 1px 1px #050000, 0px 0px 1px #1f0000;
-    border: 0px solid #000000;
-    height: 14px;
-    width: 7px;
-    border-radius: 0px;
-    background: #211817;
-    cursor: pointer;
-    height: 6.2px;
-  }
-  input[type=range]:focus::-ms-fill-lower {
-    background: #848484;
-  }
-  input[type=range]:focus::-ms-fill-upper {
-    background: #919191;
-  }
-  

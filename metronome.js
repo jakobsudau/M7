@@ -18,7 +18,7 @@ class Metronome {
         this.currentTime = 0;
         
         // this.once = true;
-        this.player = new mm.MIDIPlayer();
+        this.players = [];
         this.sequenceFinished = true;
         this.inputBarCounter = 0;
         this.inputBars = 4;
@@ -27,8 +27,8 @@ class Metronome {
     }
 
     playSequence(id, playAll) {
-        this.player.requestMIDIAccess().then(() => {
-            document.getElementById('play').disabled = true;
+        this.players[id].requestMIDIAccess().then(() => {
+            
             this.sequenceFinished = false;
             this.generatedSequences.forEach((value,key) => {
                 const inQueue = value[3];
@@ -36,18 +36,22 @@ class Metronome {
                     const seq = value[0];
                     const output = value[1];
                     const looped = value[2];
+                    const playButton = value[4];
+                    const messageDiv = value[5];
 
+                    playButton.disabled = true;
                     value[3] = false;
 
-                    this.player.outputs = [output]; // If you omit this, a message will be sent to all ports.
-                    this.player.start(seq).then(() => {
+                    this.players[id].outputs = [output]; // If you omit this, a message will be sent to all ports.
+                    this.players[id].start(seq).then(() => {
                         this.sequenceFinished = true;
                         if (looped) {
                             value[3] = true;
                             this.playSequence(id);
                         } else {
-                            document.getElementById('play').disabled = false;
-                            document.getElementById('message').innerText = 'Change chords and play again!';
+                            playButton.disabled = false;
+                            console.log(id);
+                            messageDiv.innerText = 'Change chords and play again!';
                         }
                     });
                 }
