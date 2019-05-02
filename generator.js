@@ -118,6 +118,7 @@ class GeneratorModule {
     }
 
     playGeneratedSequence() {
+        console.log(this.selectedOutput);
         this.inQueue = true;
         this.mainModule.metronome.generatedSequences.set(this.id, [this.generatedSeq, this.selectedOutput, this.looping, this.inQueue, this.playButton, this.messageDiv]);
 
@@ -154,9 +155,10 @@ class GeneratorModule {
         this.generatorModuleContainer = document.createElement("div");
         this.generatorModuleContainer.id = "generatorModuleContainer";
 
-        let generatorModuleTitleDiv = document.createElement("div");
+        let generatorModuleTitleDiv = document.createElement("input");
+        generatorModuleTitleDiv.type = "text";
         generatorModuleTitleDiv.id = "generatorTitleDiv";
-        generatorModuleTitleDiv.innerHTML = "Generator " + this.id;
+        generatorModuleTitleDiv.placeholder = "Generator " + this.id;
 
         let generatorButtonDiv = document.createElement("div");
         generatorButtonDiv.id = "generatorButtonDiv";
@@ -315,29 +317,29 @@ class GeneratorModule {
         });
 
         // loop functionality
-        loop.addEventListener('click', function(){
+        this.loopButton.addEventListener('click', function(){
             if (that.startStopLoop()) {
-                loop.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+                that.loopButton.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
             } else {
-                loop.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
+                that.loopButton.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
             }
         });
 
         // listen for input functionality
-        listen.addEventListener('click', function(){
+        this.listenButton.addEventListener('click', function(){
             if (that.startStopListening()) {
-                listen.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
-                listen.style.color = that.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
+                that.listenButton.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+                that.listenButton.style.color = that.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
             } else {
-                listen.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
-                listen.style.color = that.mainModule.isDarkMode ? "white" : "black";
+                that.listenButton.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
+                that.listenButton.style.color = that.mainModule.isDarkMode ? "white" : "black";
             }
         });
 
         // Populate the MidiOut and MidiClockOut lists
         midiBusSelect.innerHTML = that.mainModule.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
         midiBusSelect.addEventListener("change", function() {
-            that.mainModule.midi.selectedOutput = that.mainModule.midi.availableOutputs[midiBusSelect.selectedIndex];
+            that.selectedOutput = that.mainModule.midi.availableOutputs[midiBusSelect.selectedIndex];
         });
 
         // eventlistener for the generate and play model button

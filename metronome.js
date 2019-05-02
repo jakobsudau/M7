@@ -27,28 +27,39 @@ class Metronome {
     }
 
     playSequence(id, playAll) {
-        console.log(this.players[id]);
-        this.players[id].requestMIDIAccess().then(() => {
-            
-            this.sequenceFinished = false;
+        console.log(this.generatedSequences);
+        if (playAll) {
             this.generatedSequences.forEach((value,key) => {
-                const inQueue = value[3];
-                if (((id == key) || playAll) && inQueue) {
-                    const seq = value[0];
-                    const output = value[1];
-                    const looped = value[2];
-                    const playButton = value[4];
-                    const messageDiv = value[5];
+                this.playIt(this.players[key], this.generatedSequences.get(key));    
+            });
+
+        } else {
+            this.playIt(this.players[id], this.generatedSequences.get(id));
+        }
+        
+    }
+
+    playIt(player, seq) {
+        player.requestMIDIAccess().then(() => {
+            this.sequenceFinished = false;
+            const generatedSequence = seq;
+                const inQueue = generatedSequence[3];
+                if (inQueue) {
+                    const seq = generatedSequence[0];
+                    const output = generatedSequence[1];
+                    const looped = generatedSequence[2];
+                    const playButton = generatedSequence[4];
+                    const messageDiv = generatedSequence[5];
 
                     playButton.disabled = true;
-                    value[3] = false;
+                    generatedSequence[3] = false;
 
-                    this.players[id].outputs = [output]; // If you omit this, a message will be sent to all ports.
-                    this.players[id].start(seq).then(() => {
+                    player.outputs = [output]; // If you omit this, a message will be sent to all ports.
+                    player.start(seq).then(() => {
                         this.sequenceFinished = true;
                         if (looped) {
-                            value[3] = true;
-                            this.playSequence(id, false);
+                            generatedSequence[3] = true;
+                            this.playIt(player, generatedSequence);
                         } else {
                             playButton.disabled = false;
                             console.log(id);
@@ -56,8 +67,7 @@ class Metronome {
                         }
                     });
                 }
-            });
-        }); 
+        });
     }
 
     startStop(){
@@ -113,7 +123,7 @@ class Metronome {
                 // if there is still a sequence in queue and nothing is playing right now, play the currently generated sequence
                 if (this.generatedSequences.size != 0) {
                     console.log("playing sequence");
-                    this.playSequence(0, true);
+                    this.playSequence(null, true);
                 }
                 
                 if (!this.sequenceFinished) {

@@ -259,7 +259,9 @@ class MainModule {
 
         // stop button functionality
         buttonStop.addEventListener('click', function(){
-            that.metronome.player.stop();
+            that.metronome.players.forEach(function(player) {
+                player.stop();
+            });
          });
 
          // stop button functionality
