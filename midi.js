@@ -29,12 +29,12 @@ class Midi {
                     case 144:
                         // your function startNote(note, velocity)
                         //startNote(event.data[1], event.data[2]);
-                        that.mainModule.startStopNote(event.data[1], event.data[2], true);
+                        that.mainModule.startStopNote(event.data[1], event.data[2], true, input);
                         break;
                     case 128:
                         // your function stopNote(note, velocity)
                         //stopNote(event.data[1], event.data[2]);
-                        that.mainModule.startStopNote(event.data[1], event.data[2], false);
+                        that.mainModule.startStopNote(event.data[1], event.data[2], false, input);
                         break;
                     case 176:
                         // your function controlChange(controllerNr, value)

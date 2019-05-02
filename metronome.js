@@ -62,7 +62,6 @@ class Metronome {
                             this.playIt(player, generatedSequence);
                         } else {
                             playButton.disabled = false;
-                            console.log(id);
                             messageDiv.innerText = 'Change chords and play again!';
                         }
                     });

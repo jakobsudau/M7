@@ -19,7 +19,7 @@ class MainModule {
         return this.metronome.isPlaying;
     }
 
-    startStopNote(note, velocity, isStart) {
+    startStopNote(note, velocity, isStart, input) {
         this.generators.forEach((value,key) => {
             if (value.listening) {
                 value.startStopNote(note, velocity, isStart);
@@ -60,6 +60,13 @@ class MainModule {
         this.generators.forEach((value,key) => {
             value.switchDarkMode();
         });
+
+        let chords = document.getElementsByClassName("chords");
+        for(let i=0, len=chords.length; i<len; i++) {
+            if (chords[i].style.color != 'red') {
+                chords[i].style.color = this.isDarkMode ? "white" : "black";
+            }
+        }
     }
 
     checkChords() {
@@ -83,8 +90,8 @@ class MainModule {
 		}
 		}
           
-        var allGood = true;
-        const darkMode = "white"; // dark mode (light mode = "black")
+        let allGood = true;
+        let darkMode = this.isDarkMode ? "white" : "black";
 		if (isGood(chords[0])) {
 			document.getElementById('chord1').style.color = darkMode;
 		} else {
@@ -138,6 +145,10 @@ class MainModule {
         buttonAdd.id = "buttonAdd";
         buttonAdd.innerHTML = "+";
 
+        let buttonChange = document.createElement("button");
+        buttonChange.id = "buttonChange";
+        buttonChange.innerHTML = "→";
+
         let buttonStop = document.createElement("button");
         buttonStop.id = "buttonStop";
         buttonStop.innerHTML = "■";
@@ -168,21 +179,25 @@ class MainModule {
 
         let chord1 = document.createElement("input");
         chord1.id = "chord1";
+        chord1.className = "chords";
         chord1.type = "text";
         chord1.value = "C";
 
         let chord2 = document.createElement("input");
         chord2.id = "chord2";
+        chord2.className = "chords";
         chord2.type = "text";
         chord2.value = "G";
 
         let chord3 = document.createElement("input");
         chord3.id = "chord3";
+        chord3.className = "chords";
         chord3.type = "text";
         chord3.value = "Am";
 
         let chord4 = document.createElement("input");
         chord4.id = "chord4";
+        chord4.className = "chords";
         chord4.type = "text";
         chord4.value = "F";
 
@@ -244,6 +259,7 @@ class MainModule {
         // midiClockContainer.appendChild(midiClockText);
         // midiClockContainer.appendChild(midiClockBusSelect);
 
+        buttonDiv.appendChild(buttonChange);
         buttonDiv.appendChild(buttonStop);
         buttonDiv.appendChild(buttonPlayAll);
         buttonDiv.appendChild(buttonAdd);
