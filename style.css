@@ -1,21 +1,76 @@
-@media (prefers-color-scheme: dark) {
-    /* Overrides for Dark Mode. */
-    body {
-        color: white;
-        background: rgb(56, 56, 56);
-    }
-
-    #mainModuleContainer, #generatorModuleContainer {
-        color: white;
-        border: 2px solid white;
-    }
+/* --------- Dark Mode Code Start --------- */
+#darkModeSwitcher {
+    position: fixed;
+    right: 0;
+    top: 0;
+    margin: 0.2em;
+    width: 1.7em;
+    height: 1.7em;
 }
+
+:root[theme='dark'] {
+    --borderColor: white;
+    --backgroundColor: rgb(38, 38, 38);
+    --color: white;
+    --deleteColor: rgb(110, 50, 50);
+    --buttonActiveColor: #4b4b4b;
+    --buttonDisableColor: rgb(87, 87, 87);
+    --sliderBorderColor: #cecece;
+}
+
+:root[theme='light'] {
+    --borderColor: black;
+    --backgroundColor: white;
+    --color: black;
+    --deleteColor: rgb(255, 141, 141);
+    --buttonActiveColor: #cacaca;
+    --buttonDisableColor: #cacaca;
+    --sliderBorderColor: #000000;
+}
+
+body, button, #chord1, #chord2, #chord3, #chord4 {
+    background: var(--backgroundColor);
+}
+
+body, #mainModuleContainer, #generatorModuleContainer, button, #chord1, #chord2, #chord3, #chord4 {
+    color: var(--color);
+}
+
+#midiClockContainer, #midiOutContainer, #inputBarsContainer, #outputBarsContainer, #clickContainer, #buttonDiv, #generatorButtonDiv, #mainModuleContainer, #generatorModuleContainer, #chord1, #chord2, #chord3, #chord4, button { 
+    border: 2px solid var(--borderColor);
+}
+
+#titleDiv, #generatorTitleDiv {
+    border-bottom: 2px solid var(--borderColor);
+}
+
+#delete {
+    background: var(--deleteColor);
+}
+
+button:active {
+    background: var(--buttonActiveColor);
+}
+
+#play:disabled, #generate:disabled {
+    border: 2px solid var(--buttonActiveColor);
+    color: var(--buttonDisableColor);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    background: var(--buttonDisableColor);
+    border: 1.2px solid var(--sliderBorderColor);
+}
+input[type=range]::-webkit-slider-thumb {
+    border: 1px solid var(--sliderBorderColor);
+    background: var(--buttonDisableColor);
+}
+/* --------- Dark Mode Code End --------- */
 
 #mainModuleContainer, #generatorModuleContainer {
     position: relative;
     float: left;
     font-family: monospace;
-    border: 2px solid black;
     font-size: 1.4em;
     width: 19em;
     height: 18em;
@@ -26,7 +81,6 @@
 #titleDiv, #generatorTitleDiv {
     font-size: 2em;
     margin-bottom: 0.5em;
-    border-bottom: 2px solid black;
 }
 
 #delete {
@@ -36,20 +90,14 @@
     position:absolute;
     top:0;
     right:0;
-    background: rgb(255, 141, 141);
 }
  
 button {
     font-family: monospace;
-    border: 2px solid black;
     font-size: 2em;
     margin-left: 0.15em;
     margin-right: 0.15em;
     margin-bottom: 0.1em;
-}
-
-button:active {
-    background: #cacaca;
 }
 
 #buttonAdd {
@@ -66,15 +114,6 @@ button:active {
     width: 3em;
 }
 
-#play:disabled, #generate:disabled {
-    border: 2px solid #cacaca;
-}
-
-
-#playNotes {
-    margin-bottom: 0.2em;
-}
-
 #selectChords {
     margin-top: 0.5em;
 }
@@ -84,7 +123,7 @@ button:active {
 }
 
 #midiClockContainer, #midiOutContainer { 
-    padding-top: 0.5em;;
+    padding-top: 0.5em;
 }
 
 #midiText, #midiClockText {
@@ -94,7 +133,6 @@ button:active {
 #midiClockContainer, #midiOutContainer { 
     height: 3em;
     display: inline-block;
-    border: 2px solid black;
 }
 
 select {
@@ -105,7 +143,6 @@ select {
     height: 3em;
     width: 8.4em;
     display: inline-block;
-    border: 2px solid black;
     margin-bottom: 0.8em;
 }
 
@@ -114,7 +151,6 @@ select {
 }
 
 #clickContainer {
-    border: 2px solid black;
     margin-bottom: 1em;
 }
 
@@ -127,7 +163,6 @@ select {
     padding: 0.3em 1em;
     margin: 0.5em;
     margin-left: 1.5em;
-    user-select: none;
 }
 
 #buttonDiv, #generatorButtonDiv {
@@ -135,7 +170,6 @@ select {
     left: -0.1em;
     bottom: -0.1em;
     width: 21.05em;
-    border: 2px solid black;
     text-align: center;
 }
 
@@ -160,7 +194,6 @@ table {
 
 #chord1, #chord2, #chord3, #chord4 {
     width: 4em;
-    border: 2px solid black;
     font-family: monospace;
     text-align: center;
     font-size: 0.9em;
@@ -175,65 +208,21 @@ table {
 input[type=range] {
     -webkit-appearance: none;
     width: 40%;
-  }
-  input[type=range]:focus {
-    outline: none;
-  }
-  input[type=range]::-webkit-slider-runnable-track {
+}
+input[type=range]:focus {
+    outline: none;  
+}
+input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 6.2px;
     cursor: pointer;
-    background: #848484;
     border-radius: 0px;
-    border: 1.2px solid #562425;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    border: 0px solid #000000;
+}
+input[type=range]::-webkit-slider-thumb {
     height: 14px;
     width: 7px;
     border-radius: 0px;
-    background: #211817;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -5.1px;
-  }
- 
-  /* ------------- Dark Mode ------------- */
-body, button, #chord1, #chord2, #chord3, #chord4 {
-    background: rgb(38, 38, 38);
 }
-
-body, #mainModuleContainer, #generatorModuleContainer, button, #chord1, #chord2, #chord3, #chord4 {
-    color: white;
-}
-
-#midiClockContainer, #midiOutContainer, #inputBarsContainer, #outputBarsContainer, #clickContainer, #buttonDiv, #generatorButtonDiv, #mainModuleContainer, #generatorModuleContainer, #chord1, #chord2, #chord3, #chord4, button { 
-    border: 2px solid white;
-}
-
-#titleDiv, #generatorTitleDiv {
-    border-bottom: 2px solid white;
-}
-
-#delete {
-    background: rgb(110, 50, 50);
-}
-
-button:active {
-    background: #4b4b4b;
-}
-
-#play:disabled, #generate:disabled {
-    border: 2px solid #4b4b4b;
-    color: rgb(87, 87, 87);
-}
-
-/* ------------- Slider Styling Dark Mode ------------- */
-  input[type=range]::-webkit-slider-runnable-track {
-    background: rgb(87, 87, 87);
-    border: 1.2px solid #cecece;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    border: 1px solid #cecece;
-    background: rgb(87, 87, 87);
-  }

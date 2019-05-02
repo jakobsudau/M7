@@ -13,6 +13,8 @@ class GeneratorModule {
         this.messageDiv = null;
         this.playButton = null;
         this.generateButton = null;
+        this.loopButton = null;
+        this.listenButton = null;
         this.generatorModuleContainer = null;
         this.id = id;
         this.selectedOutput = this.mainModule.midi.availableOutputs[0];
@@ -48,6 +50,22 @@ class GeneratorModule {
 
     updateChords(chords) {
         console.log("updating chords...");
+    }
+
+    switchDarkMode() {
+        if (this.listening) {
+            this.listenButton.style.background = this.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+            listen.style.color = this.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
+        } else {
+            this.listenButton.style.background = this.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
+            listen.style.color = this.mainModule.isDarkMode ? "white" : "black";
+        }
+
+        if (this.looping) {
+            this.loopButton.style.background = this.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+        } else {
+            this.loopButton.style.background = this.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
+        }
     }
 
     startStopLoop() {
@@ -120,6 +138,8 @@ class GeneratorModule {
         delete this.messageDiv;
         delete this.playButton;
         delete this.generateButton;
+        delete this.loopButton;
+        delete this.listenButton;
         delete this.generatorModuleContainer;
         delete this.id;
         delete this.selectedOutput;
@@ -154,13 +174,13 @@ class GeneratorModule {
         this.playButton.innerHTML = "►";
         this.playButton.disabled = true;
 
-        let loop = document.createElement("button");
-        loop.id = "loop";
-        loop.innerHTML = "↻";
+        this.loopButton = document.createElement("button");
+        this.loopButton.id = "loop";
+        this.loopButton.innerHTML = "↻";
 
-        let listen = document.createElement("button");
-        listen.id = "listen";
-        listen.innerHTML = "●";
+        this.listenButton = document.createElement("button");
+        this.listenButton.id = "listen";
+        this.listenButton.innerHTML = "●";
 
         let deleteButton = document.createElement("button");
         deleteButton.id = "delete";
@@ -278,8 +298,8 @@ class GeneratorModule {
         
         generatorButtonDiv.appendChild(this.generateButton);
         generatorButtonDiv.appendChild(this.playButton);
-        generatorButtonDiv.appendChild(loop);
-        generatorButtonDiv.appendChild(listen);
+        generatorButtonDiv.appendChild(this.loopButton);
+        generatorButtonDiv.appendChild(this.listenButton);
         this.generatorModuleContainer.appendChild(generatorButtonDiv);
         this.generatorModuleContainer.appendChild(deleteButton);
 
@@ -296,26 +316,20 @@ class GeneratorModule {
         // loop functionality
         loop.addEventListener('click', function(){
             if (that.startStopLoop()) {
-                // loop.style.background = "lightgrey";
-                loop.style.background = "rgb(87, 87, 87)"; // dark mode
+                loop.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
             } else {
-                // loop.style.background = "white";
-                loop.style.background = "rgb(38, 38, 38)"; // dark mode
+                loop.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
             }
         });
 
         // listen for input functionality
         listen.addEventListener('click', function(){
             if (that.startStopListening()) {
-                // listen.style.background = "lightgrey";
-                // listen.style.color = "rgb(216, 49, 49)";
-                listen.style.background = "rgb(87, 87, 87)"; // dark mode
-                listen.style.color = "rgb(185, 19, 19)"; // dark mode
+                listen.style.background = that.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+                listen.style.color = that.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
             } else {
-                // listen.style.background = "white";
-                // listen.style.color = "black";
-                listen.style.background = "rgb(38, 38, 38)"; // dark mode
-                listen.style.color = "white"; // dark mode
+                listen.style.background = that.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
+                listen.style.color = that.mainModule.isDarkMode ? "white" : "black";
             }
         });
 

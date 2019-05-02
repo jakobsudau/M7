@@ -4,6 +4,7 @@
 
 class MainModule {
     constructor(midiAccess) {
+        this.isDarkMode = false;
         this.generators = new Map();
         this.generatorCounter = 0;
         this.midi = new Midi(midiAccess, this);
@@ -44,6 +45,19 @@ class MainModule {
     playAll() {
         this.generators.forEach((value,key) => {
             value.playGeneratedSequence();
+        });
+    }
+
+    switchDarkMode() {
+        this.isDarkMode = !this.isDarkMode;
+        if (this.metronome.isPlaying) {
+            click.style.background = this.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+        } else {
+            click.style.background = this.isDarkMode ? "rgb(38, 38, 38)" : "white";
+        }
+
+        this.generators.forEach((value,key) => {
+            value.switchDarkMode();
         });
     }
 
@@ -265,11 +279,9 @@ class MainModule {
         // click functionality
         click.addEventListener('click', function(){
             if (that.startStopClick()) {
-                // click.style.background = "lightgrey";
-                click.style.background = "rgb(87, 87, 87)"; // dark mode
+                click.style.background = that.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
             } else {
-                // click.style.background = "white";
-                click.style.background = "rgb(38, 38, 38)"; // dark mode
+                click.style.background = that.isDarkMode ? "rgb(38, 38, 38)" : "white";
             }
         });
 
@@ -284,9 +296,37 @@ class MainModule {
 // Start
 // ---------------------------------------------------------------------------
 
+function initializeDarkMode(main) {
+    const darkModeSwitcher = document.createElement("button");
+    darkModeSwitcher.id = "darkModeSwitcher";
+    darkModeSwitcher.innerHTML = "☾";
+    darkModeSwitcher.addEventListener("click", function() {
+        
+        if(document.body.hasAttribute('theme')){
+            document.body.removeAttribute('theme');
+        } else {
+            document.documentElement.setAttribute('theme', 'dark');
+            main.switchDarkMode();
+            if(document.body.className == "dark-mode"){
+                document.body.className = "light-mode";
+                document.documentElement.setAttribute('theme', 'light');
+                darkModeSwitcher.innerHTML = "☾";
+            } else {
+                document.body.className = "dark-mode";
+                document.documentElement.setAttribute('theme', 'dark');
+                darkModeSwitcher.innerHTML = "☀";
+            }
+        }
+    });
+    document.getElementById("mainContainer").appendChild(darkModeSwitcher);
+}
+
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {
+
+        document.documentElement.setAttribute('theme', 'light');
         const main = new MainModule(midiAccess);
+        initializeDarkMode(main);
     });
 } else {
     alert("No MIDI support in your browser.");
