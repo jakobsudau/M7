@@ -10,7 +10,9 @@ class Midi {
             0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x78, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f];
         this.midiAccess = midiAccess;        
         this.availableOutputs = [];
+        this.availableInputs = [];
         this.selectedOutput = null;
+        this.selectedInput = null;
         this.selectedClockOutput = null;
         this.ppqCounter = 0;
         this.beatCoutner = 0;
@@ -20,6 +22,7 @@ class Midi {
         const that = this;
         // loop through all inputs and listen for midi messages
         for (let input = inputs.next(); input && !input.done; input = inputs.next()) {
+            this.availableInputs.push(input.value);
             input.value.onmidimessage = function(e) {
                 // event.data is an array
                 // event.data[0] = on (144 = 0x90) / off (128 = 0x80) / controlChange (176 = 0xb0)  / pitchBend (224 = 0xf4) / ...
@@ -77,6 +80,7 @@ class Midi {
         }
 
         this.selectedOutput = this.availableOutputs[0];
+        this.selectedInput = this.availableInputs[0];
         this.selectedClockOutput = this.availableOutputs[0];
     }
 

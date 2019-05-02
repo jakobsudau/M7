@@ -29,8 +29,8 @@ class Metronome {
     playSequence(id, playAll) {
         console.log(this.generatedSequences);
         if (playAll) {
-            this.generatedSequences.forEach((value,key) => {
-                this.playIt(this.players[key], this.generatedSequences.get(key));    
+            this.generatedSequences.forEach((sequence, generatorId) => {
+                this.playIt(this.players[generatorId], this.generatedSequences.get(generatorId));    
             });
 
         } else {

@@ -127,31 +127,27 @@ button {
     margin-bottom: 1em;
 }
 
-#midiClockContainer, #midiOutContainer, #midiInContainer { 
-    padding-top: 0.5em;
-}
-
-#midiText, #midiInText, #midiClockText {
-    font-size: 0.9em;
-}
-
-#midiClockContainer, #midiOutContainer, #midiInContainer { 
+#midiClockContainer, #midiOutContainer, #midiInContainer, #inputBarsContainer, #outputBarsContainer { 
+    text-align: center;
     height: 3em;
-    display: inline-block;
+    width: 8.4em;
+    float: left;
+    margin-bottom: 0.8em;
+}
+
+#midiOutText, #midiInText, #midiClockText {
+    font-size: 0.9em;
 }
 
 select {
     width: 12.5em;
 }
+
 #inputBarsContainer, #outputBarsContainer {
-    text-align: center;
-    height: 3em;
-    width: 8.4em;
     display: inline-block;
-    margin-bottom: 0.8em;
 }
 
-#outputBarsContainer {
+#outputBarsContainer, #midiInContainer {
     margin-left: 1em;
 }
 

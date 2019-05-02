@@ -18,6 +18,7 @@ class GeneratorModule {
         this.generatorModuleContainer = null;
         this.id = id;
         this.selectedOutput = this.mainModule.midi.availableOutputs[0];
+        this.selectedInput = this.mainModule.midi.availableInputs[0];
         this.inQueue = false;
         this.listening = false;
         this.inputSequence = { 
@@ -145,6 +146,7 @@ class GeneratorModule {
         delete this.generatorModuleContainer;
         delete this.id;
         delete this.selectedOutput;
+        delete this.selectedInput;
         delete this.inQueue;
         delete this.listening;
         delete this.inputSequence;
@@ -259,12 +261,22 @@ class GeneratorModule {
         let midiOutContainer = document.createElement("div");
         midiOutContainer.id = "midiOutContainer";
 
-        let midiText = document.createElement("div");
-        midiText.id = "midiText";
-        midiText.innerHTML = "MIDI Out";
+        let midiOutText = document.createElement("div");
+        midiOutText.id = "midiOutText";
+        midiOutText.innerHTML = "MIDI Out";
 
-        let midiBusSelect = document.createElement("select");
-        midiBusSelect.id = "midiBusSelect";
+        let midiOutBusSelect = document.createElement("select");
+        midiOutBusSelect.id = "midiOutBusSelect";
+
+        let midiInContainer = document.createElement("div");
+        midiInContainer.id = "midiInContainer";
+
+        let midiInText = document.createElement("div");
+        midiInText.id = "midiInText";
+        midiInText.innerHTML = "MIDI In";
+
+        let midiInBusSelect = document.createElement("select");
+        midiInBusSelect.id = "midiInBusSelect";
 
         this.messageDiv = document.createElement("div");
         this.messageDiv.id = "message";
@@ -272,8 +284,11 @@ class GeneratorModule {
 
         this.generatorModuleContainer.appendChild(generatorModuleTitleDiv);
 
-        midiOutContainer.appendChild(midiText);
-        midiOutContainer.appendChild(midiBusSelect);
+        midiOutContainer.appendChild(midiOutText);
+        midiOutContainer.appendChild(midiOutBusSelect);
+
+        midiInContainer.appendChild(midiInText);
+        midiInContainer.appendChild(midiInBusSelect);
 
         barsContainer.appendChild(inputBarsContainer);
         inputBarsContainer.appendChild(inputBarsContainerText);
@@ -297,6 +312,7 @@ class GeneratorModule {
 
         this.generatorModuleContainer.appendChild(barsContainer);
         this.generatorModuleContainer.appendChild(midiOutContainer);
+        this.generatorModuleContainer.appendChild(midiInContainer);
         this.generatorModuleContainer.appendChild(this.messageDiv);
         
         generatorButtonDiv.appendChild(this.generateButton);
@@ -336,10 +352,15 @@ class GeneratorModule {
             }
         });
 
-        // Populate the MidiOut and MidiClockOut lists
-        midiBusSelect.innerHTML = that.mainModule.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        midiBusSelect.addEventListener("change", function() {
-            that.selectedOutput = that.mainModule.midi.availableOutputs[midiBusSelect.selectedIndex];
+        // Populate the MidiOut and MidiIn lists
+        midiOutBusSelect.innerHTML = that.mainModule.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
+        midiOutBusSelect.addEventListener("change", function() {
+            that.selectedOutput = that.mainModule.midi.availableOutputs[midiOutBusSelect.selectedIndex];
+        });
+
+        midiInBusSelect.innerHTML = that.mainModule.midi.availableInputs.map(i =>`<option>${i.name}</option>`).join('');
+        midiInBusSelect.addEventListener("change", function() {
+            that.selectedInput = that.mainModule.midi.availableInputs[midiInBusSelect.selectedIndex];
         });
 
         // eventlistener for the generate and play model button

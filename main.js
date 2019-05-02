@@ -20,9 +20,9 @@ class MainModule {
     }
 
     startStopNote(note, velocity, isStart, input) {
-        this.generators.forEach((value,key) => {
-            if (value.listening) {
-                value.startStopNote(note, velocity, isStart);
+        this.generators.forEach((generator, id) => {
+            if (generator.listening && (generator.selectedInput == input.value)) {
+                generator.startStopNote(note, velocity, isStart);
             }
         });
     }
@@ -44,8 +44,8 @@ class MainModule {
     }
 
     playAll() {
-        this.generators.forEach((value,key) => {
-            value.playGeneratedSequence();
+        this.generators.forEach((generator, id) => {
+            generator.playGeneratedSequence();
         });
     }
 
@@ -57,8 +57,8 @@ class MainModule {
             this.clickButton.style.background = this.isDarkMode ? "rgb(38, 38, 38)" : "white";
         }
 
-        this.generators.forEach((value,key) => {
-            value.switchDarkMode();
+        this.generators.forEach((generator, id) => {
+            generator.switchDarkMode();
         });
 
         let chords = document.getElementsByClassName("chords");
