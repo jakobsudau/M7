@@ -278,6 +278,22 @@ class GeneratorModule {
         let midiInBusSelect = document.createElement("select");
         midiInBusSelect.id = "midiInBusSelect";
 
+        let temparatureContainer = document.createElement("div");
+        temparatureContainer.id = "temparatureContainer";
+        temparatureContainer.className = "container";
+
+        let temparatureVolumeSlider = document.createElement("input");
+        temparatureVolumeSlider.type = "range";
+        temparatureVolumeSlider.className = "slider";
+        temparatureVolumeSlider.id = "temparatureVolumeSlider";
+        temparatureVolumeSlider.min = "1";
+        temparatureVolumeSlider.max = "100";
+        temparatureVolumeSlider.value = "80";
+
+        let temparatureButton = document.createElement("button");
+        temparatureButton.id = "temparatureButton";
+        temparatureButton.innerHTML = "Temp";
+
         this.messageDiv = document.createElement("div");
         this.messageDiv.id = "message";
         this.messageDiv.innerHTML = "Loading model...";     
@@ -310,9 +326,14 @@ class GeneratorModule {
         outputBarsOptionsContainer.appendChild(outputBarsOption3);
         outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
 
+        
+        temparatureContainer.appendChild(temparatureVolumeSlider);
+        temparatureContainer.appendChild(temparatureButton);
+
         this.generatorModuleContainer.appendChild(barsContainer);
         this.generatorModuleContainer.appendChild(midiOutContainer);
         this.generatorModuleContainer.appendChild(midiInContainer);
+        // this.generatorModuleContainer.appendChild(temparatureContainer);
         this.generatorModuleContainer.appendChild(this.messageDiv);
         
         generatorButtonDiv.appendChild(this.generateButton);
