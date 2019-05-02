@@ -23,7 +23,7 @@ class GeneratorModule {
         this.inputSequence = { 
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
-            totalQuantizedSteps: (32 * this.inputBars),
+            totalQuantizedSteps: 1,
         };
         this.inputStartTime = Date.now();
 
@@ -55,10 +55,10 @@ class GeneratorModule {
     switchDarkMode() {
         if (this.listening) {
             this.listenButton.style.background = this.mainModule.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
-            listen.style.color = this.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
+            this.listenButton.style.color = this.mainModule.isDarkMode ? "rgb(185, 19, 19)" : "rgb(216, 49, 49)";
         } else {
             this.listenButton.style.background = this.mainModule.isDarkMode ? "rgb(38, 38, 38)" : "white";
-            listen.style.color = this.mainModule.isDarkMode ? "white" : "black";
+            this.listenButton.style.color = this.mainModule.isDarkMode ? "white" : "black";
         }
 
         if (this.looping) {
@@ -108,6 +108,7 @@ class GeneratorModule {
     generateSequence(chords) {
         console.log("generating midi sequence...");
         const time = Date.now();
+        if (this.inputSequence.totalQuantizedSteps != 1) {this.inputSequence.totalQuantizedSteps = this.inputSequence.notes.length;}
         this.model.generateSequence(chords, this.inputSequence, this.model).then(function(seq){
             console.log("generating took: " + ((Date.now() - time)/1000) + "s");
             this.generatedSeq = seq;

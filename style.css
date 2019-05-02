@@ -3,7 +3,7 @@
     position: fixed;
     right: 0;
     top: 0;
-    margin: 0.2em;
+    margin: 0.65em;
     width: 1.7em;
     height: 1.7em;
 }
@@ -75,7 +75,7 @@ input[type=range]::-webkit-slider-thumb {
     width: 19em;
     height: 18em;
     padding: 1em;
-    margin: 0.96em;
+    margin: 0.5em;
 }
 
 #titleDiv, #generatorTitleDiv {

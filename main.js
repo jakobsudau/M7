@@ -5,6 +5,7 @@
 class MainModule {
     constructor(midiAccess) {
         this.isDarkMode = false;
+        this.clickButton = null;
         this.generators = new Map();
         this.generatorCounter = 0;
         this.midi = new Midi(midiAccess, this);
@@ -51,9 +52,9 @@ class MainModule {
     switchDarkMode() {
         this.isDarkMode = !this.isDarkMode;
         if (this.metronome.isPlaying) {
-            click.style.background = this.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+            this.clickButton.style.background = this.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
         } else {
-            click.style.background = this.isDarkMode ? "rgb(38, 38, 38)" : "white";
+            this.clickButton.style.background = this.isDarkMode ? "rgb(38, 38, 38)" : "white";
         }
 
         this.generators.forEach((value,key) => {
@@ -214,9 +215,9 @@ class MainModule {
         clickVolumeSlider.max = "100";
         clickVolumeSlider.value = "80";
 
-        let click = document.createElement("button");
-        click.id = "click";
-        click.innerHTML = "Click";
+        this.clickButton = document.createElement("button");
+        this.clickButton.id = "click";
+        this.clickButton.innerHTML = "Click";
 
         mainModuleContainer.appendChild(titleDiv);
         mainModuleContainer.appendChild(chordDiv);
@@ -237,7 +238,7 @@ class MainModule {
 
         mainModuleContainer.appendChild(clickContainer);
         clickContainer.appendChild(clickVolumeSlider);
-        clickContainer.appendChild(click);
+        clickContainer.appendChild(this.clickButton);
 
         // mainModuleContainer.appendChild(midiClockContainer);
         // midiClockContainer.appendChild(midiClockText);

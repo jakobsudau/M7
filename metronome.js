@@ -27,6 +27,7 @@ class Metronome {
     }
 
     playSequence(id, playAll) {
+        console.log(this.players[id]);
         this.players[id].requestMIDIAccess().then(() => {
             
             this.sequenceFinished = false;
@@ -47,7 +48,7 @@ class Metronome {
                         this.sequenceFinished = true;
                         if (looped) {
                             value[3] = true;
-                            this.playSequence(id);
+                            this.playSequence(id, false);
                         } else {
                             playButton.disabled = false;
                             console.log(id);
@@ -112,7 +113,7 @@ class Metronome {
                 // if there is still a sequence in queue and nothing is playing right now, play the currently generated sequence
                 if (this.generatedSequences.size != 0) {
                     console.log("playing sequence");
-                    this.playSequence(null, true);
+                    this.playSequence(0, true);
                 }
                 
                 if (!this.sequenceFinished) {
