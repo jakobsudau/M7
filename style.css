@@ -139,7 +139,7 @@ select {
     width: 12.5em;
 }
 
-#barsContainer, #midiContainer, #messageDiv, #clickContainer, #temparatureContainer {
+#barsContainer, #midiContainer, #messageDiv, #clickContainer, #temperatureContainer {
     float: left;
     width: 100%;
     height: 3em;
@@ -155,19 +155,19 @@ select {
     float:right;
 }
 
-#clickContainer, #temparatureContainer {
+#clickContainer, #temperatureContainer {
     width: calc(100% - 4px);
     display:flex;
     align-items: center;
     justify-content: space-evenly;
 }
 
-#clickVolumeSlider, #temparatureVolumeSlider {
+#clickVolumeSlider, #temperatureVolumeSlider {
     float: left;
     width: 50%;
 }
 
-#clickButton, #temparatureTitleDiv {
+#clickButton, #temperatureTitleDiv {
     font-size: 1.3em;
     padding: 0.3em 1em;
     height: 1.8em;
@@ -175,7 +175,7 @@ select {
     float: right;
 }
 
-#temparatureTitleDiv {
+#temperatureTitleDiv {
     font-size: 1em;
     width: 7em;
     padding: 0;
