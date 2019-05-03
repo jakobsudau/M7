@@ -286,21 +286,21 @@ class GeneratorModule {
         let midiInBusSelect = document.createElement("select");
         midiInBusSelect.id = "midiInBusSelect";
 
-        let temparatureContainer = document.createElement("div");
-        temparatureContainer.id = "temparatureContainer";
-        temparatureContainer.className = "container";
+        let temperatureContainer = document.createElement("div");
+        temperatureContainer.id = "temperatureContainer";
+        temperatureContainer.className = "container";
 
-        let temparatureVolumeSlider = document.createElement("input");
-        temparatureVolumeSlider.type = "range";
-        temparatureVolumeSlider.className = "slider";
-        temparatureVolumeSlider.id = "temparatureVolumeSlider";
-        temparatureVolumeSlider.min = "1";
-        temparatureVolumeSlider.max = "100";
-        temparatureVolumeSlider.value = "80";
+        let temperatureVolumeSlider = document.createElement("input");
+        temperatureVolumeSlider.type = "range";
+        temperatureVolumeSlider.className = "slider";
+        temperatureVolumeSlider.id = "temperatureVolumeSlider";
+        temperatureVolumeSlider.min = "1";
+        temperatureVolumeSlider.max = "100";
+        temperatureVolumeSlider.value = "80";
 
-        let temparatureTitleDiv = document.createElement("div");
-        temparatureTitleDiv.id = "temparatureTitleDiv";
-        temparatureTitleDiv.innerHTML = "Temparature";
+        let temperatureTitleDiv = document.createElement("div");
+        temperatureTitleDiv.id = "temperatureTitleDiv";
+        temperatureTitleDiv.innerHTML = "temperature";
 
         this.messageDiv = document.createElement("div");
         this.messageDiv.id = "messageDiv";
@@ -338,12 +338,12 @@ class GeneratorModule {
         outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
 
         
-        temparatureContainer.appendChild(temparatureVolumeSlider);
-        temparatureContainer.appendChild(temparatureTitleDiv);
+        temperatureContainer.appendChild(temperatureVolumeSlider);
+        temperatureContainer.appendChild(temperatureTitleDiv);
 
         this.generatorModuleContainer.appendChild(barsContainer);
         this.generatorModuleContainer.appendChild(midiContainer);
-        this.generatorModuleContainer.appendChild(temparatureContainer);
+        this.generatorModuleContainer.appendChild(temperatureContainer);
         this.generatorModuleContainer.appendChild(this.messageDiv);
         
         generatorButtonDiv.appendChild(this.generateButton);
