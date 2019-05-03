@@ -133,13 +133,14 @@ class MainModule {
     createUIElements() {
         let mainModuleContainer = document.createElement("div");
         mainModuleContainer.id = "mainModuleContainer";
+        mainModuleContainer.className = "container";
 
-        let titleDiv = document.createElement("div");
-        titleDiv.id = "titleDiv";
-        titleDiv.innerHTML = "Main Module";
+        let mainTitleDiv = document.createElement("div");
+        mainTitleDiv.id = "mainTitleDiv";
+        mainTitleDiv.innerHTML = "Main Module";
 
-        let buttonDiv = document.createElement("div");
-        buttonDiv.id = "buttonDiv";
+        let mainButtonDiv = document.createElement("div");
+        mainButtonDiv.id = "mainButtonDiv";
 
         let buttonAdd = document.createElement("button");
         buttonAdd.id = "buttonAdd";
@@ -203,6 +204,7 @@ class MainModule {
 
         let midiOutContainer = document.createElement("div");
         midiOutContainer.id = "midiOutContainer";
+        midiOutContainer.className = "container";
 
         let midiText = document.createElement("div");
         midiText.id = "midiText";
@@ -210,6 +212,7 @@ class MainModule {
 
         // let midiClockContainer = document.createElement("div");
         // midiClockContainer.id = "midiClockContainer";
+        // midiClockContainer.className = "container";
 
         // let midiClockText = document.createElement("div");
         // midiClockText.id = "midiClockText";
@@ -231,10 +234,10 @@ class MainModule {
         clickVolumeSlider.value = "80";
 
         this.clickButton = document.createElement("button");
-        this.clickButton.id = "click";
+        this.clickButton.id = "clickButton";
         this.clickButton.innerHTML = "Click";
 
-        mainModuleContainer.appendChild(titleDiv);
+        mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordDiv);
 
         chordDiv.appendChild(selectChords);
@@ -259,12 +262,12 @@ class MainModule {
         // midiClockContainer.appendChild(midiClockText);
         // midiClockContainer.appendChild(midiClockBusSelect);
 
-        buttonDiv.appendChild(buttonChange);
-        buttonDiv.appendChild(buttonStop);
-        buttonDiv.appendChild(buttonPlayAll);
-        buttonDiv.appendChild(buttonAdd);
+        mainButtonDiv.appendChild(buttonChange);
+        mainButtonDiv.appendChild(buttonStop);
+        mainButtonDiv.appendChild(buttonPlayAll);
+        mainButtonDiv.appendChild(buttonAdd);
 
-        mainModuleContainer.appendChild(buttonDiv);
+        mainModuleContainer.appendChild(mainButtonDiv);
         
         document.getElementById("mainContainer").appendChild(mainModuleContainer);
 
@@ -296,11 +299,11 @@ class MainModule {
         // midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiClockBusSelect.selectedIndex];});
 
         // click functionality
-        click.addEventListener('click', function(){
+        this.clickButton.addEventListener('click', function(){
             if (that.startStopClick()) {
-                click.style.background = that.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
+                this.clickButton.style.background = that.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
             } else {
-                click.style.background = that.isDarkMode ? "rgb(38, 38, 38)" : "white";
+                this.clickButton.style.background = that.isDarkMode ? "rgb(38, 38, 38)" : "white";
             }
         });
 

@@ -156,6 +156,7 @@ class GeneratorModule {
     createUIElements() {
         this.generatorModuleContainer = document.createElement("div");
         this.generatorModuleContainer.id = "generatorModuleContainer";
+        this.generatorModuleContainer.className = "container";
 
         let generatorModuleTitleDiv = document.createElement("input");
         generatorModuleTitleDiv.type = "text";
@@ -188,7 +189,7 @@ class GeneratorModule {
         this.listenButton.innerHTML = "●";
 
         let deleteButton = document.createElement("button");
-        deleteButton.id = "delete";
+        deleteButton.id = "deleteButton";
         deleteButton.innerHTML = "X";
 
         let barsContainer = document.createElement("div");
@@ -196,6 +197,7 @@ class GeneratorModule {
 
         let inputBarsContainer = document.createElement("div");
         inputBarsContainer.id = "inputBarsContainer";
+        inputBarsContainer.className = "container";
 
         let inputBarsContainerText = document.createElement("div");
         inputBarsContainerText.innerHTML = "Input Bars";
@@ -224,6 +226,7 @@ class GeneratorModule {
 
         let outputBarsContainer = document.createElement("div");
         outputBarsContainer.id = "outputBarsContainer";
+        outputBarsContainer.className = "container";
 
         let outputBarsContainerText = document.createElement("div");
         outputBarsContainerText.innerHTML = "Output Bars";
@@ -260,6 +263,10 @@ class GeneratorModule {
 
         let midiOutContainer = document.createElement("div");
         midiOutContainer.id = "midiOutContainer";
+        midiOutContainer.className = "container";
+        
+        let midiContainer = document.createElement("div");
+        midiContainer.id = "midiContainer";
 
         let midiOutText = document.createElement("div");
         midiOutText.id = "midiOutText";
@@ -270,6 +277,7 @@ class GeneratorModule {
 
         let midiInContainer = document.createElement("div");
         midiInContainer.id = "midiInContainer";
+        midiInContainer.className = "container";
 
         let midiInText = document.createElement("div");
         midiInText.id = "midiInText";
@@ -290,12 +298,12 @@ class GeneratorModule {
         temparatureVolumeSlider.max = "100";
         temparatureVolumeSlider.value = "80";
 
-        let temparatureButton = document.createElement("button");
-        temparatureButton.id = "temparatureButton";
-        temparatureButton.innerHTML = "Temp";
+        let temparatureTitleDiv = document.createElement("div");
+        temparatureTitleDiv.id = "temparatureTitleDiv";
+        temparatureTitleDiv.innerHTML = "Temparature";
 
         this.messageDiv = document.createElement("div");
-        this.messageDiv.id = "message";
+        this.messageDiv.id = "messageDiv";
         this.messageDiv.innerHTML = "Loading model...";     
 
         this.generatorModuleContainer.appendChild(generatorModuleTitleDiv);
@@ -305,6 +313,9 @@ class GeneratorModule {
 
         midiInContainer.appendChild(midiInText);
         midiInContainer.appendChild(midiInBusSelect);
+
+        midiContainer.appendChild(midiOutContainer);
+        midiContainer.appendChild(midiInContainer);
 
         barsContainer.appendChild(inputBarsContainer);
         inputBarsContainer.appendChild(inputBarsContainerText);
@@ -328,12 +339,11 @@ class GeneratorModule {
 
         
         temparatureContainer.appendChild(temparatureVolumeSlider);
-        temparatureContainer.appendChild(temparatureButton);
+        temparatureContainer.appendChild(temparatureTitleDiv);
 
         this.generatorModuleContainer.appendChild(barsContainer);
-        this.generatorModuleContainer.appendChild(midiOutContainer);
-        this.generatorModuleContainer.appendChild(midiInContainer);
-        // this.generatorModuleContainer.appendChild(temparatureContainer);
+        this.generatorModuleContainer.appendChild(midiContainer);
+        this.generatorModuleContainer.appendChild(temparatureContainer);
         this.generatorModuleContainer.appendChild(this.messageDiv);
         
         generatorButtonDiv.appendChild(this.generateButton);
