@@ -1,355 +1,98 @@
-// ---------------------------------------------------------------------------
-// Main Module Class
-// ---------------------------------------------------------------------------
+const {ipcMain, BrowserWindow, app} = require('electron');
+const cpus = require('os').cpus().length;
+console.log('cpus: ' + cpus);
 
-class MainModule {
-    constructor(midiAccess) {
-        this.isDarkMode = false;
-        this.clickButton = null;
-        this.generators = new Map();
-        this.generatorCounter = 0;
-        this.midi = new Midi(midiAccess, this);
-        this.metronome = new Metronome();
-        this.metronome.initialize();
-        this.createUIElements();    
+// stack of available background threads
+var available = [];
+
+// queue of tasks to be done
+var tasks = [];
+
+// hand the tasks out to waiting threads
+function doIt() {
+    while (available.length > 0 && tasks.length > 0) {
+        var task = tasks.shift();
+        available.shift().send(task[0], task[1]);
     }
-
-    startStopClick() {
-        this.metronome.startStop();
-        return this.metronome.isPlaying;
-    }
-
-    startStopNote(note, velocity, isStart, input) {
-        this.generators.forEach((generator, id) => {
-            if (generator.listening && (generator.selectedInput == input.value)) {
-                generator.startStopNote(note, velocity, isStart);
-            }
-        });
-    }
-
-    changeClickVolume(volume) {
-        this.metronome.gainNode.gain.value = volume;
-    }
-
-    addModule() {
-        const generator = new GeneratorModule(this, this.generatorCounter);
-        this.generators.set(this.generatorCounter, generator);
-        this.generatorCounter++;
-        this.metronome.players.push(new mm.MIDIPlayer());
-    }
-
-    deleteModule(id) {
-        this.generators.delete(id);
-        this.metronome.players.pop();
-    }
-
-    playAll() {
-        this.generators.forEach((generator, id) => {
-            generator.playGeneratedSequence();
-        });
-    }
-
-    switchDarkMode() {
-        this.isDarkMode = !this.isDarkMode;
-        if (this.metronome.isPlaying) {
-            this.clickButton.style.background = this.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
-        } else {
-            this.clickButton.style.background = this.isDarkMode ? "rgb(38, 38, 38)" : "white";
-        }
-
-        this.generators.forEach((generator, id) => {
-            generator.switchDarkMode();
-        });
-
-        let chords = document.getElementsByClassName("chords");
-        for(let i=0, len=chords.length; i<len; i++) {
-            if (chords[i].style.color != 'red') {
-                chords[i].style.color = this.isDarkMode ? "white" : "black";
-            }
-        }
-    }
-
-    checkChords() {
-        const chords = [
-            document.getElementById('chord1').value,
-            document.getElementById('chord2').value,
-            document.getElementById('chord3').value,
-            document.getElementById('chord4').value
-          ]; 
-         
-		const isGood = (chord) => {
-		if (!chord) {
-			return false;
-		}
-		try {
-			mm.chords.ChordSymbols.pitches(chord);
-			return true;
-		}
-		catch(e) {
-			return false;
-		}
-		}
-          
-        let allGood = true;
-        let darkMode = this.isDarkMode ? "white" : "black";
-		if (isGood(chords[0])) {
-			document.getElementById('chord1').style.color = darkMode;
-		} else {
-			document.getElementById('chord1').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[1])) {
-			document.getElementById('chord2').style.color = darkMode;
-		} else {
-			document.getElementById('chord2').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[2])) {
-			document.getElementById('chord3').style.color = darkMode;
-		} else {
-			document.getElementById('chord3').style.color = 'red';
-			allGood = false;
-		}
-		if (isGood(chords[3])) {
-			document.getElementById('chord4').style.color = darkMode;
-		} else {
-			document.getElementById('chord4').style.color = 'red';
-			allGood = false;
-		}
-					
-		let changed = false;
-		if (this.currentChords) {
-			if (chords[0] !== this.currentChords[0]) {changed = true;}
-			if (chords[1] !== this.currentChords[1]) {changed = true;}
-			if (chords[2] !== this.currentChords[2]) {changed = true;}
-			if (chords[3] !== this.currentChords[3]) {changed = true;}  
-		}
-		else {
-			changed = true;
-		}
-		//document.getElementById('play').disabled = !allGood || (!changed && this.playing);
-    }
-
-    createUIElements() {
-        let mainModuleContainer = document.createElement("div");
-        mainModuleContainer.id = "mainModuleContainer";
-        mainModuleContainer.className = "container";
-
-        let mainTitleDiv = document.createElement("div");
-        mainTitleDiv.id = "mainTitleDiv";
-        mainTitleDiv.innerHTML = "Main Module";
-
-        let mainButtonDiv = document.createElement("div");
-        mainButtonDiv.id = "mainButtonDiv";
-
-        let buttonAdd = document.createElement("button");
-        buttonAdd.id = "buttonAdd";
-        buttonAdd.innerHTML = "+";
-
-        let buttonChange = document.createElement("button");
-        buttonChange.id = "buttonChange";
-        buttonChange.innerHTML = "→";
-
-        let buttonStop = document.createElement("button");
-        buttonStop.id = "buttonStop";
-        buttonStop.innerHTML = "■";
-
-        let buttonPlayAll = document.createElement("button");
-        buttonPlayAll.id = "buttonPlayAll";
-        buttonPlayAll.innerHTML = "►";
-
-        let chordDiv = document.createElement("div");
-        chordDiv.id = "chordDiv";
-
-        let selectChords = document.createElement("div");
-        selectChords.id = "selectChords";
-        selectChords.innerHTML = "Select a chord sequence:";
-
-        let chords = document.createElement("div");
-        chords.id = "chords";
-
-        let table = document.createElement("table");
-        table.className = "center";
-
-        let tableTr = document.createElement("tr");
-
-        let tableTd1 = document.createElement("td");
-        let tableTd2 = document.createElement("td");
-        let tableTd3 = document.createElement("td");
-        let tableTd4 = document.createElement("td");
-
-        let chord1 = document.createElement("input");
-        chord1.id = "chord1";
-        chord1.className = "chords";
-        chord1.type = "text";
-        chord1.value = "C";
-
-        let chord2 = document.createElement("input");
-        chord2.id = "chord2";
-        chord2.className = "chords";
-        chord2.type = "text";
-        chord2.value = "G";
-
-        let chord3 = document.createElement("input");
-        chord3.id = "chord3";
-        chord3.className = "chords";
-        chord3.type = "text";
-        chord3.value = "Am";
-
-        let chord4 = document.createElement("input");
-        chord4.id = "chord4";
-        chord4.className = "chords";
-        chord4.type = "text";
-        chord4.value = "F";
-
-        let midiOutContainer = document.createElement("div");
-        midiOutContainer.id = "midiOutContainer";
-        midiOutContainer.className = "container";
-
-        let midiText = document.createElement("div");
-        midiText.id = "midiText";
-        midiText.innerHTML = "MIDI Out";
-
-        // let midiClockContainer = document.createElement("div");
-        // midiClockContainer.id = "midiClockContainer";
-        // midiClockContainer.className = "container";
-
-        // let midiClockText = document.createElement("div");
-        // midiClockText.id = "midiClockText";
-        // midiClockText.innerHTML = "MIDI Clock Out";
-
-        // let midiClockBusSelect = document.createElement("select");
-        // midiClockBusSelect.id = "midiClockBusSelect";
-
-        let clickContainer = document.createElement("div");
-        clickContainer.id = "clickContainer";
-        clickContainer.className = "container";
-
-        let clickVolumeSlider = document.createElement("input");
-        clickVolumeSlider.type = "range";
-        clickVolumeSlider.className = "slider";
-        clickVolumeSlider.id = "clickVolumeSlider";
-        clickVolumeSlider.min = "1";
-        clickVolumeSlider.max = "100";
-        clickVolumeSlider.value = "80";
-
-        this.clickButton = document.createElement("button");
-        this.clickButton.id = "clickButton";
-        this.clickButton.innerHTML = "Click";
-
-        mainModuleContainer.appendChild(mainTitleDiv);
-        mainModuleContainer.appendChild(chordDiv);
-
-        chordDiv.appendChild(selectChords);
-        chordDiv.appendChild(chords);
-
-        chords.appendChild(table);
-        table.appendChild(tableTr);
-        tableTr.appendChild(tableTd1);
-        tableTr.appendChild(tableTd2);
-        tableTr.appendChild(tableTd3);
-        tableTr.appendChild(tableTd4);
-        tableTd1.appendChild(chord1);
-        tableTd2.appendChild(chord2);
-        tableTd3.appendChild(chord3);
-        tableTd4.appendChild(chord4);
-
-        mainModuleContainer.appendChild(clickContainer);
-        clickContainer.appendChild(clickVolumeSlider);
-        clickContainer.appendChild(this.clickButton);
-
-        // mainModuleContainer.appendChild(midiClockContainer);
-        // midiClockContainer.appendChild(midiClockText);
-        // midiClockContainer.appendChild(midiClockBusSelect);
-
-        mainButtonDiv.appendChild(buttonChange);
-        mainButtonDiv.appendChild(buttonStop);
-        mainButtonDiv.appendChild(buttonPlayAll);
-        mainButtonDiv.appendChild(buttonAdd);
-
-        mainModuleContainer.appendChild(mainButtonDiv);
-        
-        document.getElementById("mainContainer").appendChild(mainModuleContainer);
-
-        let that = this;
-
-        // add button functionality
-        buttonAdd.addEventListener('click', function(){that.addModule();});
-
-        // stop button functionality
-        buttonStop.addEventListener('click', function(){
-            that.metronome.players.forEach(function(player) {
-                player.stop();
-            });
-         });
-
-         // stop button functionality
-        buttonPlayAll.addEventListener('click', function(){
-            that.playAll();
-         });
-
-        // Check chords for validity when changed
-        chord1.addEventListener('input', function(){that.checkChords()});
-        chord2.addEventListener('input', function(){that.checkChords()});
-        chord3.addEventListener('input', function(){that.checkChords()});
-        chord4.addEventListener('input', function(){that.checkChords()}); 
-
-        // Populate the MidiOut and MidiClockOut lists
-        // midiClockBusSelect.innerHTML = that.midi.availableOutputs.map(i =>`<option>${i.name}</option>`).join('');
-        // midiClockBusSelect.addEventListener("change", function() {that.midi.selectedClockOutput = that.midi.availableOutputs[midiClockBusSelect.selectedIndex];});
-
-        // click functionality
-        this.clickButton.addEventListener('click', function(){
-            if (that.startStopClick()) {
-                this.clickButton.style.background = that.isDarkMode ? "rgb(87, 87, 87)" : "lightgrey";
-            } else {
-                this.clickButton.style.background = that.isDarkMode ? "rgb(38, 38, 38)" : "white";
-            }
-        });
-
-        // Click volume control
-        clickVolumeSlider.addEventListener("input", function (e) {
-            that.changeClickVolume(this.value/100);
-        });
-    }
+    main.webContents.send('status', available.length, tasks.length);
 }
 
-// ---------------------------------------------------------------------------
-// Start
-// ---------------------------------------------------------------------------
-
-function initializeDarkMode(main) {
-    const darkModeSwitcher = document.createElement("button");
-    darkModeSwitcher.id = "darkModeSwitcher";
-    darkModeSwitcher.innerHTML = "☾";
-    darkModeSwitcher.addEventListener("click", function() {
-        
-        if(document.body.hasAttribute('theme')){
-            document.body.removeAttribute('theme');
-        } else {
-            document.documentElement.setAttribute('theme', 'dark');
-            main.switchDarkMode();
-            if(document.body.className == "dark-mode"){
-                document.body.className = "light-mode";
-                document.documentElement.setAttribute('theme', 'light');
-                darkModeSwitcher.innerHTML = "☾";
-            } else {
-                document.body.className = "dark-mode";
-                document.documentElement.setAttribute('theme', 'dark');
-                darkModeSwitcher.innerHTML = "☀";
-            }
+// Create a hidden background window
+function createBgWindow() {
+    result = new BrowserWindow({
+        "show": false,
+        webPreferences: {
+            nodeIntegration: true,
+            backgroundThrottling: false
         }
     });
-    document.getElementById("mainContainer").appendChild(darkModeSwitcher);
-}
-
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {
-
-        document.documentElement.setAttribute('theme', 'light');
-        const main = new MainModule(midiAccess);
-        initializeDarkMode(main);
+    result.loadURL('file://' + __dirname + '/electron/background.html');
+    result.on('closed', () => {
+        console.log('background window closed');
     });
-} else {
-    alert("No MIDI support in your browser.");
+    return result;
 }
+
+app.on('ready', function() {
+    // Create main window which contains the visible UI
+    main = new BrowserWindow({
+        "width": 720,
+        "height": 666,
+        //"icon": __dirname + "/icon/icon.icns",
+        titleBarStyle: 'hidden',
+        webPreferences: {
+            nodeIntegration: true,
+            backgroundThrottling: false,
+            webSecurity: false
+        }
+    });
+    main.webContents.openDevTools();
+    main.loadURL('file://' + __dirname + '/static/indexElectron.html');
+    main.show();
+    main.webContents.on('did-finish-load', () => {
+        main.webContents.send('test','This is a test');
+      })
+      main.on('closed', () => {
+        // call quit to exit, otherwise the background
+        // windows will keep the app running
+        app.quit();
+    })
+
+    // create background thread for each cpu
+    for (var i = 0; i < cpus; i++) {createBgWindow()}
+
+    // Main thread can receive directly from windows
+    ipcMain.on('to-main', (event, arg) => {
+        console.log(arg);
+    });
+
+    // Windows can talk to each other via main
+    ipcMain.on('for-renderer', (event, arg) => {
+        console.log("got generated data from bg thread, send it to " +
+            "generator " + arg.id);
+        main.webContents.send(('to-renderer' + arg.id), arg);
+    });
+    ipcMain.on('for-background', (event, arg) => {
+        tasks.push(['message', arg]);
+        doIt();
+    });
+
+    // heavy processing done in the background thread
+    // so UI and main threads remain responsive
+    ipcMain.on('assign-task', (event, arg) => {
+        tasks.push(['task', arg]);
+        doIt();
+    });
+
+    ipcMain.on('initialize', (event, arg) => {
+        if (available.length < cpus) {
+            createBgWindow();
+        }
+    });
+
+    ipcMain.on('ready', (event, arg) => {
+        available.push(event.sender);
+        console.log("bg thread is ready");
+        doIt();
+    })
+})

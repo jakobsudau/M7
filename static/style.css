@@ -1,0 +1,392 @@
+/* ------------------- Dark Mode & Coloring Code Start ------------------- */
+:root[theme='dark'] {
+    --borderColor: #dddddd;
+    --backgroundColor: #262626;
+    --moduleBackgroundColor: #464646;
+    --color: #ebebeb;
+    --deleteColor: #6E3232;
+    --buttonActiveColor: #696969;
+    --buttonDisableColor: #575757;
+}
+
+:root[theme='light'] {
+    --borderColor: black;
+    --backgroundColor: white;
+    --moduleBackgroundColor: #efefef;
+    --color: black;
+    --deleteColor: #FB8D8D;
+    --buttonActiveColor: #cacaca;
+    --buttonDisableColor: #cacaca;
+}
+
+#mainContainer, #helpContainer, body {
+    background: var(--backgroundColor);
+}
+
+#controlButtonDiv {
+    background-color: var(--moduleBackgroundColor);
+}
+
+#controlButtonDiv {
+    border-right: 2px solid var(--borderColor);
+}
+
+button, .chords, .generatorTitleDiv, #bpmTextfield {
+    background: var(--backgroundColor);
+}
+
+#mainModuleContainer, #generatorModuleContainer, #helpContainer,
+button, .chords, .generatorTitleDiv, #bpmTextfield {
+    color: var(--color);
+    background: var(--moduleBackgroundColor);
+}
+
+.container, .chords, button, #bpmTextfield {
+    border: 2px solid var(--borderColor);
+    border-radius: 0.1em;
+}
+
+.click.enabled, .listenButton.enabled, .mutateButton.enabled {
+    background: var(--buttonActiveColor);
+}
+
+.click.disabled, .listenButton.disabled, .mutateButton.disabled {
+    background: var(--moduleBackgroundColor);
+    color: var(--color);
+}
+
+.listenButton.enabled {
+    color: #d83131;
+}
+
+.mutateButton.enabled {
+    color: #fbf08d;
+}
+
+#mainButtonContainer, .generatorButtonDiv {
+    border-top: 2px solid var(--borderColor);
+}
+
+#mainTitleDiv, .generatorTitleDiv, #helpTitleDiv {
+    border-bottom: 2px solid var(--borderColor);
+}
+
+.deleteButton {
+    background: var(--deleteColor);
+}
+
+button:active {
+    background: var(--buttonActiveColor);
+}
+
+button:disabled, #bpmTextfield:disabled {
+    border: 2px solid var(--buttonActiveColor);
+    color: var(--buttonDisableColor);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    background: var(--buttonDisableColor);
+    border: 1.5px solid var(--borderColor);
+}
+input[type=range]::-webkit-slider-thumb {
+    border: 1.5px solid var(--borderColor);
+    background: var(--buttonDisableColor);
+}
+/* -------------------- Dark Mode & Coloring Code End -------------------- */
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+#mainContainer, #mainContainer > * {
+    transition: .2s linear, background-color .2s linear;
+}
+
+#controlButtonDiv {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: calc(100% - 1em);
+    width: 4.2em;
+    padding-top: 1em;
+    text-align: center;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    transition: .2s linear, background-color .2s linear;
+}
+
+#mainSubContainer {
+    padding-left: 4.7em;
+    padding-top: 0.5em;
+    width: calc(100% - 4.7em);
+    height: calc(100% - 0.5em);
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+}
+
+button, #mainModuleContainer, #generatorModuleContainer {
+    -webkit-app-region: no-drag;
+}
+
+#darkModeSwitcher, #helpButton, #fullscreenButton {
+    height: 1.7em;
+    width: 1.7em;
+    padding: 0;
+    margin: 0.5em;
+    text-align: center;
+    font-weight: bold;
+}
+
+#mainContainer {
+    width: 100%;
+    height: 100%;
+}
+
+#overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 2;
+}
+
+#helpContainer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#helpTextDiv {
+    font-size: 0.85em;
+}
+
+#helpBottomTextDiv {
+    position: absolute;
+    bottom: 0;
+    width: 90%;
+    text-align: center;
+    font-size: 0.59em;
+    margin-bottom: 0.3em;
+}
+
+#mainModuleContainer, #generatorModuleContainer, #helpContainer {
+    position: relative;
+    float: left;
+    font-family: monospace;
+    font-size: 1.1em;
+    width: 19em;
+    height: 19.5em;
+    padding: 1em;
+    margin: 0.5em;
+}
+
+#mainTitleDiv, .generatorTitleDiv, #helpTitleDiv {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+    padding: 0;
+    width: 85%;
+    font-family: monospace;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.listenButton {
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0;
+    margin-top: 0.16em;
+}
+
+.midiInSelectContainer {
+    float: left;
+    width: 70%;
+}
+
+button, #bpmTextfield {
+    font-family: monospace;
+    font-size: 1.5em;
+    margin: 0.5em 0 0.5em 0;
+    height: 2.1em;
+    width: 3em;
+}
+
+#bpmTextfield {
+    text-align: center;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button:focus, div:focus, input:focus, select:focus{
+    outline: none;
+}
+
+.deleteButton {
+    font-size: 1em;
+    margin-top: 0.3em;
+    margin-right: 0.3em;
+    position: absolute;
+    top:0;
+    right:0;
+    width: 2.1em;
+    padding: 0;
+}
+
+#buttonAdd, #generateLoopButton, .deleteButton {
+    font-weight: bold;
+}
+
+#selectChords {
+    margin-bottom: 0.3em;
+    text-align: center;
+}
+
+#chordContainer {
+    height: 3em;
+    margin-bottom: 1em;
+    width: 100%;
+}
+
+#midiClockContainer, #midiOutContainer, #midiInContainer,
+#inputBarsContainer, #outputBarsContainer {
+    float: left;
+    width: 46%;
+    height: calc(100% - 4px);;
+    text-align: center;
+}
+
+#midiOutContainer {
+    width: 35%;
+}
+
+#midiInContainer {
+    width: 57%;
+}
+
+select {
+    width: 7.5em;
+}
+
+.barsContainer, .midiContainer, #messageDiv,
+#clickContainer, #temperatureContainer {
+    float: left;
+    width: 100%;
+    height: 3em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+#inputBarsContainer, #outputBarsContainer {
+    display: inline-block;
+}
+
+#outputBarsContainer, #midiInContainer {
+    float:right;
+}
+
+#clickContainer, #temperatureContainer {
+    width: calc(100% - 4px);
+    height: calc(3em - 4px);
+    display:flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#clickVolumeSlider, .temperatureSlider {
+    float: left;
+    width: 50%;
+}
+
+#clickButton, .temperatureTitleDiv {
+    font-size: 1em;
+    padding: 0.3em 1em;
+    height: 2em;
+    width: 5.5em;
+    float: right;
+}
+
+.temperatureTitleDiv {
+    width: 6.5em;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.mainButtonDiv, .generatorButtonDiv {
+    width: 100%;
+    text-align: center;
+    display:flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.changeButton, #generateLoopButton, #bpmTextfield {
+    margin-bottom: 0;
+}
+
+#buttonGenerateAll, .generateButton {
+    font-weight: 550;
+}
+
+#mainButtonContainer {
+    flex-direction: column;
+}
+
+.generatorButtonDiv, #mainButtonContainer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 0.5em;
+}
+
+td {
+    text-align: center;
+}
+
+
+.chords {
+    width: 4em;
+    font-family: monospace;
+    text-align: center;
+    font-size: 1em;
+}
+
+/* ----------------------------- Slider Styling ---------------------------- */
+input[type=range] {
+    -webkit-appearance: none;
+    width: 40%;
+}
+input[type=range]:focus {
+    outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6.2px;
+    cursor: pointer;
+    border-radius: 0px;
+}
+input[type=range]::-webkit-slider-thumb {
+    height: 14px;
+    width: 7px;
+    border-radius: 0px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -5.1px;
+}

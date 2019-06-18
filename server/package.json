@@ -1,0 +1,13 @@
+{
+    "name": "m7",
+    "productName": "m7",
+    "version": "0.0.1",
+    "license": "MIT",
+    "author": "Jakob Sudau",
+    "dependencies": {
+        "@magenta/music": "../libs/magenta-js/music",
+        "express": "latest",
+        "http": "latest",
+        "socket.io": "^2.2.0"
+    }
+}

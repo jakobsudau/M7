@@ -1,0 +1,43 @@
+<h1>Background</h1>
+<script src="../libs/modelGenerate.js"></script>
+<script type="text/javascript">
+	const {ipcRenderer} = require('electron');
+	const mm = require('@magenta/music');
+
+	const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
+	const improvRNN = new mm.MusicRNN(improvCheckpoint);
+	improvRNN.initialize().then(() => ready());
+
+	// Send logs as messages to the main thread to show on the console
+	function log(value) {
+		ipcRenderer.send('to-main', process.pid + ': ' + value);
+	}
+
+	// let the main thread know this thread is ready to process something
+	function ready() {
+		ipcRenderer.send('ready');
+	}
+
+	function generate(data) {
+		modelGenerate(data).then((seq) => {
+			// send data and message that generation is done
+			log('finished generating sequence on bg thread from ' +
+				'generator ' + data.id);
+			ready();
+			ipcRenderer.send('for-renderer', {data: seq, id: data.id});
+		});
+	}
+
+	// if message is received, pass it back to the renderer via the
+	// main thread
+	ipcRenderer.on('message', (event, arg) => {
+		log('received ' + arg);
+		ipcRenderer.send('for-renderer', process.pid + ': reply to ' + arg);
+		ready();
+	});
+
+	ipcRenderer.on('task', (event, arg) => {
+		log('starting generation on bg thread from generator ' + arg.id);
+		generate(arg);
+	})
+</script>
