@@ -7,7 +7,7 @@ class Connector {
     initialize(id) {
         return new Promise(function(resolve, reject) {
             if (isElectron) {
-                electron.ipcRenderer.send('for-background',
+                electron.ipcRenderer.send('initialize',
                     {cmd: "initialize", id: id});
                 electron.ipcRenderer.on('status', (event, threads, tasks) => {
                         let id =  Math.random().toString(36).substring(7);

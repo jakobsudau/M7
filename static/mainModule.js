@@ -562,8 +562,7 @@ function showHelp() {
     }
 }
 
-// const isElectron = true;
-var electron;
+var electron; // used in connector.js
 
 if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {

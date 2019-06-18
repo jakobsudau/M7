@@ -58,9 +58,6 @@ app.on('ready', function() {
         app.quit();
     })
 
-    // create background thread for each cpu
-    for (var i = 0; i < cpus; i++) {createBgWindow()}
-
     // Main thread can receive directly from windows
     ipcMain.on('to-main', (event, arg) => {
         console.log(arg);
