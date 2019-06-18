@@ -365,27 +365,29 @@ class GeneratorModule {
 
         const inputBarsTitle = "Bar length of the input sequences";
 
-        let inputBarsOption1 = document.createElement("input");
-        inputBarsOption1.className = "radioButton";
-        inputBarsOption1.name = "inputBarsOption" + this.id;
-        inputBarsOption1.type = "radio";
-        inputBarsOption1.value = "2";
-        inputBarsOption1.title = inputBarsTitle;
+        let inputBarsOptions = [];
 
-        let inputBarsOption2 = document.createElement("input");
-        inputBarsOption2.className = "radioButton";
-        inputBarsOption2.name = "inputBarsOption" + this.id;
-        inputBarsOption2.type = "radio";
-        inputBarsOption2.value = "4";
-        inputBarsOption2.checked = "checked";
-        inputBarsOption2.title = inputBarsTitle;
+        inputBarsOptions[0] = document.createElement("input");
+        inputBarsOptions[0].className = "radioButton";
+        inputBarsOptions[0].name = "inputBarsOption" + this.id;
+        inputBarsOptions[0].type = "radio";
+        inputBarsOptions[0].value = "2";
+        inputBarsOptions[0].title = inputBarsTitle;
 
-        let inputBarsOption3 = document.createElement("input");
-        inputBarsOption3.className = "radioButton";
-        inputBarsOption3.name = "inputBarsOption" + this.id;
-        inputBarsOption3.type = "radio";
-        inputBarsOption3.value = "8";
-        inputBarsOption3.title = inputBarsTitle;
+        inputBarsOptions[1] = document.createElement("input");
+        inputBarsOptions[1].className = "radioButton";
+        inputBarsOptions[1].name = "inputBarsOption" + this.id;
+        inputBarsOptions[1].type = "radio";
+        inputBarsOptions[1].value = "4";
+        inputBarsOptions[1].checked = "checked";
+        inputBarsOptions[1].title = inputBarsTitle;
+
+        inputBarsOptions[2] = document.createElement("input");
+        inputBarsOptions[2].className = "radioButton";
+        inputBarsOptions[2].name = "inputBarsOption" + this.id;
+        inputBarsOptions[2].type = "radio";
+        inputBarsOptions[2].value = "8";
+        inputBarsOptions[2].title = inputBarsTitle;
 
         let outputBarsContainer = document.createElement("div");
         outputBarsContainer.id = "outputBarsContainer";
@@ -398,27 +400,29 @@ class GeneratorModule {
 
         const outputBarsTitle = "Bar length of the output sequences";
 
-        let outputBarsOption1 = document.createElement("input");
-        outputBarsOption1.className = "radioButton";
-        outputBarsOption1.name = "outputBarsOption" + this.id;
-        outputBarsOption1.type = "radio";
-        outputBarsOption1.value = "2";
-        outputBarsOption1.title = outputBarsTitle;
+        let outputBarsOptions = [];
 
-        let outputBarsOption2 = document.createElement("input");
-        outputBarsOption2.className = "radioButton";
-        outputBarsOption2.name = "outputBarsOption" + this.id;
-        outputBarsOption2.type = "radio";
-        outputBarsOption2.value = "4";
-        outputBarsOption2.checked = "checked";
-        outputBarsOption2.title = outputBarsTitle;
+        outputBarsOptions[0] = document.createElement("input");
+        outputBarsOptions[0].className = "radioButton";
+        outputBarsOptions[0].name = "outputBarsOption" + this.id;
+        outputBarsOptions[0].type = "radio";
+        outputBarsOptions[0].value = "2";
+        outputBarsOptions[0].title = outputBarsTitle;
 
-        let outputBarsOption3 = document.createElement("input");
-        outputBarsOption3.className = "radioButton";
-        outputBarsOption3.name = "outputBarsOption" + this.id;
-        outputBarsOption3.type = "radio";
-        outputBarsOption3.value = "8";
-        outputBarsOption3.title = outputBarsTitle;
+        outputBarsOptions[1] = document.createElement("input");
+        outputBarsOptions[1].className = "radioButton";
+        outputBarsOptions[1].name = "outputBarsOption" + this.id;
+        outputBarsOptions[1].type = "radio";
+        outputBarsOptions[1].value = "4";
+        outputBarsOptions[1].checked = "checked";
+        outputBarsOptions[1].title = outputBarsTitle;
+
+        outputBarsOptions[2] = document.createElement("input");
+        outputBarsOptions[2].className = "radioButton";
+        outputBarsOptions[2].name = "outputBarsOption" + this.id;
+        outputBarsOptions[2].type = "radio";
+        outputBarsOptions[2].value = "8";
+        outputBarsOptions[2].title = outputBarsTitle;
 
         let outputBarsOption1Text = document.createTextNode("2");
         let outputBarsOption2Text = document.createTextNode("4");
@@ -494,17 +498,17 @@ class GeneratorModule {
         inputBarsContainer.appendChild(inputBarsOptionsContainer);
         outputBarsContainer.appendChild(outputBarsContainerText);
         outputBarsContainer.appendChild(outputBarsOptionsContainer);
-        inputBarsOptionsContainer.appendChild(inputBarsOption1);
+        inputBarsOptionsContainer.appendChild(inputBarsOptions[0]);
         inputBarsOptionsContainer.appendChild(inputBarsOption1Text);
-        inputBarsOptionsContainer.appendChild(inputBarsOption2);
+        inputBarsOptionsContainer.appendChild(inputBarsOptions[1]);
         inputBarsOptionsContainer.appendChild(inputBarsOption2Text);
-        inputBarsOptionsContainer.appendChild(inputBarsOption3);
+        inputBarsOptionsContainer.appendChild(inputBarsOptions[2]);
         inputBarsOptionsContainer.appendChild(inputBarsOption3Text);
-        outputBarsOptionsContainer.appendChild(outputBarsOption1);
+        outputBarsOptionsContainer.appendChild(outputBarsOptions[0]);
         outputBarsOptionsContainer.appendChild(outputBarsOption1Text);
-        outputBarsOptionsContainer.appendChild(outputBarsOption2);
+        outputBarsOptionsContainer.appendChild(outputBarsOptions[1]);
         outputBarsOptionsContainer.appendChild(outputBarsOption2Text);
-        outputBarsOptionsContainer.appendChild(outputBarsOption3);
+        outputBarsOptionsContainer.appendChild(outputBarsOptions[2]);
         outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
         temperatureContainer.appendChild(temperatureSlider);
         temperatureContainer.appendChild(temperatureTitleDiv);
@@ -565,13 +569,12 @@ class GeneratorModule {
                 document.getElementById("chord4").value]);}.bind(this));
 
         // input and output bars lengths
-        let radioButtons = document.getElementsByClassName("radioButton");
         const that = this;
-        for (let i=0; i<(radioButtons.length/2); i++) {
-            radioButtons[i].addEventListener("change", function(e){
+        for (let i=0; i<(inputBarsOptions.length); i++) {
+            inputBarsOptions[i].addEventListener("change", function(e){
                 that.changeInputOutputBarsLength(this.value, false);
             });
-            radioButtons[i+3].addEventListener("change", function(e){
+            outputBarsOptions[i].addEventListener("change", function(e){
                 that.changeInputOutputBarsLength(this.value, true);
             });
         }

@@ -19,11 +19,13 @@ function modelGenerate(data) {
 					totalQuantizedSteps: 1,
 				};
 
+				let loopThreshold = steps+1;
+
 				// Add the continuation to the original.
 				contSeq.notes.forEach((note) => {
 					note.quantizedStartStep += 1;
 					note.quantizedEndStep += 1;
-					if (note.quantizedEndStep == 64) {
+					if (note.quantizedEndStep == loopThreshold) {
 						// for looping to work, can't have an endstep
 						// on 32/64/128
 						note.quantizedEndStep -= 1;
