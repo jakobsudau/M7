@@ -7,6 +7,8 @@
     --deleteColor: #6E3232;
     --buttonActiveColor: #696969;
     --buttonDisableColor: #575757;
+    --shadow1: #ffffff33;
+    --shadow2: #ffffff30;
 }
 
 :root[theme='light'] {
@@ -17,6 +19,8 @@
     --deleteColor: #FB8D8D;
     --buttonActiveColor: #cacaca;
     --buttonDisableColor: #cacaca;
+    --shadow1: #00000033;
+    --shadow2: #00000030;
 }
 
 #mainContainer, #helpContainer, body {
@@ -185,6 +189,10 @@ button, #mainModuleContainer, #generatorModuleContainer {
     height: 19.5em;
     padding: 1em;
     margin: 0.5em;
+}
+
+#mainModuleContainer, #generatorModuleContainer, #helpContainer, #controlButtonDiv{
+    box-shadow: 0 4px 8px 0 var(--shadow1), 0 6px 20px 0 var(--shadow2);
 }
 
 #mainTitleDiv, .generatorTitleDiv, #helpTitleDiv {

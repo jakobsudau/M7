@@ -317,7 +317,7 @@ class GeneratorModule {
 
         this.generateButton = document.createElement("button");
         this.generateButton.className = "generateButton";
-        this.generateButton.innerHTML = "g";
+        this.generateButton.innerHTML = "☰";
         this.generateButton.title = "Generate a sequence based on an " +
             "input sequence and chords";
         this.generateButton.disabled = true;

@@ -191,7 +191,6 @@ class MainModule {
     }
 
     generateLoop() {
-
         const chords = [
             this.chord1.value,
             this.chord2.value,
@@ -257,7 +256,7 @@ class MainModule {
 
         this.buttonGenerateAll = document.createElement("button");
         this.buttonGenerateAll.id = "buttonGenerateAll";
-        this.buttonGenerateAll.innerHTML = "ga";
+        this.buttonGenerateAll.innerHTML = "☷";
         this.buttonGenerateAll.title = "Generate Sequence for all " +
             "Generator Modules";
         this.buttonGenerateAll.disabled = true;
