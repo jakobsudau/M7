@@ -7,8 +7,8 @@
     --deleteColor: #6E3232;
     --buttonActiveColor: #696969;
     --buttonDisableColor: #575757;
-    --shadow1: #ffffff33;
-    --shadow2: #ffffff30;
+    --shadow1: #000000f3;
+    --shadow2: #000000f1;
 }
 
 :root[theme='light'] {
