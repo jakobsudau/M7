@@ -41,6 +41,55 @@ class GeneratorModule {
 
         this.playButton.disabled = true;
         this.generateButton.disabled = true;
+
+        // ------------ Experiments with different MIDI Players ------------
+        // let seq1 = {
+        //     notes: [
+        //         {pitch: 62, quantizedStartStep: 0, quantizedEndStep: 2},
+        //         {pitch: 64, quantizedStartStep: 2, quantizedEndStep: 4},
+        //         {pitch: 66, quantizedStartStep: 4, quantizedEndStep: 6},
+        //         {pitch: 68, quantizedStartStep: 6, quantizedEndStep: 8},
+        //         {pitch: 70, quantizedStartStep: 8, quantizedEndStep: 10},
+        //         {pitch: 72, quantizedStartStep: 10, quantizedEndStep: 12},
+        //         {pitch: 74, quantizedStartStep: 12, quantizedEndStep: 14},
+        //     ],
+        //     quantizationInfo: {stepsPerQuarter: 4},
+        //     totalQuantizedSteps: 14,
+        // };
+
+        // let seq2 = {
+        //     notes: [
+        //         {pitch: 30, quantizedStartStep: 0, quantizedEndStep: 2},
+        //         {pitch: 32, quantizedStartStep: 2, quantizedEndStep: 4},
+        //         {pitch: 34, quantizedStartStep: 4, quantizedEndStep: 6},
+        //     ],
+        //     quantizationInfo: {stepsPerQuarter: 4},
+        //     totalQuantizedSteps: 14,
+        // };
+
+        // let player1 = new mm.MIDIPlayer();
+        // let player2 = new mm.MIDIPlayer();
+
+        // player1.outputs = [this.selectedOutput];
+        // player2.outputs = [this.selectedOutput];
+
+        // player2.start(seq2).then(() => {
+        //     console.log("player2 done!");
+        // });
+
+        // player1.start(seq1).then(() => {
+        //     console.log("player1 done!");
+        // });
+
+        // JZZ().or('Cannot start MIDI engine!')
+        //     .openMidiOut().or('Cannot open MIDI Out port!')
+        //     .wait(500).send([0x90,60,127]) // note on
+        //     .wait(500).send([0x80,60,0]);  // note off
+        // JZZ().openMidiIn().or('Cannot open MIDI In port!')
+        //     .and(function() { console.log('MIDI-In: ', this.name()); })
+        //     .connect(function(msg) { console.log(msg.toString()); })
+        //     .wait(10000).close();
+        // -----------------------------------------------------------------
     }
 
     initialize() {
@@ -176,6 +225,17 @@ class GeneratorModule {
         if (this.generatedSeq != null && !this.playing) {
             this.playButton.disabled = false;
         }
+
+        // ------------ Experiments with different MIDI Players ------------
+        // let midiFile = mm.sequenceProtoToMidi(this.generatedSeq);
+        // console.log(midiFile);
+        // var midiout = JZZ().openMidiOut();
+        // var data = require('fs').readFileSync('file.mid', 'binary');
+        // var smf = new JZZ.MIDI.SMF(data);
+        // var player = smf.player();
+        // player.connect(midiout);
+        // player.play();
+        // -----------------------------------------------------------------
     }
 
     playGeneratedSequence() {

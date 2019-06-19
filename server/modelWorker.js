@@ -107,8 +107,13 @@ parentPort.on("message", message => {
 			}
 
 			// Set total sequence length.
-            seq.totalQuantizedSteps = (stps_p_prog * NUM_REPS) -1;
+			seq.totalQuantizedSteps = (stps_p_prog * NUM_REPS) -1;
 
+			// ---------- Experiments with different MIDI Players ----------
+			// let midiFile = mm.sequenceProtoToMidi(this.generatedSeq);
+			// console.log(midiFile);
+			// var data = require('fs').readFileSync('file.mid', 'binary');
+			// -------------------------------------------------------------
             parentPort.postMessage({data: seq,
                 cmd: "generateDone",
                 id: id })
