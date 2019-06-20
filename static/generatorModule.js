@@ -13,6 +13,7 @@ class GeneratorModule {
         this.playing = false;
         this.keepMutating = false;
         this.generatedSeq = null;
+        this.generatedSmf = null;
         this.playButton = null;
         this.generateButton = null;
         this.mutateButton = null;
@@ -27,8 +28,9 @@ class GeneratorModule {
         this.generationTime = Date.now();
         this.inputStartTime = Date.now();
         this.temperature = 1;
-        this.player = new mm.MIDIPlayer();
         this.shouldPlay = false;
+        this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);;
+        this.jzzPlayer = null;
         this.inputSequence = {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
@@ -41,55 +43,6 @@ class GeneratorModule {
 
         this.playButton.disabled = true;
         this.generateButton.disabled = true;
-
-        // ------------ Experiments with different MIDI Players ------------
-        // let seq1 = {
-        //     notes: [
-        //         {pitch: 62, quantizedStartStep: 0, quantizedEndStep: 2},
-        //         {pitch: 64, quantizedStartStep: 2, quantizedEndStep: 4},
-        //         {pitch: 66, quantizedStartStep: 4, quantizedEndStep: 6},
-        //         {pitch: 68, quantizedStartStep: 6, quantizedEndStep: 8},
-        //         {pitch: 70, quantizedStartStep: 8, quantizedEndStep: 10},
-        //         {pitch: 72, quantizedStartStep: 10, quantizedEndStep: 12},
-        //         {pitch: 74, quantizedStartStep: 12, quantizedEndStep: 14},
-        //     ],
-        //     quantizationInfo: {stepsPerQuarter: 4},
-        //     totalQuantizedSteps: 14,
-        // };
-
-        // let seq2 = {
-        //     notes: [
-        //         {pitch: 30, quantizedStartStep: 0, quantizedEndStep: 2},
-        //         {pitch: 32, quantizedStartStep: 2, quantizedEndStep: 4},
-        //         {pitch: 34, quantizedStartStep: 4, quantizedEndStep: 6},
-        //     ],
-        //     quantizationInfo: {stepsPerQuarter: 4},
-        //     totalQuantizedSteps: 14,
-        // };
-
-        // let player1 = new mm.MIDIPlayer();
-        // let player2 = new mm.MIDIPlayer();
-
-        // player1.outputs = [this.selectedOutput];
-        // player2.outputs = [this.selectedOutput];
-
-        // player2.start(seq2).then(() => {
-        //     console.log("player2 done!");
-        // });
-
-        // player1.start(seq1).then(() => {
-        //     console.log("player1 done!");
-        // });
-
-        // JZZ().or('Cannot start MIDI engine!')
-        //     .openMidiOut().or('Cannot open MIDI Out port!')
-        //     .wait(500).send([0x90,60,127]) // note on
-        //     .wait(500).send([0x80,60,0]);  // note off
-        // JZZ().openMidiIn().or('Cannot open MIDI In port!')
-        //     .and(function() { console.log('MIDI-In: ', this.name()); })
-        //     .connect(function(msg) { console.log(msg.toString()); })
-        //     .wait(10000).close();
-        // -----------------------------------------------------------------
     }
 
     initialize() {
@@ -136,7 +89,6 @@ class GeneratorModule {
         delete this.generationTime;
         delete this.inputStartTime;
         delete this.temperature;
-        delete this.player;
         delete this.shouldPlay;
         delete this.inputSequence;
         delete this.stepsPerChord;
@@ -215,6 +167,9 @@ class GeneratorModule {
         console.log("generator " + this.id + ": generating on server " +
         "took: " + ((Date.now() - this.generationTime)/1000) + "s");
         this.generatedSeq = data.data;
+        this.generatedSmf = this.convertToSmf(this.generatedSeq);
+        this.jzzPlayer = this.generatedSmf.player();
+        // this.generatedSeq = data.smf;
         // console.log("getting back this sequence: ");
         // console.log(this.generatedSeq);
         // console.log("----END----");
@@ -225,65 +180,71 @@ class GeneratorModule {
         if (this.generatedSeq != null && !this.playing) {
             this.playButton.disabled = false;
         }
+    }
 
-        // ------------ Experiments with different MIDI Players ------------
-        // let midiFile = mm.sequenceProtoToMidi(this.generatedSeq);
-        // console.log(midiFile);
-        // var midiout = JZZ().openMidiOut();
-        // var data = require('fs').readFileSync('file.mid', 'binary');
-        // var smf = new JZZ.MIDI.SMF(data);
-        // var player = smf.player();
-        // player.connect(midiout);
-        // player.play();
-        // -----------------------------------------------------------------
+    convertToSmf(seq) {
+        let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter note
+        let trk = new JZZ.MIDI.SMF.MTrk();
+        trk.add(0, JZZ.MIDI.smfSeqName('generatedSequence'));
+        trk.add(0, JZZ.MIDI.smfBPM(120*4));
+        smf.push(trk);
+        seq.notes.forEach((note) => {
+            trk.add((note.quantizedStartStep*96), JZZ.MIDI.noteOn(0, note.pitch, 127));
+            trk.add((note.quantizedEndStep*96), JZZ.MIDI.noteOff(0, note.pitch, 127));
+        });
+        trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
+        return smf;
     }
 
     playGeneratedSequence() {
+        this.jzzPlayer.stop();
+        delete this.jzzPlayer;
+        this.jzzPlayer = this.generatedSmf.player();
+        this.jzzPlayer.connect(this.jzzMidiOut);
+        this.jzzPlayer.play();
+
         if (!this.playing && this.shouldPlay) {
-            this.player.requestMIDIAccess().then(() => {
-                if (this.keepMutating) {
-                    const chords = [
-                        document.getElementById("chord1").value,
-                        document.getElementById("chord2").value,
-                        document.getElementById("chord3").value,
-                        document.getElementById("chord4").value
-                    ];
-                    this.generateSequence(chords);
-                }
+            this.playButton.disabled = true;
+            this.playing = true;
+            this.barCounter = 0;
 
-                this.playButton.disabled = true;
-                this.playing = true;
-                if (this.listening) {
-                    this.barCounter = 0;
-                    console.log(this.inputSequence);
-                    this.inputStartTime = Date.now();
-                    this.inputSequence.notes = [];
-                    this.inputSequence.totalQuantizedSteps = 1;
-                }
-                this.player.outputs = [this.selectedOutput];
-                // omitting player.outputs = message to all ports
+            if (this.keepMutating) {
+                const chords = [
+                    document.getElementById("chord1").value,
+                    document.getElementById("chord2").value,
+                    document.getElementById("chord3").value,
+                    document.getElementById("chord4").value
+                ];
+                this.generateSequence(chords);
+            }
 
-                this.player.start(this.generatedSeq, this.mainModule.metronome.bpm).then(() => {
-                    this.playButton.disabled = false;
-                    this.playing = false;
+            if (this.listening) {
+                console.log(this.inputSequence);
+                this.inputStartTime = Date.now();
+                this.inputSequence.notes = [];
+                this.inputSequence.totalQuantizedSteps = 1;
+            }
 
-                    if (!this.looping) {
-                        this.shouldPlay = false;
-                        this.stopButton.disabled = false;
-                        this.looping = true;
-                    }
+            // when done:
+            //         this.playButton.disabled = false;
+            //         this.playing = false;
 
-                    if (this.looping &&
-                        !this.mainModule.metronome.isPlaying) {
-                        this.playGeneratedSequence();
-                    }
-                });
-            });
+            //         if (!this.looping) {
+            //             this.shouldPlay = false;
+            //             this.stopButton.disabled = false;
+            //             this.looping = true;
+            //         }
+
+            //         if (this.looping &&
+            //             !this.mainModule.metronome.isPlaying) {
+            //             this.playGeneratedSequence();
+            //         }
         }
     }
 
     playTick() {
-        if (this.shouldPlay) {
+        if (this.shouldPlay && this.barCounter == 0) {
+            console.log("playSeq from playTick!");
             this.playGeneratedSequence();
         }
 
@@ -292,19 +253,31 @@ class GeneratorModule {
             if (this.barCounter == this.inputBars-1) {
                 this.mainModule.metronome.isSeqStart = true;
             }
-            if (this.barCounter < (this.inputBars-1)) {
-                this.barCounter++
-            }
+        }
+        console.log(this.barCounter);
+        if (this.barCounter < (this.inputBars-1)) {
+            this.barCounter++;
+        } else if (this.barCounter == this.outputBars -1) {
+            this.barCounter = 0;
         }
     }
 
     stopPlayback() {
         console.log("stopping...");
-        this.player.stop();
+        this.jzzPlayer.stop();
         this.playButton.disabled = false;
         this.stopButton.disabled = false;
         this.playing = false;
         this.shouldPlay = false;
+    }
+
+    changeMidiPort(isInput, port) {
+        if (isInput) {
+            this.selectedInput = this.mainModule.midi.availableInputs[port];
+        } else {
+            this.selectedOutput = this.mainModule.midi.availableOutputs[port];
+                this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
+        }
     }
 
     stopModule() {
@@ -313,7 +286,7 @@ class GeneratorModule {
     }
 
     changeBpm(value) {
-        this.player.setTempo(value);
+        console.log("change bpm!");
     }
 
     mutate() {
@@ -329,6 +302,7 @@ class GeneratorModule {
     setPlayActive() {
         if (this.mainModule.metronome.isPlaying) {
             this.shouldPlay = true;
+            this.barCounter = 0;
         } else {
             this.shouldPlay = true;
             this.playGeneratedSequence();
@@ -608,17 +582,13 @@ class GeneratorModule {
         midiOutBusSelect.innerHTML = this.mainModule.midi.availableOutputs
             .map(i =>`<option>${i.name}</option>`).join('');
         midiOutBusSelect.addEventListener("change", function() {
-            const selOut = midiOutBusSelect.selectedIndex;
-            this.selectedOutput=this.mainModule.midi
-                .availableOutputs[selOut];
+            this.changeMidiPort(false, midiOutBusSelect.selectedIndex);
         }.bind(this));
 
         midiInBusSelect.innerHTML = this.mainModule.midi.availableInputs
             .map(i =>`<option>${i.name}</option>`).join('');
         midiInBusSelect.addEventListener("change", function() {
-            const selIn = midiInBusSelect.selectedIndex;
-            this.selectedInput = this.mainModule.midi
-                .availableInputs[selIn];
+            this.changeMidiPort(true, midiInBusSelect.selectedIndex);
         }.bind(this));
 
         // eventlistener for the generate and play model button
