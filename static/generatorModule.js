@@ -255,7 +255,7 @@ class GeneratorModule {
             }
         }
         console.log(this.barCounter);
-        if (this.barCounter < (this.inputBars-1)) {
+        if (this.barCounter < (this.outputBars-1)) {
             this.barCounter++;
         } else if (this.barCounter == this.outputBars -1) {
             this.barCounter = 0;
