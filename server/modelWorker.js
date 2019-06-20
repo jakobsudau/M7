@@ -1,7 +1,5 @@
 const { workerData, parentPort, isMainThread } = require("worker_threads");
 const mm = require('@magenta/music');
-// const JZZ = require('jzz');
-// require('jzz-midi-smf')(JZZ);
 const id = workerData;
 const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 const improvRNN = new mm.MusicRNN(improvCheckpoint);
@@ -37,16 +35,6 @@ improvRNN.initialize().then(() =>
 // You can do any heavy stuff here, in a synchronous way
 // without blocking the "main thread"
 parentPort.on("message", message => {
-
-	// if (message == "play") {
-	// 	console.log("playit!!!");
-	// 	var midiout = JZZ().openMidiOut();
-	// 	var player = smf.player();
-	// 	player.connect(midiout);
-	// 	player.play();
-	// 	return;
-	// }
-
     let data = JSON.parse(message);
 
     // Number of steps to play each chord.
@@ -68,26 +56,18 @@ parentPort.on("message", message => {
 				totalQuantizedSteps: 1,
 			};
 
-			// let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter note
-			// let trk = new JZZ.MIDI.SMF.MTrk();
-			// trk.add(0, JZZ.MIDI.smfSeqName('generatedSequence'));
-			// trk.add(0, JZZ.MIDI.smfBPM(120*4));
-			// smf.push(trk);
-
 			let loopThreshold = steps+1;
 
             // Add the continuation to the original.
 			contSeq.notes.forEach((note) => {
                 note.quantizedStartStep += 1;
                 note.quantizedEndStep += 1;
-                // if (note.quantizedEndStep == loopThreshold) {
-				// 	// for looping to work, can't have an endstep
-				// 	// on 32/64/128
-				// 	note.quantizedEndStep -= 1;
-				// 	// trk.add((note.quantizedEndStep*96), JZZ.MIDI.smfEndOfTrack());
-				// }
-				// trk.add((note.quantizedStartStep*96), JZZ.MIDI.noteOn(0, note.pitch, 127));
-				// trk.add((note.quantizedEndStep*96), JZZ.MIDI.noteOff(0, note.pitch, 127));
+                if (note.quantizedEndStep == loopThreshold) {
+					// for looping to work, can't have an endstep
+					// on 32/64/128
+					note.quantizedEndStep -= 1;
+					// trk.add((note.quantizedEndStep*96), JZZ.MIDI.smfEndOfTrack());
+				}
                 seq.notes.push(note);
 				});
 
@@ -103,8 +83,6 @@ parentPort.on("message", message => {
 						quantizedStartStep: i*stps_p_prog,
 						quantizedEndStep: i*stps_p_prog + stps_p_chrd
 					});
-					// trk.add((i*stps_p_prog*96), JZZ.MIDI.noteOn(0, 36 + roots[0], 127));
-					// trk.add((i*stps_p_prog + stps_p_chrd*96), JZZ.MIDI.noteOff(0, 36 + roots[0], 127));
 					seq.notes.push({
 						instrument: 1,
 						program: 32,
@@ -112,8 +90,6 @@ parentPort.on("message", message => {
 						quantizedStartStep: i*stps_p_prog + stps_p_chrd,
 						quantizedEndStep: i*stps_p_prog + 2*stps_p_chrd
 						});
-					// trk.add((i*stps_p_prog + stps_p_chrd*96), JZZ.MIDI.noteOn(0, 36 + roots[1], 127));
-					// trk.add((i*stps_p_prog + 2*stps_p_chrd*96), JZZ.MIDI.noteOff(0, 36 + roots[1], 127));
 					seq.notes.push({
 						instrument: 1,
 						program: 32,
@@ -121,8 +97,6 @@ parentPort.on("message", message => {
 						quantizedStartStep: i*stps_p_prog + 2*stps_p_chrd,
 						quantizedEndStep: i*stps_p_prog + 3*stps_p_chrd
 					});
-					// trk.add((i*stps_p_prog + 2*stps_p_chrd*96), JZZ.MIDI.noteOn(0, 36 + roots[2], 127));
-					// trk.add((i*stps_p_prog + 3*stps_p_chrd*96), JZZ.MIDI.noteOff(0, 36 + roots[2], 127));
 					seq.notes.push({
 						instrument: 1,
 						program: 32,
@@ -130,8 +104,6 @@ parentPort.on("message", message => {
 						quantizedStartStep: i*stps_p_prog + 3*stps_p_chrd,
 						quantizedEndStep: i*stps_p_prog + 4*stps_p_chrd - 1
 					});
-					// trk.add((i*stps_p_prog + 3*stps_p_chrd*96), JZZ.MIDI.noteOn(0, 36 + roots[3], 127));
-					// trk.add(((i*stps_p_prog + 4*stps_p_chrd - 1)*96), JZZ.MIDI.noteOff(0, 36 + roots[3], 127));
 				}
 			}
 
