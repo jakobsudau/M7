@@ -37,6 +37,6 @@ global.fetch = function (url, options) {
     }
 };
 ```
-5a. To run project as a Node server, run following command: yarn startNode and navigate to http://localhost:3000
-5b. To run project as a standalone, run following command: yarn startElectron
+5. To run project as a Node server, run following command: yarn startNode and navigate to http://localhost:3000
+6. To run project as a standalone, run following command: yarn startElectron
 
