@@ -6,6 +6,7 @@
     "author": "Jakob Sudau",
     "main": "main.js",
     "scripts": {
+        "installProject": "cd libs/magenta-js/music && yarn install && yarn build && cd ../../../ && cd server/ && yarn install && cd ../ && yarn install",
         "startElectron": "electron .",
         "startNode": "cd ./server && npm run start --scripts-prepend-node-path",
         "buildElectron": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=electron/icon/icon.icns --prune=true --out=electron/release-builds --ignore=server --ignore=assets"
