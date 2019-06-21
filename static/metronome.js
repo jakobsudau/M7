@@ -51,6 +51,10 @@ class Metronome {
         }
     }
 
+    setVolume(value) {
+        this.gainNode.gain.value = value;
+    }
+
     nextNote() { //Advance current note and time by a quater note...
         const secondsPerBeat = 60.0 / this.bpm; //This picks up the CURRENT
                                                 // bpm value to
@@ -80,16 +84,11 @@ class Metronome {
             let osc = this.audioContext.createOscillator();
             osc.connect(this.gainNode);
             if (beatNumber % 16 == 0){
-
-                // call play function of all generators and let them
-                // handle it
-                this.mainModule.generators.forEach((generator, id) => {
-                    generator.playTick();
-                });
-                osc.frequency.value = this.isSeqStart ? 1320 : 880.0;
-                if (this.isSeqStart) {this.isSeqStart = false}
+                osc.frequency.value = 880.0;
+                this.mainModule.playTick(true);
             }else{
                 osc.frequency.value = 440.0;
+                this.mainModule.playTick(false);
             }
             osc.start(time);
             osc.stop(time + this.noteLength);

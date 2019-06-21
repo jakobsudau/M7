@@ -13,6 +13,8 @@ class MainModule {
         this.buttonChangeBackward;
         this.buttonChangeForward;
         this.generateLoopButton;
+        this.clickVolume = 0.8;
+        this.metronomeOn = false;
         this.chord1;
         this.chord2;
         this.chord3;
@@ -25,7 +27,10 @@ class MainModule {
         this.midi = new Midi(midiAccess, this);
         this.metronome = new Metronome(this);
         this.metronome.initialize();
+        this.metronome.startStop();
         this.createUIElements();
+        this.startStopClick();
+        this.startStopClick();
     }
 
     addModule() {
@@ -125,18 +130,37 @@ class MainModule {
         }
     }
 
-    startStopClick() {
-        this.metronome.startStop();
+    playTick(isStart) {
+        let highlight = " highlighted";
+        if (isStart) {
+            highlight = " highlightedStart";
+            this.generators.forEach((generator, id) => {
+                generator.playTick();
+            });
+        }
 
-        if (this.metronome.isPlaying) {
+        const clickClass =  this.metronomeOn ? "click enabled" : "click disabled";
+        this.clickButton.className = clickClass + highlight;
+        window.setTimeout(function() {
+            this.clickButton.className = clickClass;
+        }, 20);
+    }
+
+    startStopClick() {
+        this.metronomeOn = !this.metronomeOn;
+
+        if (this.metronomeOn) {
+            this.metronome.setVolume(this.clickVolume);
             this.clickButton.className = "click enabled";
         } else {
+            this.metronome.setVolume(0);
             this.clickButton.className = "click disabled";
         }
     }
 
     changeClickVolume(volume) {
-        this.metronome.gainNode.gain.value = volume;
+        this.clickVolume = volume;
+        this.metronome.setVolume(volume);
     }
 
     playAll() {

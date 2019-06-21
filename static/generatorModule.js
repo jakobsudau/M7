@@ -11,6 +11,7 @@ class GeneratorModule {
         this.barCounter = 0;
         this.looping = true;
         this.playing = false;
+        this.stopNext = false;
         this.keepMutating = false;
         this.generatedSeq = null;
         this.generatedSmf = null;
@@ -183,14 +184,16 @@ class GeneratorModule {
     }
 
     convertToSmf(seq) {
-        let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter note
+        let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter
         let trk = new JZZ.MIDI.SMF.MTrk();
         trk.add(0, JZZ.MIDI.smfSeqName('generatedSequence'));
         trk.add(0, JZZ.MIDI.smfBPM(120*4));
         smf.push(trk);
         seq.notes.forEach((note) => {
-            trk.add((note.quantizedStartStep*96), JZZ.MIDI.noteOn(0, note.pitch, 127));
-            trk.add((note.quantizedEndStep*96), JZZ.MIDI.noteOff(0, note.pitch, 127));
+            trk.add((note.quantizedStartStep*96),
+                JZZ.MIDI.noteOn(0, note.pitch, 127));
+            trk.add((note.quantizedEndStep*96),
+                JZZ.MIDI.noteOff(0, note.pitch, 127));
         });
         trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
         return smf;
@@ -224,46 +227,31 @@ class GeneratorModule {
                 this.inputSequence.notes = [];
                 this.inputSequence.totalQuantizedSteps = 1;
             }
-
-            // when done:
-            //         this.playButton.disabled = false;
-            //         this.playing = false;
-
-            //         if (!this.looping) {
-            //             this.shouldPlay = false;
-            //             this.stopButton.disabled = false;
-            //             this.looping = true;
-            //         }
-
-            //         if (this.looping &&
-            //             !this.mainModule.metronome.isPlaying) {
-            //             this.playGeneratedSequence();
-            //         }
         }
     }
 
     playTick() {
-        if (this.shouldPlay && this.barCounter == 0) {
-            console.log("playSeq from playTick!");
-            this.playGeneratedSequence();
-        }
-
-        if (this.listening) {
-            console.log(this.barCounter);
-            if (this.barCounter == this.inputBars-1) {
-                this.mainModule.metronome.isSeqStart = true;
+        if (this.barCounter == 0) {
+            if (this.shouldPlay) {
+                this.playing = false;
+                this.playGeneratedSequence();
+            } else if (this.stopNext) {
+                this.stopNext = false;
+                this.playButton.disabled = false;
+                this.stopButton.disabled = false;
             }
         }
+
         console.log(this.barCounter);
         if (this.barCounter < (this.outputBars-1)) {
             this.barCounter++;
         } else if (this.barCounter == this.outputBars -1) {
+            this.mainModule.metronome.isSeqStart = true;
             this.barCounter = 0;
         }
     }
 
     stopPlayback() {
-        console.log("stopping...");
         this.jzzPlayer.stop();
         this.playButton.disabled = false;
         this.stopButton.disabled = false;
@@ -273,15 +261,20 @@ class GeneratorModule {
 
     changeMidiPort(isInput, port) {
         if (isInput) {
-            this.selectedInput = this.mainModule.midi.availableInputs[port];
+            this.selectedInput =
+                this.mainModule.midi.availableInputs[port];
         } else {
-            this.selectedOutput = this.mainModule.midi.availableOutputs[port];
-                this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
+            this.selectedOutput =
+                this.mainModule.midi.availableOutputs[port];
+                this.jzzMidiOut =
+                    JZZ().openMidiOut(this.selectedOutput.name);
         }
     }
 
     stopModule() {
+        this.stopNext = true;
         this.looping = false;
+        this.shouldPlay = false;
         this.stopButton.disabled = true;
     }
 
@@ -300,12 +293,9 @@ class GeneratorModule {
     }
 
     setPlayActive() {
+        this.shouldPlay = true;
         if (this.mainModule.metronome.isPlaying) {
-            this.shouldPlay = true;
             this.barCounter = 0;
-        } else {
-            this.shouldPlay = true;
-            this.playGeneratedSequence();
         }
     }
 
@@ -326,8 +316,8 @@ class GeneratorModule {
             this.inputSequence.totalQuantizedSteps = 1;
         } else if (this.listening == false) {
             this.listenButton.className = "listenButton disabled";
-            console.log(this.inputSequence);
-            this.barCounter = 0;
+            // console.log(this.inputSequence);
+            // this.barCounter = 0;
         }
     }
 

@@ -54,6 +54,14 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     background: var(--buttonActiveColor);
 }
 
+.click.enabled.highlighted, .click.disabled.highlighted {
+    background: red;
+}
+
+.click.enabled.highlightedStart, .click.disabled.highlightedStart {
+    background: green;
+}
+
 .click.disabled, .listenButton.disabled, .mutateButton.disabled {
     background: var(--moduleBackgroundColor);
     color: var(--color);
@@ -299,7 +307,7 @@ select {
     display: inline-block;
 }
 
-#outputBarsContainer, #midiInContainer {
+#inputBarsContainer, #midiInContainer {
     float:right;
 }
 
