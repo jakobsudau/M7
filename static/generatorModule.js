@@ -237,7 +237,8 @@ class GeneratorModule {
                 this.playing = false;
                 this.playGeneratedSequence();
             } else if (this.stopNext) {
-                this.playButton.style.background = "var(--moduleBackgroundColor)";
+                this.playButton.style.background =
+                    "var(--moduleBackgroundColor)";
                 this.stopNext = false;
                 this.playing = false;
                 this.playButton.disabled = false;
@@ -245,9 +246,10 @@ class GeneratorModule {
             }
         }
         if (this.playing) {
-            this.playButton.style.background = "linear-gradient(90deg, " +
-                " var(--deleteColor) " + (((this.barCounter+1)/this.outputBars)*100)
-                + "%, var(--moduleBackgroundColor) 0%)";
+            this.playButton.style.background =
+                "linear-gradient(90deg, var(--deleteColor) " +
+                (((this.barCounter+1)/this.outputBars)*100) +
+                "%, var(--moduleBackgroundColor) 0%)";
         }
 
         // console.log(this.barCounter);
