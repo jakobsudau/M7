@@ -16,6 +16,7 @@ class GeneratorModule {
         this.generatedSeq = null;
         this.generatedSmf = null;
         this.playButton = null;
+        this.bpm = mainModule.metronome.bpm;
         this.generateButton = null;
         this.mutateButton = null;
         this.stopButton = null;
@@ -187,7 +188,7 @@ class GeneratorModule {
         let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter
         let trk = new JZZ.MIDI.SMF.MTrk();
         trk.add(0, JZZ.MIDI.smfSeqName('generatedSequence'));
-        trk.add(0, JZZ.MIDI.smfBPM(120*4));
+        trk.add(0, JZZ.MIDI.smfBPM(this.bpm*4));
         smf.push(trk);
         seq.notes.forEach((note) => {
             trk.add((note.quantizedStartStep*96),
@@ -196,6 +197,7 @@ class GeneratorModule {
                 JZZ.MIDI.noteOff(0, note.pitch, 127));
         });
         trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
+        console.log(smf);
         return smf;
     }
 
@@ -279,13 +281,20 @@ class GeneratorModule {
     }
 
     changeBpm(value) {
-        console.log("change bpm!");
+        this.bpm = value;
     }
 
     mutate() {
         this.keepMutating = !this.keepMutating;
 
         if (this.keepMutating) {
+            const chords = [
+                document.getElementById("chord1").value,
+                document.getElementById("chord2").value,
+                document.getElementById("chord3").value,
+                document.getElementById("chord4").value
+            ];
+            this.generateSequence(chords);
             this.mutateButton.className = "mutateButton enabled";
         } else {
             this.mutateButton.className = "mutateButton disabled";
