@@ -197,7 +197,6 @@ class GeneratorModule {
                 JZZ.MIDI.noteOff(0, note.pitch, 127));
         });
         trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
-        console.log(smf);
         return smf;
     }
 
@@ -238,13 +237,20 @@ class GeneratorModule {
                 this.playing = false;
                 this.playGeneratedSequence();
             } else if (this.stopNext) {
+                this.playButton.style.background = "var(--moduleBackgroundColor)";
                 this.stopNext = false;
+                this.playing = false;
                 this.playButton.disabled = false;
                 this.stopButton.disabled = false;
             }
         }
+        if (this.playing) {
+            this.playButton.style.background = "linear-gradient(90deg, " +
+                " var(--deleteColor) " + (((this.barCounter+1)/this.outputBars)*100)
+                + "%, var(--moduleBackgroundColor) 0%)";
+        }
 
-        console.log(this.barCounter);
+        // console.log(this.barCounter);
         if (this.barCounter < (this.outputBars-1)) {
             this.barCounter++;
         } else if (this.barCounter == this.outputBars -1) {
@@ -259,6 +265,7 @@ class GeneratorModule {
         this.stopButton.disabled = false;
         this.playing = false;
         this.shouldPlay = false;
+        this.playButton.style.background = "var(--moduleBackgroundColor)";
     }
 
     changeMidiPort(isInput, port) {
@@ -303,6 +310,7 @@ class GeneratorModule {
 
     setPlayActive() {
         this.shouldPlay = true;
+        this.playButton.disabled = true;
         if (this.mainModule.metronome.isPlaying) {
             this.barCounter = 0;
         }
