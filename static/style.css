@@ -135,10 +135,12 @@ html, body {
     padding-top: 1em;
     height: calc(100% - 1em);
     width: 4.2em;
+    margin-right: 0.8em;
 }
 
 .right {
     float: right;
+    margin-right: 0;
 }
 
 .top {

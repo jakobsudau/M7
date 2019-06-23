@@ -36,8 +36,8 @@ function createBgWindow() {
 app.on('ready', function() {
     // Create main window which contains the visible UI
     main = new BrowserWindow({
-        "width": 720,
-        "height": 666,
+        "width": 736,
+        "height": 680,
         //"icon": __dirname + "/icon/icon.icns",
         titleBarStyle: 'hidden',
         webPreferences: {
