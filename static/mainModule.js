@@ -538,7 +538,7 @@ function initializeDarkModeAndUtilities(main) {
                 break;
             case "top":
                 cont.style.height = "calc(100% - 0.8em)";
-                cont.style.width = "calc(100% - 5.2em)";
+                cont.style.width = "calc(100% - 0.8em)";
                 positionButton.innerHTML = "◨";
                 controlButtonDiv.className = "right";
                 break;

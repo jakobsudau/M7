@@ -148,7 +148,7 @@ html, body {
 #mainSubContainer {
     padding-left: 0.8em;
     padding-top: 0.8em;
-    width: calc(100% - 5.2em);
+    width: calc(100% - 0.8em);
     height: calc(100% - 0.8em);
     -webkit-user-select: none;
     -webkit-app-region: drag;
