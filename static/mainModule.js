@@ -483,6 +483,7 @@ class MainModule {
 function initializeDarkModeAndUtilities(main) {
     const controlButtonDiv = document.createElement("div");
     controlButtonDiv.id = "controlButtonDiv";
+    controlButtonDiv.className = "left";
 
     const helpButton = document.createElement("button");
     helpButton.id = "helpButton";
@@ -494,6 +495,11 @@ function initializeDarkModeAndUtilities(main) {
     fullscreenButton.id = "fullscreenButton";
     fullscreenButton.innerHTML = "◱";
     fullscreenButton.title = "Toggle Fullscreen on/off";
+
+    const positionButton = document.createElement("button");
+    positionButton.id = "positionButton";
+    positionButton.innerHTML = "◧";
+    positionButton.title = "Move control button bar to top/right/left";
 
     const darkModeSwitcher = document.createElement("button");
     darkModeSwitcher.id = "darkModeSwitcher";
@@ -511,6 +517,7 @@ function initializeDarkModeAndUtilities(main) {
     });
 
     fullscreenButton.addEventListener("click", function() {
+        controlButtonDiv
         if (document.fullscreenElement) {
             fullscreenButton.innerHTML = "◱";
             document.exitFullscreen()
@@ -520,11 +527,34 @@ function initializeDarkModeAndUtilities(main) {
         }
     });
 
+    positionButton.addEventListener("click", function() {
+        const cont = document.getElementById("mainSubContainer");
+        switch (controlButtonDiv.className) {
+            case "left":
+                cont.style.height = "calc(100% - 4.1em)";
+                cont.style.width = "calc(100% - 0.8em)";
+                positionButton.innerHTML = "⬒";
+                controlButtonDiv.className = "top";
+                break;
+            case "top":
+                cont.style.height = "calc(100% - 0.8em)";
+                cont.style.width = "calc(100% - 5.2em)";
+                positionButton.innerHTML = "◨";
+                controlButtonDiv.className = "right";
+                break;
+            case "right":
+                positionButton.innerHTML = "◧";
+                controlButtonDiv.className = "left";
+                break;
+        }
+    });
+
     controlButtonDiv.appendChild(darkModeSwitcher);
     controlButtonDiv.appendChild(helpButton);
     controlButtonDiv.appendChild(fullscreenButton);
-    document.getElementById("mainSubContainer")
-        .appendChild(controlButtonDiv);
+    controlButtonDiv.appendChild(positionButton);
+    let mainCon = document.getElementById("mainContainer");
+    mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
 
     addHelp();
 }

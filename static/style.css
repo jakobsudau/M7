@@ -31,8 +31,16 @@
     background-color: var(--moduleBackgroundColor);
 }
 
-#controlButtonDiv {
+.left {
     border-right: 2px solid var(--borderColor);
+}
+
+.top {
+    border-bottom: 2px solid var(--borderColor);
+}
+
+.right {
+    border-left: 2px solid var(--borderColor);
 }
 
 button, .chords, .generatorTitleDiv, #bpmTextfield {
@@ -116,23 +124,32 @@ html, body {
 }
 
 #controlButtonDiv {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: calc(100% - 1em);
-    width: 4.2em;
-    padding-top: 1em;
     text-align: center;
     -webkit-user-select: none;
     -webkit-app-region: drag;
-    transition: .2s linear, background-color .2s linear;
+    transition: background-color .2s linear;
 }
 
+.left, .right {
+    float: left;
+    padding-top: 1em;
+    height: calc(100% - 1em);
+    width: 4.2em;
+}
+
+.right {
+    float: right;
+}
+
+.top {
+    height: 3.2em;
+    width: 100%;
+}
 #mainSubContainer {
-    padding-left: 4.7em;
-    padding-top: 0.5em;
-    width: calc(100% - 4.7em);
-    height: calc(100% - 0.5em);
+    padding-left: 0.8em;
+    padding-top: 0.8em;
+    width: calc(100% - 5.2em);
+    height: calc(100% - 0.8em);
     -webkit-user-select: none;
     -webkit-app-region: drag;
 }
@@ -141,7 +158,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     -webkit-app-region: no-drag;
 }
 
-#darkModeSwitcher, #helpButton, #fullscreenButton {
+#darkModeSwitcher, #helpButton, #fullscreenButton, #positionButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
