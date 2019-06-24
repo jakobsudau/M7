@@ -46,7 +46,7 @@ app.on('ready', function() {
             webSecurity: false
         }
     });
-    main.webContents.openDevTools();
+    // main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/static/indexElectron.html');
     main.show();
     main.webContents.on('did-finish-load', () => {

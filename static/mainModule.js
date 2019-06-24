@@ -257,7 +257,7 @@ class MainModule {
     createUIElements() {
         let mainSubContainer = document.createElement("div");
         mainSubContainer.id = "mainSubContainer";
-        mainSubContainer.className = "mainSubContainerLeft";
+        mainSubContainer.className = "mainSubContainerLeftRight";
 
         let mainModuleContainer = document.createElement("div");
         mainModuleContainer.id = "mainModuleContainer";
@@ -540,7 +540,7 @@ function initializeDarkModeAndUtilities(main) {
             case "top":
                 positionButton.innerHTML = "◨";
                 controlButtonDiv.className = "right";
-                mainSubCon.className = "mainSubContainerRight";
+                mainSubCon.className = "mainSubContainerLeftRight";
                 break;
             case "right":
                 positionButton.innerHTML = "⬓";
@@ -551,7 +551,7 @@ function initializeDarkModeAndUtilities(main) {
             case "bottom":
                 positionButton.innerHTML = "◧";
                 controlButtonDiv.className = "left";
-                mainSubCon.className = "mainSubContainerLeft";
+                mainSubCon.className = "mainSubContainerLeftRight";
                 mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
                 break;
         }

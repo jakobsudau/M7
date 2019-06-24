@@ -134,12 +134,10 @@ html, body {
     padding-top: 1em;
     height: calc(100% - 1em);
     width: 4.2em;
-    margin-right: 0.8em;
 }
 
 .right {
     float: right;
-    margin-right: 0;
 }
 
 .top, .bottom {
@@ -152,15 +150,11 @@ html, body {
     padding-top: 0.8em;
     -webkit-user-select: none;
     -webkit-app-region: drag;
+    overflow: auto;
 }
 
-.mainSubContainerRight {
-    width: calc(100% - 4.2em);
-    height: calc(100% - 0.8em);
-}
-
-.mainSubContainerLeft {
-    width: calc(100% - 0.8em);
+.mainSubContainerLeftRight {
+    width: calc(100% - 5.2em);
     height: calc(100% - 0.8em);
 }
 
