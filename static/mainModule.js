@@ -13,7 +13,7 @@ class MainModule {
         this.buttonChangeBackward;
         this.buttonChangeForward;
         this.generateLoopButton;
-        this.clickVolume = 0.8;
+        this.selectedClickBusId = "internal";
         this.metronomeOn = false;
         this.chord1;
         this.chord2;
@@ -139,27 +139,32 @@ class MainModule {
             });
         }
 
-        const clickClass =  this.metronomeOn ? "click enabled" : "click disabled";
+        let clickClass = this.metronomeOn ? "click enabled" : "click disabled";
         this.clickButton.className = clickClass + highlight;
         window.setTimeout(function() {
             this.clickButton.className = clickClass;
         }, 20);
     }
 
+    changeClickPort(port) {
+        if (port == 0) {
+            this.metronome.outputId = "internal";
+        } else {
+            this.metronome.outputId = this.midi.availableOutputs[port].id;
+        }
+    }
+
     startStopClick() {
         this.metronomeOn = !this.metronomeOn;
-
+        this.metronome.playOutput = this.metronomeOn;
         if (this.metronomeOn) {
-            this.metronome.setVolume(this.clickVolume);
             this.clickButton.className = "click enabled";
         } else {
-            this.metronome.setVolume(0);
             this.clickButton.className = "click disabled";
         }
     }
 
     changeClickVolume(volume) {
-        this.clickVolume = volume;
         this.metronome.setVolume(volume);
     }
 
@@ -405,12 +410,24 @@ class MainModule {
         this.clickButton.innerHTML = "Click";
         this.clickButton.title = "Start/Stop the Click";
 
+        let clickBusContainer = document.createElement("div");
+        clickBusContainer.id = "clickBusContainer";
+
+        let clickBusText = document.createElement("div");
+        clickBusText.innerHTML = "Click Out";
+
+        let clickBusSelect = document.createElement("select");
+        clickBusSelect.title = "Port for outgoing click messages";
+
         mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordContainer);
         mainModuleContainer.appendChild(clickContainer);
         mainModuleContainer.appendChild(mainButtonContainer);
         clickContainer.appendChild(clickVolumeSlider);
         clickContainer.appendChild(this.clickButton);
+        clickContainer.appendChild(clickBusContainer);
+        clickBusContainer.appendChild(clickBusText);
+        clickBusContainer.appendChild(clickBusSelect);
         mainButtonContainer.appendChild(mainButtonSubContainer1);
         mainButtonContainer.appendChild(mainButtonSubContainer2);
         mainButtonSubContainer1.appendChild(this.buttonChangeBackward);
@@ -474,6 +491,15 @@ class MainModule {
             }}.bind(this));
         this.clickButton.addEventListener('click', function(){
             this.startStopClick()}.bind(this));
+
+        // Populate the MidiOut and MidiIn lists
+        let clickBusOptions = this.midi.availableOutputs;
+        clickBusOptions.unshift({name: "internal"})
+        clickBusSelect.innerHTML = clickBusOptions
+            .map(i =>`<option>${i.name}</option>`).join('');
+            clickBusSelect.addEventListener("change", function() {
+            this.changeClickPort(clickBusSelect.selectedIndex);
+        }.bind(this));
     }
 }
 
@@ -563,7 +589,6 @@ function initializeDarkModeAndUtilities(main) {
     controlButtonDiv.appendChild(positionButton);
     const mainCon = document.getElementById("mainContainer");
     mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
-
     addHelp();
 }
 

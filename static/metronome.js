@@ -16,6 +16,8 @@ class Metronome {
         this.timerWorker = null;        // WebWorker used to fire timer msgs
         this.bpm = 120;
         this.currentQuaterNote = 0;
+        this.outputId = "internal";
+        this.playOutput = false;
         this.audioContext = new AudioContext();
         this.gainNode = this.audioContext.createGain();
         this.isSeqStart = false;
@@ -72,26 +74,33 @@ class Metronome {
         console.log("time difference to worker event: " +
             timeDifference + "s");
 
-        // if (this.once) {
-        //     this.midi.sendMIDIClockMessage("tick");
-        //     this.once = false;
-        // }
-
         if (timeDifference > 0.001) {
             console.log("Too big!!!");
         } else {
-            // this.midi.sendMIDIClockMessage("tick");
-            let osc = this.audioContext.createOscillator();
-            osc.connect(this.gainNode);
             if (beatNumber % 16 == 0){
-                osc.frequency.value = 880.0;
+                this.playClick(true, time);
                 this.mainModule.playTick(true);
             }else{
-                osc.frequency.value = 440.0;
+                this.playClick(false, time);
                 this.mainModule.playTick(false);
             }
-            osc.start(time);
-            osc.stop(time + this.noteLength);
+        }
+    }
+
+    playClick(isStart, time) {
+        if (this.playOutput) {
+            if (this.outputId == "internal") {
+                let osc;
+                osc = this.audioContext.createOscillator();
+                osc.connect(this.gainNode);
+                osc.frequency.value = isStart ? 880.0 : 440.0;
+                osc.start(time);
+                osc.stop(time + this.noteLength);
+            } else {
+                this.mainModule.midi.sendMIDIMetronomeMessage(isStart,
+                    this.outputId,
+                    this.gainNode.gain.value);
+            }
         }
     }
 

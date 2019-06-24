@@ -133,6 +133,18 @@ class Midi {
             //omitting timestamp = send immediately
     }
 
+    sendMIDIMetronomeMessage(isBarStart, portId, volume) {
+        const velocity = volume * 127;
+        let start = [0x90, 60, velocity];
+        let stop = [0x80, 60, velocity];
+        if (isBarStart) {
+            start = [0x90, 70, velocity];
+            stop = [0x80, 70, velocity];
+        }
+        this.midiAccess.outputs.get(portId).send(start);
+        this.midiAccess.outputs.get(portId).send(stop, (Date.now()+100));
+    }
+
     sendMIDISceneChange(number) {
         // Ableton
         // this.midiAccess.outputs.get(this.availableOutputs[3].id)

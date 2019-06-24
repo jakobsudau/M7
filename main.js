@@ -46,7 +46,7 @@ app.on('ready', function() {
             webSecurity: false
         }
     });
-    // main.webContents.openDevTools();
+    main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/static/indexElectron.html');
     main.show();
     main.webContents.on('did-finish-load', () => {
@@ -69,6 +69,7 @@ app.on('ready', function() {
             "generator " + arg.id);
         main.webContents.send(('to-renderer' + arg.id), arg);
     });
+
     ipcMain.on('for-background', (event, arg) => {
         tasks.push(['message', arg]);
         doIt();
@@ -85,6 +86,10 @@ app.on('ready', function() {
         if (available.length < cpus) {
             createBgWindow();
         }
+    });
+
+    ipcMain.on('delete', (event, arg) => {
+        // delete bgWindow / thread
     });
 
     ipcMain.on('ready', (event, arg) => {

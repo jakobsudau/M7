@@ -36,8 +36,10 @@ class Connector {
         }
     }
 
-    delete() {
-        if (!isElectron) {
+    delete(id) {
+        if (isElectron) {
+            electron.ipcRenderer.send('delete', id);
+        } else {
             this.socket.disconnect();
         }
         delete this.socket;

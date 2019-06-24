@@ -225,7 +225,8 @@ button, #mainModuleContainer, #generatorModuleContainer {
     margin: 0.5em;
 }
 
-#mainModuleContainer, #generatorModuleContainer, #helpContainer, #controlButtonDiv{
+#mainModuleContainer, #generatorModuleContainer,
+#helpContainer, #controlButtonDiv{
     box-shadow: 0 4px 8px 0 var(--shadow1), 0 6px 20px 0 var(--shadow2);
 }
 
@@ -410,7 +411,7 @@ td {
     font-size: 1em;
 }
 
-/* ----------------------------- Slider Styling ---------------------------- */
+/* ---------------------------- Slider Styling --------------------------- */
 input[type=range] {
     -webkit-appearance: none;
     width: 40%;

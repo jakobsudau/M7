@@ -67,17 +67,21 @@ class GeneratorModule {
         const mainSubContainer =document.getElementById("mainSubContainer");
         mainSubContainer.removeChild(this.generatorModuleContainer);
         this.mainModule.deleteModule(this.id);
-        this.connector.delete();
+        this.connector.delete(this.id);
 
         delete this.mainModule;
+        delete this.connector;
         delete this.outputBars;
         delete this.inputBars;
         delete this.barCounter;
         delete this.looping;
         delete this.playing;
+        delete this.stopNext;
         delete this.keepMutating;
         delete this.generatedSeq;
+        delete this.generatedSmf;
         delete this.playButton;
+        delete this.bpm;
         delete this.generateButton;
         delete this.mutateButton;
         delete this.stopButton;
@@ -92,10 +96,11 @@ class GeneratorModule {
         delete this.inputStartTime;
         delete this.temperature;
         delete this.shouldPlay;
+        delete this.jzzMidiOut;
+        delete this.jzzPlayer;
         delete this.inputSequence;
         delete this.stepsPerChord;
         delete this.stepsPerProg;
-        delete this.logTime;
     }
 
     startStopNote(note, velocity, isStart) {
