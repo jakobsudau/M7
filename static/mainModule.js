@@ -407,7 +407,7 @@ class MainModule {
 
         this.clickButton = document.createElement("button");
         this.clickButton.id = "clickButton";
-        this.clickButton.innerHTML = "Click";
+        this.clickButton.innerHTML = "▵";
         this.clickButton.title = "Start/Stop the Click";
 
         let clickBusContainer = document.createElement("div");
