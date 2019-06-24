@@ -54,7 +54,7 @@ class MainModule {
     startStopNote(note, velocity, isStart, input) {
         this.generators.forEach((generator, id) => {
             if (generator.listening &&
-                (generator.selectedInput == input.value)) {
+                (generator.selectedInput == input)) {
                 generator.startStopNote(note, velocity, isStart);
             }
         });
@@ -152,6 +152,13 @@ class MainModule {
         } else {
             this.metronome.outputId = this.midi.availableOutputs[port].id;
         }
+    }
+
+    midiPortChanged() {
+        // let clickBusOptions = this.midi.availableOutputs;
+        // clickBusOptions.unshift({name: "internal"})
+        // document.getElementById("clickBusSelect").innerHTML = clickBusOptions
+        //     .map(i =>`<option>${i.name}</option>`).join('');
     }
 
     startStopClick() {
@@ -417,6 +424,7 @@ class MainModule {
         clickBusText.innerHTML = "Click Out";
 
         let clickBusSelect = document.createElement("select");
+        clickBusSelect.id = "clickBusSelect";
         clickBusSelect.title = "Port for outgoing click messages";
 
         mainModuleContainer.appendChild(mainTitleDiv);

@@ -16,7 +16,6 @@ class Midi {
             0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c,
             0x6d, 0x6e, 0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
             0x78, 0x78, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f];
-        this.midiAccess = midiAccess;
         this.availableOutputs = [];
         this.availableInputs = [];
         this.selectedOutput = null;
@@ -25,112 +24,50 @@ class Midi {
         this.ppqCounter = 0;
         this.beatCoutner = 0;
         this.mainModule = mainModule;
+        this.midiAccess = midiAccess;
+        this.midiAccess.onstatechange = this.hookUpMIDIInput();
+    }
 
-        const inputs = midiAccess.inputs.values();
+    hookUpMIDIInput() {
         const that = this;
-        // // loop through all inputs and listen for midi messages
-        for (let input = inputs.next(); input && !input.done;
-                input = inputs.next()) {
+        var inputs = this.midiAccess.inputs.values();
+        for ( var input = inputs.next(); input && !input.done; input = inputs.next()) {
             this.availableInputs.push(input.value);
-            input.value.onmidimessage = function(e) {
-                // event.data is an array
-                // event.data[0] =  on (144 = 0x90)
-                //                  off (128 = 0x80)
-                //                  controlChange (176 = 0xb0)
-                //                  pitchBend (224 = 0xf4)
-                //                  ...
-                // event.data[1] = midi note
-                // event.data[2] = velocity
-                switch(e.data[0]) {
-                    case 0x90:
-                        // your function startNote(note, velocity)
-                        //startNote(event.data[1], event.data[2]);
-                        that.mainModule.startStopNote(
-                            event.data[1], event.data[2], true, input);
-                        break;
-                    case 0x80:
-                        // your function stopNote(note, velocity)
-                        //stopNote(event.data[1], event.data[2]);
-                        that.mainModule.startStopNote(
-                            event.data[1], event.data[2], false, input);
-                        break;
-                    case 0xB0:
-                        // your function controlChange(controllerNr, value)
-                        //176, controlChange(event.data[1], event.data[2]);
-                        break;
-                    case 0xE0:
-                        // your function pitchBend(LSB, HSB) 224
-                        //pitchBend(event.data[1], event.data[2]);
-                        break;
-                    case 0xF8:
-                        // MIDI Clock tick
-                        // that.ppqCounter++;
-                        // if (that.ppqCounter == 23) {
-                        //     that.beatCoutner++;
-                        //     that.ppqCounter = 0;
-                        //     if (!that.mainThreadBusy) {
-                        //         console.log("midi clock tick: " +
-                        //              that.beatCoutner);
-                        //     }
-                        // }
-                        // if (that.beatCoutner == 4) {
-                        //     that.beatCoutner = 0;
-                        // }
-                        break;
-                    case 0xFA:
-                        // MIDI Clock start
-                        // that.beatCoutner = 0;
-                        break;
-                    case 0xFC:
-                        // MIDI Clock stop
-                        // that.beatCoutner = 0;
-                        break;
-                }
-            };
+            input.value.onmidimessage = function(e) {that.mIDIMessageEventHandler(event, that)};
         }
 
-        const outputs = midiAccess.outputs.values();
+        const outputs = this.midiAccess.outputs.values();
         // Get all the MIDI outputs to show them in a <select> (for example)
-        for (let output = outputs.next(); output && !output.done;
-                output = outputs.next()) {
+        for (let output = outputs.next(); output && !output.done; output = outputs.next()) {
             this.availableOutputs.push(output.value);
         }
-
+        this.mainModule.midiPortChanged();
         this.selectedOutput = this.availableOutputs[0];
         this.selectedInput = this.availableInputs[0];
-        this.selectedClockOutput = this.availableOutputs[0];
     }
 
-    sendMIDIMessage(note, velocity, startOrstop) {
-        let message;
-        // [0xFA] midi clock start
-        // [0xF8] midi clock advance
-        // [0xFC] midi clock stop
-        if (startOrstop) {
-            message = [0x90, note, this.velocityHexArray[velocity]];
-        } else {
-            message = [0x80, note, this.velocityHexArray[velocity]];
+    mIDIMessageEventHandler(event, that) {
+        let input = event.currentTarget;
+        // Mask off the lower nibble (MIDI channel, which we don't care about)
+        switch (event.data[0] & 0xf0) {
+            case 0x90:
+                if (event.data[2]!=0) {  // if velocity != 0, this is a note-on message
+                    that.mainModule.startStopNote(event.data[1], event.data[2], true, input);
+                    return;
+                }
+                // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, ya'll.
+            case 0x80:
+                that.mainModule.startStopNote(event.data[1], event.data[2], false, input);
+                return;
         }
-        this.midiAccess.outputs.get(this.selectedOutput.id).send(message);
-            // omitting timestamp = send immediately
     }
 
-    sendMIDIClockMessage(command) {
-        let message;
-        switch (command) {
-            case "start": // [0xFA] midi clock start
-                message = [0xFA];
-                break;
-            case "stop": // [0xFC] midi clock stop
-                message = [0xFC];
-                break;
-            case "tick": // [0xF8] midi clock tick
-                message = [0xF8];
-                break;
-        }
-        this.midiAccess.outputs.get(this.selectedClockOutput.id)
-            .send(message);
-            //omitting timestamp = send immediately
+    noteOn(noteNumber) {
+        console.log("note on: " + noteNumber);
+    }
+
+    noteOff(noteNumber) {
+        console.log("note off: " + noteNumber);
     }
 
     sendMIDIMetronomeMessage(isBarStart, portId, volume) {

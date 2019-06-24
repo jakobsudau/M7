@@ -133,6 +133,11 @@ class GeneratorModule {
         }
 
         if (isStart) {
+            this.listenButton.style.color = "yellow";
+            window.setTimeout(function() {
+                this.listenButton.style.color = "red";
+            }.bind(this), 40);
+
             this.inputSequence.notes.push(
                 {pitch: note,
                 quantizedStartStep: playedAtQuantized,
