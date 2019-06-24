@@ -83,7 +83,7 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     color: #fbf08d;
 }
 
-#mainButtonContainer, .generatorButtonDiv {
+#mainButtonContainer, .generatorButtonDiv, .bottom {
     border-top: 2px solid var(--borderColor);
 }
 
@@ -120,14 +120,13 @@ html, body {
 }
 
 #mainContainer, #mainContainer > * {
-    transition: .2s linear, background-color .2s linear;
+    transition: background-color .2s linear;
 }
 
 #controlButtonDiv {
     text-align: center;
     -webkit-user-select: none;
     -webkit-app-region: drag;
-    transition: background-color .2s linear;
 }
 
 .left, .right {
@@ -143,17 +142,31 @@ html, body {
     margin-right: 0;
 }
 
-.top {
+.top, .bottom {
     height: 3.2em;
     width: 100%;
 }
+
 #mainSubContainer {
     padding-left: 0.8em;
     padding-top: 0.8em;
-    width: calc(100% - 0.8em);
-    height: calc(100% - 0.8em);
     -webkit-user-select: none;
     -webkit-app-region: drag;
+}
+
+.mainSubContainerRight {
+    width: calc(100% - 4.2em);
+    height: calc(100% - 0.8em);
+}
+
+.mainSubContainerLeft {
+    width: calc(100% - 0.8em);
+    height: calc(100% - 0.8em);
+}
+
+.mainSubContainerTopBottom {
+    width: calc(100% - 0.8em);
+    height: calc(100% - 4.2em);
 }
 
 button, #mainModuleContainer, #generatorModuleContainer {
@@ -184,7 +197,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     right: 0;
     bottom: 0;
     background-color: rgba(255, 255, 255, 0.5);
-    z-index: 2;
+    z-index: 3;
 }
 
 #helpContainer {

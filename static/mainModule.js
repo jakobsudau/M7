@@ -257,6 +257,7 @@ class MainModule {
     createUIElements() {
         let mainSubContainer = document.createElement("div");
         mainSubContainer.id = "mainSubContainer";
+        mainSubContainer.className = "mainSubContainerLeft";
 
         let mainModuleContainer = document.createElement("div");
         mainModuleContainer.id = "mainModuleContainer";
@@ -528,23 +529,30 @@ function initializeDarkModeAndUtilities(main) {
     });
 
     positionButton.addEventListener("click", function() {
-        const cont = document.getElementById("mainSubContainer");
+        const mainSubCon = document.getElementById("mainSubContainer");
+        const mainCon = document.getElementById("mainContainer");
         switch (controlButtonDiv.className) {
             case "left":
-                cont.style.height = "calc(100% - 4.1em)";
-                cont.style.width = "calc(100% - 0.8em)";
                 positionButton.innerHTML = "⬒";
                 controlButtonDiv.className = "top";
+                mainSubCon.className = "mainSubContainerTopBottom";
                 break;
             case "top":
-                cont.style.height = "calc(100% - 0.8em)";
-                cont.style.width = "calc(100% - 0.8em)";
                 positionButton.innerHTML = "◨";
                 controlButtonDiv.className = "right";
+                mainSubCon.className = "mainSubContainerRight";
                 break;
             case "right":
+                positionButton.innerHTML = "⬓";
+                controlButtonDiv.className = "bottom";
+                mainSubCon.className = "mainSubContainerTopBottom";
+                mainCon.appendChild(controlButtonDiv);
+                break;
+            case "bottom":
                 positionButton.innerHTML = "◧";
                 controlButtonDiv.className = "left";
+                mainSubCon.className = "mainSubContainerLeft";
+                mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
                 break;
         }
     });
@@ -553,7 +561,7 @@ function initializeDarkModeAndUtilities(main) {
     controlButtonDiv.appendChild(helpButton);
     controlButtonDiv.appendChild(fullscreenButton);
     controlButtonDiv.appendChild(positionButton);
-    let mainCon = document.getElementById("mainContainer");
+    const mainCon = document.getElementById("mainContainer");
     mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
 
     addHelp();
