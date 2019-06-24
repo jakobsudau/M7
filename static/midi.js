@@ -135,11 +135,11 @@ class Midi {
 
     sendMIDIMetronomeMessage(isBarStart, portId, volume) {
         const velocity = volume * 127;
-        let start = [0x90, 60, velocity];
-        let stop = [0x80, 60, velocity];
+        let start = [0x90, 80, velocity];
+        let stop = [0x80, 80, velocity];
         if (isBarStart) {
-            start = [0x90, 70, velocity];
-            stop = [0x80, 70, velocity];
+            start = [0x90, 90, velocity];
+            stop = [0x80, 90, velocity];
         }
         this.midiAccess.outputs.get(portId).send(start);
         this.midiAccess.outputs.get(portId).send(stop, (Date.now()+100));
