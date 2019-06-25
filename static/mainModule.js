@@ -433,6 +433,7 @@ class MainModule {
 
         let clickBusText = document.createElement("div");
         clickBusText.innerHTML = "Click Out";
+        clickBusText.title = "Port for outgoing click messages";
 
         this.clickBusSelect = document.createElement("select");
         this.clickBusSelect.id = "clickBusSelect";

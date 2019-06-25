@@ -43,7 +43,7 @@
     border-left: 2px solid var(--borderColor);
 }
 
-button, .chords, .generatorTitleDiv, #bpmTextfield {
+button, .generatorTitleDiv, #bpmTextfield {
     background: var(--backgroundColor);
 }
 
@@ -51,6 +51,10 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 button, .chords, .generatorTitleDiv, #bpmTextfield {
     color: var(--color);
     background: var(--moduleBackgroundColor);
+}
+
+.chords {
+    background: var(--backgroundColor);
 }
 
 .container, .chords, button, #bpmTextfield {

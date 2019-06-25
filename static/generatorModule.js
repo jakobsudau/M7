@@ -503,6 +503,8 @@ class GeneratorModule {
 
         let midiOutText = document.createElement("div");
         midiOutText.innerHTML = "MIDI Out";
+        midiOutText.title = "MIDI Port for the outgoing " +
+            "generated sequence";
 
         this.midiOutBusSelect = document.createElement("select");
         this.midiOutBusSelect.title = "MIDI Port for the outgoing " +
@@ -517,10 +519,12 @@ class GeneratorModule {
 
         let midiInText = document.createElement("div");
         midiInText.innerHTML = "MIDI In";
+        midiInText.title = "MIDI Port for the incoming MIDI " +
+            "data to generate a new sequence";
 
         this.midiInBusSelect = document.createElement("select");
-        this.midiInBusSelect.title = "MIDI Port for the incoming MIDI data to " +
-            "generate a new sequence";
+        this.midiInBusSelect.title = "MIDI Port for the incoming MIDI " +
+            "data to generate a new sequence";
 
         let temperatureContainer = document.createElement("div");
         temperatureContainer.id = "temperatureContainer";

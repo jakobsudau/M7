@@ -96,6 +96,7 @@ class Metronome {
                 osc.frequency.value = isStart ? 880.0 : 440.0;
                 osc.start(time);
                 osc.stop(time + this.noteLength);
+                osc.onended = function() {osc.disconnect()};
             } else {
                 this.mainModule.midi.sendMIDIMetronomeMessage(isStart,
                     this.outputId,
