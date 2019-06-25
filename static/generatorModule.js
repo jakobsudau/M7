@@ -13,15 +13,17 @@ class GeneratorModule {
         this.playing = false;
         this.stopNext = false;
         this.keepMutating = false;
-        this.generatedSeq = null;
-        this.generatedSmf = null;
-        this.playButton = null;
+        this.generatedSeq;
+        this.generatedSmf;
+        this.playButton;
         this.bpm = mainModule.metronome.bpm;
-        this.generateButton = null;
-        this.mutateButton = null;
-        this.stopButton = null;
-        this.listenButton = null;
-        this.generatorModuleContainer = null;
+        this.generateButton;
+        this.mutateButton;
+        this.stopButton;
+        this.listenButton;
+        this.generatorModuleContainer;
+        this.midiInBusSelect;
+        this.midiOutBusSelect;
         this.id = id;
         this.selectedOutput = this.mainModule.midi.availableOutputs[0];
         this.selectedInput = this.mainModule.midi.availableInputs[0];
@@ -32,7 +34,7 @@ class GeneratorModule {
         this.temperature = 1;
         this.shouldPlay = false;
         this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);;
-        this.jzzPlayer = null;
+        this.jzzPlayer;
         this.inputSequence = {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
@@ -189,7 +191,7 @@ class GeneratorModule {
         this.generateButton.style.background =
             `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
 
-        if (this.generatedSeq != null && !this.playing) {
+        if (this.generatedSeq != undefined && !this.playing) {
             this.playButton.disabled = false;
         }
     }
@@ -334,6 +336,13 @@ class GeneratorModule {
         } else {
             this.inputBars = length;
         }
+    }
+
+    midiPortListUpdated() {
+        this.midiOutBusSelect.innerHTML = this.mainModule.midi.availableOutputs
+            .map(i =>`<option>${i.name}</option>`).join('');
+        this.midiInBusSelect.innerHTML = this.mainModule.midi.availableInputs
+            .map(i =>`<option>${i.name}</option>`).join('');
     }
 
     startStopListening() {
@@ -495,8 +504,8 @@ class GeneratorModule {
         let midiOutText = document.createElement("div");
         midiOutText.innerHTML = "MIDI Out";
 
-        let midiOutBusSelect = document.createElement("select");
-        midiOutBusSelect.title = "MIDI Port for the outgoing " +
+        this.midiOutBusSelect = document.createElement("select");
+        this.midiOutBusSelect.title = "MIDI Port for the outgoing " +
             "generated sequence";
 
         let midiInContainer = document.createElement("div");
@@ -509,8 +518,8 @@ class GeneratorModule {
         let midiInText = document.createElement("div");
         midiInText.innerHTML = "MIDI In";
 
-        let midiInBusSelect = document.createElement("select");
-        midiInBusSelect.title = "MIDI Port for the incoming MIDI data to " +
+        this.midiInBusSelect = document.createElement("select");
+        this.midiInBusSelect.title = "MIDI Port for the incoming MIDI data to " +
             "generate a new sequence";
 
         let temperatureContainer = document.createElement("div");
@@ -538,10 +547,10 @@ class GeneratorModule {
         generatorButtonDiv.appendChild(this.stopButton);
         generatorButtonDiv.appendChild(this.mutateButton);
         midiOutContainer.appendChild(midiOutText);
-        midiOutContainer.appendChild(midiOutBusSelect);
+        midiOutContainer.appendChild(this.midiOutBusSelect);
         midiInContainer.appendChild(midiInSelectContainer);
         midiInSelectContainer.appendChild(midiInText);
-        midiInSelectContainer.appendChild(midiInBusSelect);
+        midiInSelectContainer.appendChild(this.midiInBusSelect);
         midiInContainer.appendChild(this.listenButton);
         midiContainer.appendChild(midiOutContainer);
         midiContainer.appendChild(midiInContainer);
@@ -598,16 +607,12 @@ class GeneratorModule {
             this.startStopListening()}.bind(this));
 
         // Populate the MidiOut and MidiIn lists
-        midiOutBusSelect.innerHTML = this.mainModule.midi.availableOutputs
-            .map(i =>`<option>${i.name}</option>`).join('');
-        midiOutBusSelect.addEventListener("change", function() {
-            this.changeMidiPort(false, midiOutBusSelect.selectedIndex);
+        this.midiPortListUpdated();
+        this.midiOutBusSelect.addEventListener("change", function() {
+            this.changeMidiPort(false, this.midiOutBusSelect.selectedIndex);
         }.bind(this));
-
-        midiInBusSelect.innerHTML = this.mainModule.midi.availableInputs
-            .map(i =>`<option>${i.name}</option>`).join('');
-        midiInBusSelect.addEventListener("change", function() {
-            this.changeMidiPort(true, midiInBusSelect.selectedIndex);
+        this.midiInBusSelect.addEventListener("change", function() {
+            this.changeMidiPort(true, this.midiInBusSelect.selectedIndex);
         }.bind(this));
 
         // eventlistener for the generate and play model button

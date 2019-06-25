@@ -25,25 +25,39 @@ class Midi {
         this.beatCoutner = 0;
         this.mainModule = mainModule;
         this.midiAccess = midiAccess;
-        this.midiAccess.onstatechange = this.hookUpMIDIInput();
+        this.hookUpMIDIInput();
     }
 
     hookUpMIDIInput() {
+        console.log("midi inputs/outputs changed");
+        let updatedAvailableInputs = [];
+        let updatedAvailableOutputs = [];
+
         const that = this;
-        var inputs = this.midiAccess.inputs.values();
-        for ( var input = inputs.next(); input && !input.done; input = inputs.next()) {
-            this.availableInputs.push(input.value);
+        const inputs = this.midiAccess.inputs.values();
+        for ( let input = inputs.next(); input && !input.done; input = inputs.next()) {
+            updatedAvailableInputs.push(input.value);
             input.value.onmidimessage = function(e) {that.mIDIMessageEventHandler(event, that)};
         }
 
         const outputs = this.midiAccess.outputs.values();
         // Get all the MIDI outputs to show them in a <select> (for example)
         for (let output = outputs.next(); output && !output.done; output = outputs.next()) {
-            this.availableOutputs.push(output.value);
+            updatedAvailableOutputs.push(output.value);
         }
-        this.mainModule.midiPortChanged();
-        this.selectedOutput = this.availableOutputs[0];
-        this.selectedInput = this.availableInputs[0];
+
+        if (updatedAvailableInputs.length != this.availableInputs.length) {
+            this.availableInputs = updatedAvailableInputs;
+            this.selectedInput = this.availableInputs[0];
+            this.mainModule.generatorPortListUpdated();
+        }
+
+        if (updatedAvailableOutputs.length != this.availableOutputs.length) {
+            this.availableOutputs = updatedAvailableOutputs;
+            this.selectedOutput = this.availableOutputs[0];
+            this.mainModule.midiPortListUpdated();
+            this.mainModule.generatorPortListUpdated();
+        }
     }
 
     mIDIMessageEventHandler(event, that) {

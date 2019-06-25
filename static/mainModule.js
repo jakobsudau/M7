@@ -13,6 +13,7 @@ class MainModule {
         this.buttonChangeBackward;
         this.buttonChangeForward;
         this.generateLoopButton;
+        this.clickBusSelect;
         this.selectedClickBusId = "internal";
         this.metronomeOn = false;
         this.chord1;
@@ -147,18 +148,27 @@ class MainModule {
     }
 
     changeClickPort(port) {
-        if (port == 0) {
+        if (this.clickBusSelect[port].value == "internal") {
             this.metronome.outputId = "internal";
         } else {
-            this.metronome.outputId = this.midi.availableOutputs[port].id;
+            this.metronome.outputId = this.midi.availableOutputs[port-1].id;
         }
     }
 
-    midiPortChanged() {
-        // let clickBusOptions = this.midi.availableOutputs;
-        // clickBusOptions.unshift({name: "internal"})
-        // document.getElementById("clickBusSelect").innerHTML = clickBusOptions
-        //     .map(i =>`<option>${i.name}</option>`).join('');
+    midiPortListUpdated() {
+        if(this.midi != undefined) {
+            // move "internal" option into click midi output options
+            this.clickBusSelect.innerHTML = "";
+            this.clickBusSelect.options[0] = new Option('internal', 'internal');
+            this.clickBusSelect.innerHTML += this.midi.availableOutputs
+                .map(i =>`<option>${i.name}</option>`).join('');
+        }
+    }
+
+    generatorPortListUpdated() {
+        this.generators.forEach((generator, id) => {
+            generator.midiPortListUpdated();
+        });
     }
 
     startStopClick() {
@@ -423,9 +433,9 @@ class MainModule {
         let clickBusText = document.createElement("div");
         clickBusText.innerHTML = "Click Out";
 
-        let clickBusSelect = document.createElement("select");
-        clickBusSelect.id = "clickBusSelect";
-        clickBusSelect.title = "Port for outgoing click messages";
+        this.clickBusSelect = document.createElement("select");
+        this.clickBusSelect.id = "clickBusSelect";
+        this.clickBusSelect.title = "Port for outgoing click messages";
 
         mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordContainer);
@@ -435,7 +445,7 @@ class MainModule {
         clickContainer.appendChild(this.clickButton);
         clickContainer.appendChild(clickBusContainer);
         clickBusContainer.appendChild(clickBusText);
-        clickBusContainer.appendChild(clickBusSelect);
+        clickBusContainer.appendChild(this.clickBusSelect);
         mainButtonContainer.appendChild(mainButtonSubContainer1);
         mainButtonContainer.appendChild(mainButtonSubContainer2);
         mainButtonSubContainer1.appendChild(this.buttonChangeBackward);
@@ -501,12 +511,9 @@ class MainModule {
             this.startStopClick()}.bind(this));
 
         // Populate the MidiOut and MidiIn lists
-        let clickBusOptions = this.midi.availableOutputs;
-        clickBusOptions.unshift({name: "internal"})
-        clickBusSelect.innerHTML = clickBusOptions
-            .map(i =>`<option>${i.name}</option>`).join('');
-            clickBusSelect.addEventListener("change", function() {
-            this.changeClickPort(clickBusSelect.selectedIndex);
+        this.midiPortListUpdated();
+        this.clickBusSelect.addEventListener("change", function() {
+            this.changeClickPort(this.clickBusSelect.selectedIndex);
         }.bind(this));
     }
 }
@@ -659,23 +666,32 @@ function showHelp() {
 var electron; // used in connector.js
 
 if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess({sysex: false}).then(function(midiAccess) {
-        if (isElectron) {
-            electron = require('electron');
-        } else {
-            let socketScript = document.createElement("script");
-            socketScript.type = "text/javascript";
-            socketScript.src = "/socket.io/socket.io.js";
-            socketScript.addEventListener("load", function() {
-                console.log("done loading");
-            });
-            document.getElementById("mainContainer").appendChild(socketScript);
-        }
-
-        document.documentElement.setAttribute('theme', 'light');
-        const main = new MainModule(midiAccess);
-        initializeDarkModeAndUtilities(main);
-    });
+    navigator.requestMIDIAccess().then( onMIDIInit, onMIDIReject );
 } else {
-    alert("No MIDI support in your browser.");
+    alert("No MIDI support present in your browser.");
+}
+
+function onMIDIInit(midi) {
+    midiAccess = midi;
+
+    if (isElectron) {
+        electron = require('electron');
+    } else {
+        let socketScript = document.createElement("script");
+        socketScript.type = "text/javascript";
+        socketScript.src = "/socket.io/socket.io.js";
+        socketScript.addEventListener("load", function() {
+            console.log("done loading");
+        });
+        document.getElementById("mainContainer").appendChild(socketScript);
+    }
+
+    document.documentElement.setAttribute('theme', 'light');
+    const main = new MainModule(midiAccess);
+    midiAccess.onstatechange = function() {main.midi.hookUpMIDIInput()};
+    initializeDarkModeAndUtilities(main);
+}
+
+function onMIDIReject(err) {
+    alert("The MIDI system failed to start.");
 }
