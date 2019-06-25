@@ -120,7 +120,7 @@ html, body {
 }
 
 #mainContainer, #mainContainer > * {
-    transition: background-color .2s linear;
+    transition: background-color .2s linear, filter .2s linear;
 }
 
 #controlButtonDiv {
