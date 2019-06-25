@@ -162,6 +162,7 @@ class MainModule {
             this.clickBusSelect.options[0] = new Option('internal', 'internal');
             this.clickBusSelect.innerHTML += this.midi.availableOutputs
                 .map(i =>`<option>${i.name}</option>`).join('');
+            this.changeClickPort(0);
         }
     }
 
