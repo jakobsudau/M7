@@ -1,4 +1,4 @@
-const {ipcMain, BrowserWindow, app} = require('electron');
+const {ipcMain, BrowserWindow, app, systemPreferences} = require('electron');
 const cpus = require('os').cpus().length;
 console.log('cpus: ' + cpus);
 
@@ -57,6 +57,14 @@ app.on('ready', function() {
         // windows will keep the app running
         app.quit();
     })
+
+    systemPreferences.subscribeNotification(
+        'AppleInterfaceThemeChangedNotification',
+        function theThemeHasChanged () {
+            main.webContents.send(('to-mainModule'),
+                systemPreferences.isDarkMode());
+        }
+      )
 
     // Main thread can receive directly from windows
     ipcMain.on('to-main', (event, arg) => {

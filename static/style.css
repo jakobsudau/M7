@@ -1,6 +1,7 @@
 /* ------------------- Dark Mode & Coloring Code Start ------------------- */
 :root[theme='dark'] {
     --borderColor: #dddddd;
+    --chordsColor: #3a3a3a;
     --backgroundColor: #262626;
     --moduleBackgroundColor: #464646;
     --color: #ebebeb;
@@ -13,6 +14,7 @@
 
 :root[theme='light'] {
     --borderColor: black;
+    --chordsColor: #faf8f8;
     --backgroundColor: white;
     --moduleBackgroundColor: #efefef;
     --color: black;
@@ -54,7 +56,7 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 }
 
 .chords {
-    background: var(--backgroundColor);
+    background: var(--chordsColor);
 }
 
 .container, .chords, button, #bpmTextfield {

@@ -33,7 +33,7 @@ class GeneratorModule {
         this.inputStartTime = Date.now();
         this.temperature = 1;
         this.shouldPlay = false;
-        this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);;
+        this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
         this.jzzPlayer;
         this.inputSequence = {
             notes: [],
@@ -182,7 +182,6 @@ class GeneratorModule {
         "took: " + ((Date.now() - this.generationTime)/1000) + "s");
         this.generatedSeq = data.data;
         this.generatedSmf = this.convertToSmf(this.generatedSeq);
-        this.jzzPlayer = this.generatedSmf.player();
         // this.generatedSeq = data.smf;
         // console.log("getting back this sequence: ");
         // console.log(this.generatedSeq);
@@ -213,7 +212,6 @@ class GeneratorModule {
     }
 
     playGeneratedSequence() {
-        this.jzzPlayer.stop();
         delete this.jzzPlayer;
         this.jzzPlayer = this.generatedSmf.player();
         this.jzzPlayer.connect(this.jzzMidiOut);

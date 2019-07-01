@@ -23,7 +23,9 @@ class MainModule {
         this.bpmTextfield;
         this.maxScenes = 2;
         this.generators = new Map();
-        this.generatorCounter = 0;
+        this.connector = new Connector(this);
+        this.connector.initialize(0);
+        this.generatorCounter = 1;
         this.sceneCounter = 0;
         this.midi = new Midi(midiAccess, this);
         this.metronome = new Metronome(this);
@@ -266,13 +268,23 @@ class MainModule {
         }
     }
 
-    switchDarkMode() {
-        this.isDarkMode = !this.isDarkMode;
+    switchDarkMode(darkMode) {
+        if (this.isDarkMode != darkMode) {
+            if(document.documentElement.getAttribute('theme') == "dark"){
+                document.documentElement.setAttribute('theme', 'light');
+                darkModeSwitcher.innerHTML = "☾";
+            } else {
+                document.documentElement.setAttribute('theme', 'dark');
+                darkModeSwitcher.innerHTML = "☀";
+            }
 
-        let chords = document.getElementsByClassName("chords");
-        for(let i=0, len=chords.length; i<len; i++) {
-            if (chords[i].style.color != 'red') {
-                chords[i].style.color = this.isDarkMode ? "white" : "black";
+            this.isDarkMode = darkMode;
+
+            let chords = document.getElementsByClassName("chords");
+            for(let i=0, len=chords.length; i<len; i++) {
+                if (chords[i].style.color != 'red') {
+                    chords[i].style.color = this.isDarkMode ? "white" : "black";
+                }
             }
         }
     }
@@ -550,14 +562,7 @@ function initializeDarkModeAndUtilities(main) {
     darkModeSwitcher.innerHTML = "☾";
     darkModeSwitcher.title = "Switch to Dark/Light Mode";
     darkModeSwitcher.addEventListener("click", function() {
-        if(document.documentElement.getAttribute('theme') == "dark"){
-            document.documentElement.setAttribute('theme', 'light');
-            darkModeSwitcher.innerHTML = "☾";
-        } else {
-            document.documentElement.setAttribute('theme', 'dark');
-            darkModeSwitcher.innerHTML = "☀";
-        }
-        main.switchDarkMode();
+        main.switchDarkMode(!main.isDarkMode);
     });
 
     fullscreenButton.addEventListener("click", function() {
