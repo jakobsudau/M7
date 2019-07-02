@@ -6,6 +6,9 @@ class MainModule {
     constructor(midiAccess) {
         this.spaceSwitch = false;
         this.isDarkMode = false;
+        this.midiMapMode = false;
+        this.midiMapSelection;
+        this.midiMapParams = new Map();
         this.clickButton;
         this.buttonGenerateAll;
         this.buttonStopAll;
@@ -55,12 +58,28 @@ class MainModule {
     }
 
     startStopNote(note, velocity, isStart, input) {
-        this.generators.forEach((generator, id) => {
-            if (generator.listening &&
-                (generator.selectedInput == input)) {
-                generator.startStopNote(note, velocity, isStart);
+        if (this.midiMapMode) {
+            if (isStart) {
+                this.midiMapSelection.childNodes[1].innerHTML = note;
+                this.midiMapParams.set(this.midiMapSelection, {note: note, input: input});
             }
-        });
+        } else {
+            this.generators.forEach((generator, id) => {
+                if (generator.listening &&
+                    (generator.selectedInput == input)) {
+                    generator.startStopNote(note, velocity, isStart);
+                }
+            });
+
+            if (isStart) {
+                this.midiMapParams.forEach((noteAndInput, button) => {
+                    if (noteAndInput.note == note &&
+                        noteAndInput.input == input) {
+                        button.click();
+                    }
+                });
+            }
+        }
     }
 
     checkChords() {
@@ -285,6 +304,40 @@ class MainModule {
                 if (chords[i].style.color != 'red') {
                     chords[i].style.color = this.isDarkMode ? "white" : "black";
                 }
+            }
+        }
+    }
+
+    mapMidi() {
+        this.midiMapMode = !this.midiMapMode;
+        const buttons = document.getElementById("mainSubContainer").getElementsByTagName("button");
+        for (const button of buttons) {
+            if (this.midiMapMode) {
+                let buttonOverlay = document.createElement("div");
+                buttonOverlay.className = "buttonOverlay";
+                const mapped = this.midiMapParams.get(button);
+                if (mapped) {
+                    buttonOverlay.innerHTML = mapped.note;
+                }
+                buttonOverlay.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    const overlays = document.getElementsByClassName("buttonOverlay selected");
+                    for (const overlay of overlays) {
+                        overlay.className = "buttonOverlay";
+                    }
+                    e.target.className = "buttonOverlay selected";
+                    this.midiMapSelection = e.target.parentElement;
+                }.bind(this));
+
+                buttonOverlay.addEventListener("dblclick", function(e) {
+                    e.stopPropagation();
+                    e.target.innerHTML = "";
+                    this.midiMapParams.delete(e.target.parentElement);
+                }.bind(this));
+
+                button.appendChild(buttonOverlay);
+            } else {
+                button.removeChild(button.childNodes[1]);
             }
         }
     }
@@ -557,6 +610,16 @@ function initializeDarkModeAndUtilities(main) {
     positionButton.innerHTML = "◧";
     positionButton.title = "Move control button bar to top/right/left";
 
+    const midiMapButton = document.createElement("button");
+    midiMapButton.id = "midiMapButton";
+    midiMapButton.innerHTML = "⚇";
+    midiMapButton.title = "Map controls to MIDI. Click on the desired " +
+        " button and play the MIDI note to map. " +
+        "Double Click on mapped button to delete.";
+    midiMapButton.addEventListener("click", function() {
+        main.mapMidi();
+    });
+
     const darkModeSwitcher = document.createElement("button");
     darkModeSwitcher.id = "darkModeSwitcher";
     darkModeSwitcher.innerHTML = "☾";
@@ -608,6 +671,7 @@ function initializeDarkModeAndUtilities(main) {
     controlButtonDiv.appendChild(darkModeSwitcher);
     controlButtonDiv.appendChild(helpButton);
     controlButtonDiv.appendChild(fullscreenButton);
+    controlButtonDiv.appendChild(midiMapButton);
     controlButtonDiv.appendChild(positionButton);
     const mainCon = document.getElementById("mainContainer");
     mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);

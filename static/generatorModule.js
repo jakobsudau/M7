@@ -53,14 +53,16 @@ class GeneratorModule {
         return new Promise(function(resolve, reject) {
             console.log("initializing model with placeholder id " +
             this.id + "...");
-        this.logTime = Date.now();
+        const logTime = Date.now();
         this.connector.initialize(this.id).then((msg) => {
-            this.generateButton.disabled = false;
-            this.addBassProg = (this.id == 0);
-            this.id = msg.data;
-            console.log("model " + this.id + " initialization done, " +
-                "it took " + ((Date.now() - this.logTime)/1000) + "s");
-            resolve(this.id);
+            if (this.id) {
+                this.generateButton.disabled = false;
+                this.addBassProg = (this.id == 0);
+                this.id = msg.data;
+                console.log("model " + this.id + " initialization done, " +
+                    "it took " + ((Date.now() - logTime)/1000) + "s");
+                resolve(this.id);
+            }
         });
         }.bind(this));
     }
@@ -103,6 +105,8 @@ class GeneratorModule {
         delete this.inputSequence;
         delete this.stepsPerChord;
         delete this.stepsPerProg;
+        delete this.midiInBusSelect;
+        delete this.midiOutBusSelect;
     }
 
     startStopNote(note, velocity, isStart) {

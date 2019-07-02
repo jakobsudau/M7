@@ -45,10 +45,6 @@
     border-left: 2px solid var(--borderColor);
 }
 
-button, .generatorTitleDiv, #bpmTextfield {
-    background: var(--backgroundColor);
-}
-
 #mainModuleContainer, #generatorModuleContainer, #helpContainer,
 button, .chords, .generatorTitleDiv, #bpmTextfield {
     color: var(--color);
@@ -125,6 +121,23 @@ html, body {
     padding: 0;
 }
 
+.buttonOverlay {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: rgba(173, 216, 230, 0.699);
+    border: 2px solid  rgba(173, 216, 230, 0.699);
+    color: white;
+    border-radius: 0.1em;
+}
+
+.buttonOverlay.selected {
+    background: rgba(173, 230, 211, 0.699);
+}
+
 #mainContainer, #mainContainer > * {
     transition: background-color .2s linear, filter .2s linear;
 }
@@ -173,7 +186,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     -webkit-app-region: no-drag;
 }
 
-#darkModeSwitcher, #helpButton, #fullscreenButton, #positionButton {
+#darkModeSwitcher, #helpButton, #fullscreenButton, #positionButton, #midiMapButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
@@ -260,6 +273,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
 }
 
 button, #bpmTextfield {
+    position: relative;
     font-family: monospace;
     font-size: 1.5em;
     margin: 0.5em 0 0.5em 0;

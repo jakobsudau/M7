@@ -76,14 +76,6 @@ class Midi {
         }
     }
 
-    noteOn(noteNumber) {
-        console.log("note on: " + noteNumber);
-    }
-
-    noteOff(noteNumber) {
-        console.log("note off: " + noteNumber);
-    }
-
     sendMIDIMetronomeMessage(isBarStart, portId, volume) {
         const velocity = volume * 127;
         let start = [0x90, 80, velocity];
