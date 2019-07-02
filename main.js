@@ -58,13 +58,16 @@ app.on('ready', function() {
         app.quit();
     })
 
-    systemPreferences.subscribeNotification(
-        'AppleInterfaceThemeChangedNotification',
-        function theThemeHasChanged () {
-            main.webContents.send(('to-mainModule'),
-                systemPreferences.isDarkMode());
-        }
-      )
+    // support for native dark mode on macOS
+    if (process.platform == 'darwin') {
+        systemPreferences.subscribeNotification(
+            'AppleInterfaceThemeChangedNotification',
+            function theThemeHasChanged () {
+                main.webContents.send(('to-mainModule'),
+                    systemPreferences.isDarkMode());
+            }
+        );
+    }
 
     // Main thread can receive directly from windows
     ipcMain.on('to-main', (event, arg) => {
