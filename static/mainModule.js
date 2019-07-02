@@ -55,6 +55,14 @@ class MainModule {
 
     deleteModule(id) {
         this.generators.delete(id);
+        // delete any mapped parameters
+        this.midiMapParams.forEach((noteAndInput, button) => {
+            console.log(button);
+            if (!(document.body.contains(button))) {
+                this.midiMapParams.delete(button);
+                console.log(this.midiMapParams);
+            }
+        });
     }
 
     startStopNote(note, velocity, isStart, input) {

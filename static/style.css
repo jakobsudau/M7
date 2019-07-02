@@ -8,6 +8,8 @@
     --deleteColor: #6E3232;
     --buttonActiveColor: #696969;
     --buttonDisableColor: #575757;
+    --buttonOverlayColor: #517481b2;
+    --buttonOverlaySelectedColor: #4e7568b2;
     --shadow1: #000000f3;
     --shadow2: #000000f1;
 }
@@ -21,6 +23,8 @@
     --deleteColor: #FB8D8D;
     --buttonActiveColor: #cacaca;
     --buttonDisableColor: #cacaca;
+    --buttonOverlayColor: #add8e6b2;
+    --buttonOverlaySelectedColor: #ade6d3b2;
     --shadow1: #00000033;
     --shadow2: #00000030;
 }
@@ -85,6 +89,16 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     color: #fbf08d;
 }
 
+.buttonOverlay {
+    background: var(--buttonOverlayColor);
+    border: 2px solid  var(--buttonOverlayColor);
+}
+
+.buttonOverlay.selected {
+    background: var(--buttonOverlaySelectedColor);
+    border: 2px solid  var(--buttonOverlaySelectedColor);
+}
+
 #mainButtonContainer, .generatorButtonDiv, .bottom {
     border-top: 2px solid var(--borderColor);
 }
@@ -128,14 +142,9 @@ html, body {
     width: 100%;
     height: 100%;
     z-index: 10;
-    background: rgba(173, 216, 230, 0.699);
-    border: 2px solid  rgba(173, 216, 230, 0.699);
     color: white;
     border-radius: 0.1em;
-}
-
-.buttonOverlay.selected {
-    background: rgba(173, 230, 211, 0.699);
+    font-weight: normal;
 }
 
 #mainContainer, #mainContainer > * {
