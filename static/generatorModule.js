@@ -13,6 +13,7 @@ class GeneratorModule {
         this.playing = false;
         this.stopNext = false;
         this.keepMutating = false;
+        this.addBassProg;
         this.generatedSeq;
         this.generatedSmf;
         this.playButton;
@@ -107,6 +108,7 @@ class GeneratorModule {
         delete this.stepsPerProg;
         delete this.midiInBusSelect;
         delete this.midiOutBusSelect;
+        delete this.addBassProg;
     }
 
     startStopNote(note, velocity, isStart) {
@@ -160,13 +162,6 @@ class GeneratorModule {
 
     generateSequence(chords) {
         this.generateButton.disabled = true;
-        // console.log("----START----");
-        // console.log("Generator Module: " + this.id);
-        // console.log("generating midi sequence over: " + chords);
-        // console.log("with output length: " + this.outputBars);
-        // console.log("and following input sequence: ");
-        // console.log(this.inputSequence);
-        // console.log("--------");
         this.generationTime = Date.now();
 
         this.connector.generateSequence({
@@ -186,10 +181,6 @@ class GeneratorModule {
         "took: " + ((Date.now() - this.generationTime)/1000) + "s");
         this.generatedSeq = data.data;
         this.generatedSmf = this.convertToSmf(this.generatedSeq);
-        // this.generatedSeq = data.smf;
-        // console.log("getting back this sequence: ");
-        // console.log(this.generatedSeq);
-        // console.log("----END----");
         this.generateButton.disabled = false;
         this.generateButton.style.background =
             `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
@@ -266,7 +257,6 @@ class GeneratorModule {
                 "%, var(--moduleBackgroundColor) 0%)";
         }
 
-        // console.log(this.barCounter);
         if (this.barCounter < (this.outputBars-1)) {
             this.barCounter++;
         } else if (this.barCounter == this.outputBars -1) {
@@ -356,8 +346,6 @@ class GeneratorModule {
             this.inputSequence.totalQuantizedSteps = 1;
         } else if (this.listening == false) {
             this.listenButton.className = "listenButton disabled";
-            // console.log(this.inputSequence);
-            // this.barCounter = 0;
         }
     }
 

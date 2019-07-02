@@ -54,13 +54,12 @@ class MainModule {
     }
 
     deleteModule(id) {
+        console.log(this.generators.get(id));
         this.generators.delete(id);
         // delete any mapped parameters
         this.midiMapParams.forEach((noteAndInput, button) => {
-            console.log(button);
             if (!(document.body.contains(button))) {
                 this.midiMapParams.delete(button);
-                console.log(this.midiMapParams);
             }
         });
     }
