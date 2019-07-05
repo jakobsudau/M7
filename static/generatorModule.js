@@ -58,7 +58,7 @@ class GeneratorModule {
         this.connector.initialize(this.id).then((msg) => {
             if (this.id) {
                 this.generateButton.disabled = false;
-                this.addBassProg = (this.id == 0);
+                this.addBassProg = (this.id == 1);
                 this.id = msg.data;
                 console.log("model " + this.id + " initialization done, " +
                     "it took " + ((Date.now() - logTime)/1000) + "s");

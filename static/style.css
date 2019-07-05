@@ -111,7 +111,11 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     background: var(--deleteColor);
 }
 
-button:active {
+.midiMapButton.inactive {
+    background: var(--moduleBackgroundColor);
+    }
+
+button:active, .midiMapButton.active {
     background: var(--buttonActiveColor);
 }
 

@@ -68,7 +68,8 @@ class MainModule {
         if (this.midiMapMode) {
             if (isStart) {
                 this.midiMapSelection.childNodes[1].innerHTML = note;
-                this.midiMapParams.set(this.midiMapSelection, {note: note, input: input});
+                this.midiMapParams.set(this.midiMapSelection,
+                    {note: note, input: input});
             }
         } else {
             this.generators.forEach((generator, id) => {
@@ -317,7 +318,15 @@ class MainModule {
 
     mapMidi() {
         this.midiMapMode = !this.midiMapMode;
-        const buttons = document.getElementById("mainSubContainer").getElementsByTagName("button");
+
+        if (this.midiMapMode) {
+            midiMapButton.className = "midiMapButton active";
+        } else {
+            midiMapButton.className = "midiMapButton inactive";
+        }
+
+        const buttons = document.getElementById("mainSubContainer")
+            .getElementsByTagName("button");
         for (const button of buttons) {
             if (this.midiMapMode) {
                 let buttonOverlay = document.createElement("div");
@@ -328,7 +337,8 @@ class MainModule {
                 }
                 buttonOverlay.addEventListener("click", function(e) {
                     e.stopPropagation();
-                    const overlays = document.getElementsByClassName("buttonOverlay selected");
+                    const overlays =
+                    document.getElementsByClassName("buttonOverlay selected");
                     for (const overlay of overlays) {
                         overlay.className = "buttonOverlay";
                     }
@@ -619,6 +629,7 @@ function initializeDarkModeAndUtilities(main) {
 
     const midiMapButton = document.createElement("button");
     midiMapButton.id = "midiMapButton";
+    midiMapButton.className = "midiMapButton inactive";
     midiMapButton.innerHTML = "⚇";
     midiMapButton.title = "Map controls to MIDI. Click on the desired " +
         " button and play the MIDI note to map. " +
