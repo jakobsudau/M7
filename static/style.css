@@ -338,7 +338,7 @@ button:focus, div:focus, input:focus, select:focus{
 #inputBarsContainer, #outputBarsContainer {
     float: left;
     width: 46%;
-    height: calc(100% - 4px);;
+    height: calc(100% - 4px);
     text-align: center;
 }
 
@@ -354,13 +354,28 @@ select {
     width: 7.5em;
 }
 
-.barsContainer, .midiContainer, #messageDiv,
-#clickContainer, #temperatureContainer {
+#modelContainer {
+    float: left;
+    width: 35%;
+    height: calc(100% - 4px);
+}
+
+.modelAndTemperatureContainer, .barsContainer, .midiContainer, #messageDiv,
+#clickContainer {
     float: left;
     width: 100%;
     height: 3em;
     margin-bottom: 1em;
     text-align: center;
+}
+
+#temperatureContainer {
+    float: right;
+    width: 57%;
+    height: calc(100% - 4px);
+    display:flex;
+    align-items: center;
+    justify-content: space-evenly;
 }
 
 #inputBarsContainer, #outputBarsContainer {
@@ -371,7 +386,7 @@ select {
     float:right;
 }
 
-#clickContainer, #temperatureContainer {
+#clickContainer {
     width: calc(100% - 4px);
     height: calc(3em - 4px);
     display:flex;
@@ -393,7 +408,6 @@ select {
 }
 
 .temperatureTitleDiv {
-    width: 6.5em;
     padding: 0;
     display: flex;
     align-items: center;
@@ -447,8 +461,8 @@ td {
 /* ---------------------------- Slider Styling --------------------------- */
 input[type=range] {
     -webkit-appearance: none;
-    width: 40%;
 }
+
 input[type=range]:focus {
     outline: none;
 }
