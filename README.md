@@ -5,7 +5,7 @@ To install and run:
 1. clone this repository
 2. open a Terminal in the project directory
 3. run following command: yarn installProject
-4. in node_modules and server/node_modules, navigate to @magenta/music/es5/music_rnn/model.js and add following code below the requires:
+4. in node_modules and server/node_modules, navigate to @magenta/music/es5/music_rnn/model.js and add following code below the requires and before the MusicRNN class declaration:
 ```
 const fs = require('fs');
 const path = require('path');
