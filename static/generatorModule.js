@@ -36,6 +36,7 @@ class GeneratorModule {
         this.shouldPlay = false;
         this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
         this.jzzPlayer;
+        // this.player = new mm.MIDIPlayer();
         this.inputSequence = {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
@@ -103,6 +104,7 @@ class GeneratorModule {
         delete this.shouldPlay;
         delete this.jzzMidiOut;
         delete this.jzzPlayer;
+        // delete this.player;
         delete this.inputSequence;
         delete this.stepsPerChord;
         delete this.stepsPerProg;
@@ -236,6 +238,50 @@ class GeneratorModule {
         }
     }
 
+    // playGeneratedSequence2() {
+    //     if (!this.playing && this.shouldPlay) {
+    //         this.player.requestMIDIAccess().then(() => {
+    //             if (this.keepMutating) {
+    //                 const chords = [
+    //                     document.getElementById("chord1").value,
+    //                     document.getElementById("chord2").value,
+    //                     document.getElementById("chord3").value,
+    //                     document.getElementById("chord4").value
+    //                 ];
+    //                 this.generateSequence(chords);
+    //             }
+
+    //             this.playButton.disabled = true;
+    //             this.playing = true;
+    //             if (this.listening) {
+    //                 this.barCounter = 0;
+    //                 console.log(this.inputSequence);
+    //                 this.inputStartTime = Date.now();
+    //                 this.inputSequence.notes = [];
+    //                 this.inputSequence.totalQuantizedSteps = 1;
+    //             }
+    //             this.player.outputs = [this.selectedOutput];
+    //             // omitting player.outputs = message to all ports
+
+    //             this.player.start(this.generatedSeq, this.mainModule.metronome.bpm).then(() => {
+    //                 this.playButton.disabled = false;
+    //                 this.playing = false;
+
+    //                 if (!this.looping) {
+    //                     this.shouldPlay = false;
+    //                     this.stopButton.disabled = false;
+    //                     this.looping = true;
+    //                 }
+
+    //                 if (this.looping &&
+    //                     !this.mainModule.metronome.isPlaying) {
+    //                     this.playGeneratedSequence();
+    //                 }
+    //             });
+    //         });
+    //     }
+    // }
+
     playTick() {
         if (this.barCounter == 0) {
             if (this.shouldPlay) {
@@ -266,6 +312,7 @@ class GeneratorModule {
     }
 
     stopPlayback() {
+        // this.player.stop();
         this.jzzPlayer.stop();
         this.playButton.disabled = false;
         this.stopButton.disabled = false;
@@ -294,6 +341,7 @@ class GeneratorModule {
     }
 
     changeBpm(value) {
+        // this.player.setTempo(value);
         this.bpm = value;
     }
 

@@ -38,6 +38,8 @@ app.on('ready', function() {
     main = new BrowserWindow({
         "width": 736,
         "height": 680,
+        "minWidth": 414,
+        "minHeight": 354,
         //"icon": __dirname + "/icon/icon.icns",
         titleBarStyle: 'hidden',
         webPreferences: {

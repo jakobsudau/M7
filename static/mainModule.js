@@ -714,7 +714,7 @@ function addHelp() {
         "click with as many Generators as your system can handle and " +
         "send them each to any of your systems MIDI Ports so you can " +
         "listen to your own AI band!<br/><br/>Hover over any UI Element " +
-        "to see the tooltip.<br/><br/>This is the project M7 by Jakob " +
+        "to see the tooltip.<br/><br/>This is the project MMAI by Jakob " +
         "Sudau for his Master at the HAW Hamburg called Sound/Vision." +
         "<br/><br/><br/>Enjoy!";
 

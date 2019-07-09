@@ -1,4 +1,4 @@
-# M7 Masterthesis Project by Jakob Sudau
+# MMAI Masterthesis Project by Jakob Sudau
 
 To install and run:
 
