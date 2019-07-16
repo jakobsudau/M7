@@ -512,8 +512,9 @@ class MainModule {
 
         this.clickClockSelect = document.createElement("select");
         this.clickClockSelect.id = "clickClockSelect";
-        this.clickClockSelect.title = "Select whether MIDI Clock should be "
-            + "used and be in send or receive state";
+        this.clickClockSelect.title = "Select whether MIDI Clock messages should be "
+            + "used (instead of regular MIDI messages) and "
+            + "be in send or receive state";
         this.clickClockSelect.options[0] = new Option('none');
         this.clickClockSelect.options[1] = new Option('send');
         this.clickClockSelect.options[2] = new Option('receive');
