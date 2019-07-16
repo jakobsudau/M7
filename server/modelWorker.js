@@ -7,6 +7,7 @@ const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints
 const models = [new mm.MusicRNN(improvCheckpoint),
 				new mm.MusicRNN(melodyCheckpoint),
 				new mm.MusicVAE(vaeCheckpoint)];
+
 models[0].initialize().then(() =>
 	models[1].initialize().then(() =>
 		models[2].initialize().then(() =>
@@ -136,11 +137,12 @@ function modelGenerate(data) {
 
 		if (data.model == 2) {
 			console.log("generate with Music VAE!");
-			models[data.model].sample(steps)
-				.then((contSeq) => {returnSeq(contSeq)});
+			models[data.model].sample(steps).then((contSeq) => {
+				returnSeq(contSeq)});
 		} else {
-			models[data.model].continueSequence(data.seq, steps, data.temp, chords)
-			.then((contSeq) => {returnSeq(contSeq)});
+			models[data.model].continueSequence(
+				data.seq, steps, data.temp, chords).then((contSeq) => {
+					returnSeq(contSeq)});
 		}
 		});
 	}

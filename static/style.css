@@ -1,5 +1,6 @@
 /* ------------------- Dark Mode & Coloring Code Start ------------------- */
 :root[theme='dark'] {
+    --logo: url("img/logoDark.png");
     --borderColor: #dddddd;
     --chordsColor: #3a3a3a;
     --backgroundColor: #262626;
@@ -8,13 +9,14 @@
     --deleteColor: #6E3232;
     --buttonActiveColor: #696969;
     --buttonDisableColor: #575757;
-    --buttonOverlayColor: #517481b2;
-    --buttonOverlaySelectedColor: #4e7568b2;
+    --btnOverlayColor: #517481b2;
+    --btnOverlaySelectedColor: #4e7568b2;
     --shadow1: #000000f3;
     --shadow2: #000000f1;
 }
 
 :root[theme='light'] {
+    --logo: url("img/logoLight.png");
     --borderColor: black;
     --chordsColor: #faf8f8;
     --backgroundColor: white;
@@ -23,8 +25,8 @@
     --deleteColor: #FB8D8D;
     --buttonActiveColor: #cacaca;
     --buttonDisableColor: #cacaca;
-    --buttonOverlayColor: #add8e6b2;
-    --buttonOverlaySelectedColor: #ade6d3b2;
+    --btnOverlayColor: #add8e6b2;
+    --btnOverlaySelectedColor: #ade6d3b2;
     --shadow1: #00000033;
     --shadow2: #00000030;
 }
@@ -89,14 +91,14 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     color: #fbf08d;
 }
 
-.buttonOverlay {
-    background: var(--buttonOverlayColor);
-    border: 2px solid  var(--buttonOverlayColor);
+.btnOverlay {
+    background: var(--btnOverlay);
+    border: 2px solid  var(--btnOverlay);
 }
 
-.buttonOverlay.selected {
-    background: var(--buttonOverlaySelectedColor);
-    border: 2px solid  var(--buttonOverlaySelectedColor);
+.btnOverlay.selected {
+    background: var(--btnOverlaySelectedColor);
+    border: 2px solid  var(--btnOverlaySelectedColor);
 }
 
 #mainButtonContainer, .generatorButtonDiv, .bottom {
@@ -139,7 +141,7 @@ html, body {
     padding: 0;
 }
 
-.buttonOverlay {
+.btnOverlay {
     position: absolute;
     top: -2px;
     left: -2px;
@@ -199,13 +201,22 @@ button, #mainModuleContainer, #generatorModuleContainer {
     -webkit-app-region: no-drag;
 }
 
-#darkModeSwitcher, #helpButton, #fullscreenButton, #positionButton, #midiMapButton {
+#darkModeSwitcher, #helpButton, #fullscreenButton,
+#positionButton, #midiMapButton, #logoButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
     margin: 0.5em;
     text-align: center;
     font-weight: bold;
+}
+
+#logoButton {
+    border: none;
+    background-image: var(--logo);
+    background-repeat: none;
+    background-size: 100%;
+    color: transparent;
 }
 
 #mainContainer {
@@ -360,7 +371,7 @@ select {
     height: calc(100% - 4px);
 }
 
-.modelAndTemperatureContainer, .barsContainer, .midiContainer, #messageDiv,
+.modelAndHeatContainer, .barsContainer, .midiContainer, #messageDiv,
 #clickContainer {
     float: left;
     width: 100%;
@@ -369,7 +380,7 @@ select {
     text-align: center;
 }
 
-#temperatureContainer {
+#heatContainer {
     float: right;
     width: 57%;
     height: calc(100% - 4px);
@@ -394,12 +405,12 @@ select {
     justify-content: space-evenly;
 }
 
-#clickVolumeSlider, .temperatureSlider {
+#clickVolumeSlider, .heatSlider {
     float: left;
     width: 6em;
 }
 
-#clickButton, .temperatureTitleDiv {
+#clickButton, .heatTitleDiv {
     font-size: 1em;
     padding: 0.3em 1em;
     height: 2em;
@@ -407,7 +418,7 @@ select {
     float: right;
 }
 
-.temperatureTitleDiv {
+.heatTitleDiv {
     padding: 0;
     display: flex;
     align-items: center;

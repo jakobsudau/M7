@@ -35,14 +35,19 @@ class Midi {
 
         const that = this;
         const inputs = this.midiAccess.inputs.values();
-        for ( let input = inputs.next(); input && !input.done; input = inputs.next()) {
+        for (let input = inputs.next();
+                input && !input.done;
+                input = inputs.next()) {
             updatedAvailableInputs.push(input.value);
-            input.value.onmidimessage = function(e) {that.mIDIMessageEventHandler(event, that)};
+            input.value.onmidimessage = function(e) {
+                that.mIDIMessageEventHandler(event, that)};
         }
 
         const outputs = this.midiAccess.outputs.values();
         // Get all the MIDI outputs to show them in a <select> (for example)
-        for (let output = outputs.next(); output && !output.done; output = outputs.next()) {
+        for (let output = outputs.next();
+                output && !output.done;
+                output = outputs.next()) {
             updatedAvailableOutputs.push(output.value);
         }
 
@@ -62,30 +67,27 @@ class Midi {
 
     mIDIMessageEventHandler(event, that) {
         let input = event.currentTarget;
-        // Mask off the lower nibble (MIDI channel, which we don't care about)
+        // Mask off the lower nibble (MIDI channel, not used)
         switch (event.data[0] & 0xf0) {
             case 0x90:
-                if (event.data[2]!=0) {  // if velocity != 0, this is a note-on message
-                    that.mainModule.startStopNote(event.data[1], event.data[2], true, input);
+                if (event.data[2]!=0) {  // if velocity != 0 = noteOn message
+                    that.mainModule.startStopNote(
+                        event.data[1], event.data[2], true, input);
                     return;
                 }
-                // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, ya'll.
+                // if velocity == 0, fall thru: noteOff
             case 0x80:
-                that.mainModule.startStopNote(event.data[1], event.data[2], false, input);
+                that.mainModule.startStopNote(
+                    event.data[1], event.data[2], false, input);
                 return;
         }
     }
 
     sendMIDIMetronomeMessage(isBarStart, portId, volume) {
-        const velocity = volume * 127;
-        let start = [0x90, 80, velocity];
-        let stop = [0x80, 80, velocity];
-        if (isBarStart) {
-            start = [0x90, 90, velocity];
-            stop = [0x80, 90, velocity];
-        }
-        this.midiAccess.outputs.get(portId).send(start);
-        this.midiAccess.outputs.get(portId).send(stop, (Date.now()+100));
+        this.midiAccess.outputs.get(portId).send(
+            [0x90, (isBarStart ? 90 : 80), (volume * 127)]);
+        this.midiAccess.outputs.get(portId).send(
+            [0x80, (isBarStart ? 90 : 80), (volume * 127)], (Date.now()+100));
     }
 
     sendMIDISceneChange(number) {

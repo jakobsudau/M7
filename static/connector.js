@@ -9,9 +9,8 @@ class Connector {
             if (isElectron) {
                 if (id == 0) {
                     // support for native dark mode on macOS
-                    electron.ipcRenderer.on('to-mainModule', (event, arg) => {
-                        this.parent.switchDarkMode(arg);
-                    });
+                    electron.ipcRenderer.on('to-mainModule', (evt, arg) => {
+                        this.parent.switchDarkMode(arg)});
                     resolve({data: id});
                 } else {
                     electron.ipcRenderer.send('initialize',

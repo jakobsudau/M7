@@ -33,7 +33,7 @@ class GeneratorModule {
         this.listening = false;
         this.generationTime = Date.now();
         this.inputStartTime = Date.now();
-        this.temperature = 1.00;
+        this.heat = 1.00;
         this.shouldPlay = false;
         this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
         this.jzzPlayer;
@@ -101,7 +101,7 @@ class GeneratorModule {
         delete this.listening;
         delete this.generationTime;
         delete this.inputStartTime;
-        delete this.temperature;
+        delete this.heat;
         delete this.shouldPlay;
         delete this.jzzMidiOut;
         delete this.jzzPlayer;
@@ -171,7 +171,7 @@ class GeneratorModule {
         this.connector.generateSequence({
             cmd: "generate",
             seq: this.inputSequence,
-            temp: this.temperature,
+            temp: this.heat,
             chords: chords,
             outputBars: this.outputBars,
             id: this.id,
@@ -266,7 +266,8 @@ class GeneratorModule {
     //             this.player.outputs = [this.selectedOutput];
     //             // omitting player.outputs = message to all ports
 
-    //             this.player.start(this.generatedSeq, this.mainModule.metronome.bpm).then(() => {
+    //             this.player.start(this.generatedSeq,
+    //                 this.mainModule.metronome.bpm).then(() => {
     //                 this.playButton.disabled = false;
     //                 this.playing = false;
 
@@ -382,9 +383,10 @@ class GeneratorModule {
     }
 
     midiPortListUpdated() {
-        this.midiOutBusSelect.innerHTML = this.mainModule.midi.availableOutputs
+        let midi = this.mainModule.midi;
+        this.midiOutBusSelect.innerHTML = midi.availableOutputs
             .map(i =>`<option>${i.name}</option>`).join('');
-        this.midiInBusSelect.innerHTML = this.mainModule.midi.availableInputs
+        this.midiInBusSelect.innerHTML = midi.availableInputs
             .map(i =>`<option>${i.name}</option>`).join('');
     }
 
@@ -567,8 +569,8 @@ class GeneratorModule {
         this.midiInBusSelect.title = "MIDI Port for the incoming MIDI " +
             "data to generate a new sequence";
 
-        let modelAndTemperatureContainer = document.createElement("div");
-        modelAndTemperatureContainer.className = "modelAndTemperatureContainer";
+        let modelAndHeatContainer = document.createElement("div");
+        modelAndHeatContainer.className = "modelAndHeatContainer";
 
         let modelContainer = document.createElement("div");
         modelContainer.id = "modelContainer";
@@ -589,23 +591,23 @@ class GeneratorModule {
         this.modelSelect.add(new Option("MelodyRNN", "2"));
         this.modelSelect.add(new Option("MusicVAE", "3"));
 
-        let temperatureContainer = document.createElement("div");
-        temperatureContainer.id = "temperatureContainer";
-        temperatureContainer.className = "container";
+        let heatContainer = document.createElement("div");
+        heatContainer.id = "heatContainer";
+        heatContainer.className = "container";
 
-        let temperatureSlider = document.createElement("input");
-        temperatureSlider.type = "range";
-        temperatureSlider.className = "temperatureSlider";
-        temperatureSlider.min = "0";
-        temperatureSlider.max = "200";
-        temperatureSlider.value = "100";
+        let heatSlider = document.createElement("input");
+        heatSlider.type = "range";
+        heatSlider.className = "heatSlider";
+        heatSlider.min = "0";
+        heatSlider.max = "200";
+        heatSlider.value = "100";
 
-        temperatureSlider.title = "Controls the temperature level from " +
+        heatSlider.title = "Controls the heat level from " +
             "0 to 2";
-        let temperatureTitleDiv = document.createElement("div");
-        temperatureTitleDiv.className = "temperatureTitleDiv";
-        temperatureTitleDiv.innerHTML = "Heat " + this.temperature.toFixed(2);
-        temperatureTitleDiv.title = "The heat controls how " +
+        let heatTitleDiv = document.createElement("div");
+        heatTitleDiv.className = "heatTitleDiv";
+        heatTitleDiv.innerHTML = "Heat "+this.heat.toFixed(2);
+        heatTitleDiv.title = "The heat controls how " +
             "'erratic' or 'simple' the generated sequence should be, min " +
             "is very simple and max is very erratic";
 
@@ -639,16 +641,16 @@ class GeneratorModule {
         outputBarsOptionsContainer.appendChild(outputBarsOption2Text);
         outputBarsOptionsContainer.appendChild(outputBarsOptions[2]);
         outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
-        temperatureContainer.appendChild(temperatureSlider);
-        temperatureContainer.appendChild(temperatureTitleDiv);
+        heatContainer.appendChild(heatSlider);
+        heatContainer.appendChild(heatTitleDiv);
         modelContainer.appendChild(modelSelectContainer);
         modelSelectContainer.appendChild(modelText);
         modelSelectContainer.appendChild(this.modelSelect);
-        modelAndTemperatureContainer.appendChild(temperatureContainer);
-        modelAndTemperatureContainer.appendChild(modelContainer);
+        modelAndHeatContainer.appendChild(heatContainer);
+        modelAndHeatContainer.appendChild(modelContainer);
         this.generatorModuleContainer.appendChild(generatorModuleTitleDiv);
         this.generatorModuleContainer.appendChild(barsContainer);
-        this.generatorModuleContainer.appendChild(modelAndTemperatureContainer);
+        this.generatorModuleContainer.appendChild(modelAndHeatContainer);
         this.generatorModuleContainer.appendChild(midiContainer);
 
         this.generatorModuleContainer.appendChild(generatorButtonDiv);
@@ -661,10 +663,10 @@ class GeneratorModule {
             this.setPlayActive()}.bind(this));
         deleteButton.addEventListener('click', function() {
             this.deleteModule()}.bind(this));
-        temperatureSlider.addEventListener("input", function(e) {
-            this.temperature = (e.target.value/100);
-            temperatureTitleDiv.innerHTML = "Heat " +
-                this.temperature.toFixed(2);
+            heatSlider.addEventListener("input", function(e) {
+            this.heat = (e.target.value/100);
+            heatTitleDiv.innerHTML = "Heat " +
+                this.heat.toFixed(2);
 
         }.bind(this));
 

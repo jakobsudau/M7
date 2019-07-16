@@ -23,7 +23,6 @@ class Metronome {
         this.isSeqStart = false;
         this.startTime = 0;
         this.currentTime = 0;
-
         // this.once = true;
         this.mainModule = mainModule;
     }
@@ -31,8 +30,7 @@ class Metronome {
     startStop(){
         this.isPlaying = !this.isPlaying;
 
-        if (this.isPlaying) {    //start playing
-            const quatersPerSecond = 60.0 / this.bpm;
+        if (this.isPlaying) {
             this.currentQuaterNote = 0;
             let beatOffset = 1;
 
@@ -66,11 +64,11 @@ class Metronome {
         this.currentTime = this.audioContext.currentTime;
         this.currentQuaterNote++;               //Advance beat num, wrap
                                                 // to zero
-        if (this.currentQuaterNote == 4) {this.currentQuaterNote = 0;}
+        if (this.currentQuaterNote == 4) {this.currentQuaterNote = 0}
     }
 
     scheduleNote(beatNumber, time, data) {    //create an oscillator
-        const timeDifference = (Date.now() - data)/1000;
+        const timeDifference = (Date.now() - data) / 1000;
         console.log("time difference to worker event: " +
             timeDifference + "s");
 
@@ -99,8 +97,7 @@ class Metronome {
                 osc.onended = function() {osc.disconnect()};
             } else {
                 this.mainModule.midi.sendMIDIMetronomeMessage(isStart,
-                    this.outputId,
-                    this.gainNode.gain.value);
+                    this.outputId, this.gainNode.gain.value);
             }
         }
     }
@@ -111,8 +108,7 @@ class Metronome {
         const time = this.audioContext.currentTime + this.scheduleAheadTime;
         while (this.nextNoteTime < time) {
             this.scheduleNote(this.currentQuaterNote,
-                            this.nextNoteTime,
-                            data);
+                            this.nextNoteTime, data);
             this.nextNote();
         }
     }
@@ -123,7 +119,7 @@ class Metronome {
         this.timerWorker = null;
         this.timerWorker = new Worker("metronomeWorker.js");
         this.timerWorker.onmessage = function(e) {
-            if (e.data.tick) {this.scheduler(e.data.tick);}}.bind(this);
-        this.timerWorker.postMessage({"interval":this.lookahead});
+            if (e.data.tick) {this.scheduler(e.data.tick)}}.bind(this);
+        this.timerWorker.postMessage({"interval": this.lookahead});
     }
 }

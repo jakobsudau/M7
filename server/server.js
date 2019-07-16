@@ -24,7 +24,7 @@ io.on('connection', function(socket){
     console.log('a client connected');
 
     socket.on('disconnect', function(){
-        console.log('client disconnected');
+        console.log('a client disconnected');
         clientsAndWorkers.delete(socket.id);
         socket.disconnect(true);
     });
@@ -36,8 +36,7 @@ io.on('connection', function(socket){
         worker.on("message", incoming => callBack(incoming, socket.id));
         worker.on("error", code => new Error(`Worker error, code ${code}`));
         worker.on("exit", code =>
-            console.log(`Worker stopped with exit code ${code}`)
-        );
+            console.log(`Worker stopped with exit code ${code}`));
       });
 
     socket.on('generate', function(msg){

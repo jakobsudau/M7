@@ -54,7 +54,6 @@ class MainModule {
     }
 
     deleteModule(id) {
-        console.log(this.generators.get(id));
         this.generators.delete(id);
         // delete any mapped parameters
         this.midiMapParams.forEach((noteAndInput, button) => {
@@ -74,7 +73,7 @@ class MainModule {
         } else {
             this.generators.forEach((generator, id) => {
                 if (generator.listening &&
-                    (generator.selectedInput == input)) {
+                    generator.selectedInput == input) {
                     generator.startStopNote(note, velocity, isStart);
                 }
             });
@@ -103,9 +102,8 @@ class MainModule {
         ];
 
 		const isGood = (chord) => {
-            if (!chord) {
-                return false;
-            }
+            if (!chord) {return false}
+
             try {
                 mm.chords.ChordSymbols.pitches(chord);
                 return true;
@@ -142,17 +140,6 @@ class MainModule {
 			allGood = false;
 		}
 
-		let changed = false;
-		if (this.currentChords) {
-			if (chords[0] !== this.currentChords[0]) {changed = true;}
-			if (chords[1] !== this.currentChords[1]) {changed = true;}
-			if (chords[2] !== this.currentChords[2]) {changed = true;}
-			if (chords[3] !== this.currentChords[3]) {changed = true;}
-		}
-		else {
-			changed = true;
-        }
-
         if (allGood) {
             this.generators.forEach((generator, id) => {
                 generator.generateButton.disabled = false;
@@ -169,7 +156,7 @@ class MainModule {
             });
         }
 
-        let clickClass = this.metronomeOn ? "click enabled" : "click disabled";
+        let clickClass = "click "+ this.metronomeOn ? "enabled" : "disabled";
         this.clickButton.className = clickClass + highlight;
         window.setTimeout(function() {
             this.clickButton.className = clickClass;
@@ -188,7 +175,7 @@ class MainModule {
         if(this.midi != undefined) {
             // move "internal" option into click midi output options
             this.clickBusSelect.innerHTML = "";
-            this.clickBusSelect.options[0] = new Option('internal', 'internal');
+            this.clickBusSelect.options[0] = new Option('internal');
             this.clickBusSelect.innerHTML += this.midi.availableOutputs
                 .map(i =>`<option>${i.name}</option>`).join('');
             this.changeClickPort(0);
@@ -310,7 +297,8 @@ class MainModule {
             let chords = document.getElementsByClassName("chords");
             for(let i=0, len=chords.length; i<len; i++) {
                 if (chords[i].style.color != 'red') {
-                    chords[i].style.color = this.isDarkMode ? "white" : "black";
+                    chords[i].style.color =
+                        this.isDarkMode ? "white" : "black";
                 }
             }
         }
@@ -329,30 +317,30 @@ class MainModule {
             .getElementsByTagName("button");
         for (const button of buttons) {
             if (this.midiMapMode) {
-                let buttonOverlay = document.createElement("div");
-                buttonOverlay.className = "buttonOverlay";
+                let btnOverlay = document.createElement("div");
+                btnOverlay.className = "btnOverlay";
                 const mapped = this.midiMapParams.get(button);
                 if (mapped) {
-                    buttonOverlay.innerHTML = mapped.note;
+                    btnOverlay.innerHTML = mapped.note;
                 }
-                buttonOverlay.addEventListener("click", function(e) {
+                btnOverlay.addEventListener("click", function(e) {
                     e.stopPropagation();
                     const overlays =
-                    document.getElementsByClassName("buttonOverlay selected");
+                    document.getElementsByClassName("btnOverlay selected");
                     for (const overlay of overlays) {
-                        overlay.className = "buttonOverlay";
+                        overlay.className = "btnOverlay";
                     }
-                    e.target.className = "buttonOverlay selected";
+                    e.target.className = "btnOverlay selected";
                     this.midiMapSelection = e.target.parentElement;
                 }.bind(this));
 
-                buttonOverlay.addEventListener("dblclick", function(e) {
+                btnOverlay.addEventListener("dblclick", function(e) {
                     e.stopPropagation();
                     e.target.innerHTML = "";
                     this.midiMapParams.delete(e.target.parentElement);
                 }.bind(this));
 
-                button.appendChild(buttonOverlay);
+                button.appendChild(btnOverlay);
             } else {
                 button.removeChild(button.childNodes[1]);
             }
@@ -622,6 +610,11 @@ function initializeDarkModeAndUtilities(main) {
     fullscreenButton.innerHTML = "◱";
     fullscreenButton.title = "Toggle Fullscreen on/off";
 
+    const logoButton = document.createElement("button");
+    logoButton.id = "logoButton";
+    logoButton.innerHTML = "◱";
+    logoButton.title = "Welcome to MMAI";
+
     const positionButton = document.createElement("button");
     positionButton.id = "positionButton";
     positionButton.innerHTML = "◧";
@@ -681,11 +674,12 @@ function initializeDarkModeAndUtilities(main) {
                 positionButton.innerHTML = "◧";
                 controlButtonDiv.className = "left";
                 mainSubCon.className = "mainSubContainerLeftRight";
-                mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
+                mainCon.insertBefore(controlButtonDiv,mainCon.childNodes[0]);
                 break;
         }
     });
 
+    controlButtonDiv.appendChild(logoButton);
     controlButtonDiv.appendChild(darkModeSwitcher);
     controlButtonDiv.appendChild(helpButton);
     controlButtonDiv.appendChild(fullscreenButton);

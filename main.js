@@ -28,8 +28,7 @@ function createBgWindow() {
     });
     result.loadURL('file://' + __dirname + '/electron/background.html');
     result.on('closed', () => {
-        console.log('background window closed');
-    });
+        console.log('background window closed')});
     return result;
 }
 
@@ -51,14 +50,10 @@ app.on('ready', function() {
     main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/static/indexElectron.html');
     main.show();
-    main.webContents.on('did-finish-load', () => {
-        main.webContents.send('test','This is a test');
-      })
-      main.on('closed', () => {
-        // call quit to exit, otherwise the background
-        // windows will keep the app running
-        app.quit();
-    })
+    // main.webContents.on('did-finish-load', () => {
+    //     main.webContents.send('test','This is a test')});
+    // call quit to exit, otherwise background windows keep app running
+    main.on('closed', () => {app.quit()})
 
     // support for native dark mode on macOS
     if (process.platform == 'darwin') {
@@ -96,9 +91,7 @@ app.on('ready', function() {
     });
 
     ipcMain.on('initialize', (event, arg) => {
-        if (available.length < cpus) {
-            createBgWindow();
-        }
+        if (available.length < cpus) {createBgWindow()}
     });
 
     ipcMain.on('delete', (event, arg) => {
