@@ -496,19 +496,27 @@ class MainModule {
 
         this.clickButton = document.createElement("button");
         this.clickButton.id = "clickButton";
-        this.clickButton.innerHTML = "▵";
+        this.clickButton.innerHTML = "◭";
         this.clickButton.title = "Start/Stop the Click";
 
         let clickBusContainer = document.createElement("div");
         clickBusContainer.id = "clickBusContainer";
 
         let clickBusText = document.createElement("div");
-        clickBusText.innerHTML = "Click Out";
+        clickBusText.innerHTML = "Click Out Clock";
         clickBusText.title = "Port for outgoing click messages";
 
         this.clickBusSelect = document.createElement("select");
         this.clickBusSelect.id = "clickBusSelect";
         this.clickBusSelect.title = "Port for outgoing click messages";
+
+        this.clickClockSelect = document.createElement("select");
+        this.clickClockSelect.id = "clickClockSelect";
+        this.clickClockSelect.title = "Select whether MIDI Clock should be "
+            + "used and be in send or receive state";
+        this.clickClockSelect.options[0] = new Option('none');
+        this.clickClockSelect.options[1] = new Option('send');
+        this.clickClockSelect.options[2] = new Option('receive');
 
         mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordContainer);
@@ -519,6 +527,7 @@ class MainModule {
         clickContainer.appendChild(clickBusContainer);
         clickBusContainer.appendChild(clickBusText);
         clickBusContainer.appendChild(this.clickBusSelect);
+        clickBusContainer.appendChild(this.clickClockSelect);
         mainButtonContainer.appendChild(mainButtonSubContainer1);
         mainButtonContainer.appendChild(mainButtonSubContainer2);
         mainButtonSubContainer1.appendChild(this.buttonChangeBackward);

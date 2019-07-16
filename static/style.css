@@ -69,7 +69,6 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 
 .container, .chords, button, #bpmTextfield {
     border: 2px solid var(--borderColor);
-    border-radius: 0.1em;
 }
 
 .click.enabled, .listenButton.enabled, .mutateButton.enabled {
@@ -212,13 +211,18 @@ button, #mainModuleContainer, #generatorModuleContainer {
 }
 
 #darkModeSwitcher, #helpButton, #fullscreenButton,
-#positionButton, #midiMapButton, #logoButton {
+#positionButton, #midiMapButton, #logoButton, #clickButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
     margin: 0.5em;
     text-align: center;
     font-weight: bold;
+}
+
+#clickButton {
+    margin: 0;
+    font-size: 1.3635em;
 }
 
 #logoButton {
@@ -279,7 +283,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
 }
 
 #mainModuleContainer, #generatorModuleContainer,
-#helpContainer, #controlButtonDiv{
+#helpContainer, #controlButtonDiv {
     box-shadow: 0 4px 8px 0 var(--shadow1), 0 6px 20px 0 var(--shadow2);
 }
 
@@ -375,6 +379,11 @@ select {
     width: 7.5em;
 }
 
+#clickClockSelect {
+    width: 5.2em;
+    margin-left: 0.4em;
+}
+
 #modelContainer {
     float: left;
     width: 35%;
@@ -420,16 +429,12 @@ select {
     width: 6em;
 }
 
-#clickButton, .heatTitleDiv {
+.heatTitleDiv {
     font-size: 1em;
-    padding: 0.3em 1em;
     height: 2em;
     width: 3.2em;
-    float: right;
-}
-
-.heatTitleDiv {
     padding: 0;
+    float: right;
     display: flex;
     align-items: center;
 }
