@@ -7,6 +7,9 @@
     --moduleBackgroundColor: #464646;
     --color: #ebebeb;
     --deleteColor: #6E3232;
+    --highlightStartColor: #008000;
+    --highlightEnableColor: #d83131;
+    --highlightEnableActiveColor: #fbf08d;
     --buttonActiveColor: #696969;
     --buttonDisableColor: #575757;
     --btnOverlayColor: #517481b2;
@@ -23,6 +26,9 @@
     --moduleBackgroundColor: #efefef;
     --color: black;
     --deleteColor: #FB8D8D;
+    --highlightStartColor: #008000;
+    --highlightEnableColor: #d83131;
+    --highlightEnableActiveColor: #fbf08d;
     --buttonActiveColor: #cacaca;
     --buttonDisableColor: #cacaca;
     --btnOverlayColor: #add8e6b2;
@@ -70,25 +76,29 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     background: var(--buttonActiveColor);
 }
 
-.click.enabled.highlighted, .click.disabled.highlighted {
-    background: red;
-}
-
-.click.enabled.highlightedStart, .click.disabled.highlightedStart {
-    background: green;
-}
-
 .click.disabled, .listenButton.disabled, .mutateButton.disabled {
     background: var(--moduleBackgroundColor);
     color: var(--color);
 }
 
+.click.enabled.highlighted, .click.disabled.highlighted {
+    background: var(--highlightEnableColor);
+}
+
+.click.enabled.highlightedStart, .click.disabled.highlightedStart {
+    background: var(--highlightStartColor);
+}
+
 .listenButton.enabled {
-    color: #d83131;
+    color: var(--highlightEnableColor);
+}
+
+.listenButton.enabled.active {
+    color: var(--highlightEnableActiveColor);
 }
 
 .mutateButton.enabled {
-    color: #fbf08d;
+    color: var(--highlightEnableActiveColor);
 }
 
 .btnOverlay {

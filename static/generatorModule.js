@@ -145,9 +145,9 @@ class GeneratorModule {
         }
 
         if (isStart) {
-            this.listenButton.style.color = "yellow";
+            this.listenButton.className = "listenButton enabled active";
             window.setTimeout(function() {
-                this.listenButton.style.color = "red";
+                this.listenButton.className = "listenButton enabled";
             }.bind(this), 40);
 
             this.inputSequence.notes.push(
