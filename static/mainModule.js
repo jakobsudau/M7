@@ -156,7 +156,7 @@ class MainModule {
             });
         }
 
-        let clickClass = "click "+ this.metronomeOn ? "enabled" : "disabled";
+        let clickClass = this.metronomeOn ? "click enabled":"click disabled";
         this.clickButton.className = clickClass + highlight;
         window.setTimeout(function() {
             this.clickButton.className = clickClass;
@@ -317,6 +317,7 @@ class MainModule {
             .getElementsByTagName("button");
         for (const button of buttons) {
             if (this.midiMapMode) {
+                console.log("midi map it!");
                 let btnOverlay = document.createElement("div");
                 btnOverlay.className = "btnOverlay";
                 const mapped = this.midiMapParams.get(button);

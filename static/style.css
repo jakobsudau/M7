@@ -92,8 +92,8 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 }
 
 .btnOverlay {
-    background: var(--btnOverlay);
-    border: 2px solid  var(--btnOverlay);
+    background: var(--btnOverlayColor);
+    border: 2px solid  var(--btnOverlayColor);
 }
 
 .btnOverlay.selected {
