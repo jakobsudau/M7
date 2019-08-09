@@ -4,17 +4,22 @@
 
 class MainModule {
     constructor(midiAccess) {
+        if (!!MainModule.instance) {
+            return MainModule.instance;
+        }
+
+        MainModule.instance = this;
         this.spaceSwitch = false;
         this.isDarkMode = false;
         this.midiMapMode = false;
         this.midiMapSelection;
         this.midiMapParams = new Map();
         this.clickButton;
-        this.buttonGenerateAll;
-        this.buttonStopAll;
-        this.buttonPlayAll;
-        this.buttonChangeBackward;
-        this.buttonChangeForward;
+        this.generateAllButton;
+        this.stopAllButton;
+        this.playAllButton;
+        this.changeBackwardButton;
+        this.changeForwardButton;
         this.generateLoopButton;
         this.clickBusSelect;
         this.selectedClickBusId = "internal";
@@ -30,27 +35,28 @@ class MainModule {
         this.connector.initialize(0);
         this.generatorCounter = 1;
         this.sceneCounter = 0;
+        this.generateAllCounter = 0;
         this.midi = new Midi(midiAccess, this);
         this.metronome = new Metronome(this);
         this.metronome.initialize();
-        this.metronome.startStop();
         this.createUIElements();
         this.startStopClick();
         this.startStopClick();
+        return this;
     }
 
     addModule() {
         const generator = new GeneratorModule(this, this.generatorCounter);
         generator.initialize().then((id) => {
             this.generators.set(id, generator);
+            this.generateAllButton.disabled = false;
+            this.changeForwardButton.disabled = false;
+            this.playAllButton.disabled = false;
+            this.stopAllButton.disabled = false;
+            this.bpmTextfield.disabled = false;
+            this.generateLoopButton.disabled = false;
         });
         this.generatorCounter++;
-        this.buttonGenerateAll.disabled = false;
-        this.buttonChangeForward.disabled = false;
-        this.buttonPlayAll.disabled = false;
-        this.buttonStopAll.disabled = false;
-        this.bpmTextfield.disabled = false;
-        this.generateLoopButton.disabled = false;
     }
 
     deleteModule(id) {
@@ -191,6 +197,7 @@ class MainModule {
     startStopClick() {
         this.metronomeOn = !this.metronomeOn;
         this.metronome.playOutput = this.metronomeOn;
+        this.metronome.startStop();
         if (this.metronomeOn) {
             this.clickButton.className = "click enabled";
         } else {
@@ -237,6 +244,8 @@ class MainModule {
     }
 
     generateAll() {
+        this.generateAllButton.disabled = true;
+        this.generateAllCounter = 0;
         const chords = [
             this.chord1.value,
             this.chord2.value,
@@ -245,12 +254,18 @@ class MainModule {
         ];
 
         this.generators.forEach((generator, id) => {
-            generator.generateSequence(chords);
+            generator.generateSequence(chords).then((data) => {
+                this.generateAllCounter++;
+
+                if (this.generateAllCounter == this.generators.size) {
+                    this.generateAllButton.disabled = false;
+                    this.generateAllButton.style.backgroundImage =
+                        `linear-gradient(to bottom right, ` +
+                        `hsla(${Math.random() * 360}, 80%, 70%, 0.3), ` +
+                        `hsla(${Math.random() * 360}, 80%, 70%, 0.3))`;
+                }
+            });
         });
-        this.buttonGenerateAll.style.backgroundImage =
-            `linear-gradient(to bottom right, ` +
-            `hsla(${Math.random() * 360}, 80%, 70%, 0.3), ` +
-            `hsla(${Math.random() * 360}, 80%, 70%, 0.3))`;
     }
 
     generateLoop() {
@@ -277,7 +292,7 @@ class MainModule {
                 this.midi.sendMIDISceneChange(this.sceneCounter);
             }
 
-            document.getElementById("buttonChangeBackward").disabled =
+            document.getElementById("changeBackwardButton").disabled =
                 this.sceneCounter == 0;
         }
     }
@@ -286,10 +301,10 @@ class MainModule {
         if (this.isDarkMode != darkMode) {
             if(document.documentElement.getAttribute('theme') == "dark"){
                 document.documentElement.setAttribute('theme', 'light');
-                darkModeSwitcher.innerHTML = "☾";
+                darkModeButton.innerHTML = "☾";
             } else {
                 document.documentElement.setAttribute('theme', 'dark');
-                darkModeSwitcher.innerHTML = "☀";
+                darkModeButton.innerHTML = "☀";
             }
 
             this.isDarkMode = darkMode;
@@ -313,7 +328,7 @@ class MainModule {
             midiMapButton.className = "midiMapButton inactive";
         }
 
-        const buttons = document.getElementById("mainSubContainer")
+        const buttons = document.getElementById("modulesContainer")
             .getElementsByTagName("button");
         for (const button of buttons) {
             if (this.midiMapMode) {
@@ -349,9 +364,9 @@ class MainModule {
     }
 
     createUIElements() {
-        let mainSubContainer = document.createElement("div");
-        mainSubContainer.id = "mainSubContainer";
-        mainSubContainer.className = "mainSubContainerLeftRight";
+        let modulesContainer = document.createElement("div");
+        modulesContainer.id = "modulesContainer";
+        modulesContainer.className = "modulesContainerLeftRight";
 
         let mainModuleContainer = document.createElement("div");
         mainModuleContainer.id = "mainModuleContainer";
@@ -373,12 +388,12 @@ class MainModule {
         mainButtonSubContainer2.id = "mainButtonSubContainer2";
         mainButtonSubContainer2.className = "mainButtonDiv";
 
-        this.buttonGenerateAll = document.createElement("button");
-        this.buttonGenerateAll.id = "buttonGenerateAll";
-        this.buttonGenerateAll.innerHTML = "☷";
-        this.buttonGenerateAll.title = "Generate Sequence for all " +
+        this.generateAllButton = document.createElement("button");
+        this.generateAllButton.id = "generateAllButton";
+        this.generateAllButton.innerHTML = "☷";
+        this.generateAllButton.title = "Generate Sequence for all " +
             "Generator Modules";
-        this.buttonGenerateAll.disabled = true;
+        this.generateAllButton.disabled = true;
 
         this.bpmTextfield = document.createElement("input");
         this.bpmTextfield.type = "number";
@@ -395,39 +410,39 @@ class MainModule {
         this.generateLoopButton.title = "Magical generate loop!";
         this.generateLoopButton.disabled = true;
 
-        let buttonAdd = document.createElement("button");
-        buttonAdd.id = "buttonAdd";
-        buttonAdd.innerHTML = "+";
-        buttonAdd.title = "Add a Generator Module";
+        let addButton = document.createElement("button");
+        addButton.id = "addButton";
+        addButton.innerHTML = "+";
+        addButton.title = "Add a Generator Module";
 
-        this.buttonChangeForward = document.createElement("button");
-        this.buttonChangeForward.id = "buttonChangeForward";
-        this.buttonChangeForward.className = "changeButton";
-        this.buttonChangeForward.innerHTML = "⇥";
-        this.buttonChangeForward.title = "Move one Scene (Instrument  " +
+        this.changeForwardButton = document.createElement("button");
+        this.changeForwardButton.id = "changeForwardButton";
+        this.changeForwardButton.className = "changeButton";
+        this.changeForwardButton.innerHTML = "⇥";
+        this.changeForwardButton.title = "Move one Scene (Instrument  " +
             "Presets) forward ";
-        this.buttonChangeForward.disabled = true;
+        this.changeForwardButton.disabled = true;
 
-        this.buttonChangeBackward = document.createElement("button");
-        this.buttonChangeBackward.id = "buttonChangeBackward";
-        this.buttonChangeBackward.className = "changeButton";
-        this.buttonChangeBackward.innerHTML = "⇤";
-        this.buttonChangeBackward.title = "Move one Scene (Instrument " +
+        this.changeBackwardButton = document.createElement("button");
+        this.changeBackwardButton.id = "changeBackwardButton";
+        this.changeBackwardButton.className = "changeButton";
+        this.changeBackwardButton.innerHTML = "⇤";
+        this.changeBackwardButton.title = "Move one Scene (Instrument " +
         "Presets) backward";
-        this.buttonChangeBackward.disabled = true;
+        this.changeBackwardButton.disabled = true;
 
-        this.buttonStopAll = document.createElement("button");
-        this.buttonStopAll.id = "buttonStopAll";
-        this.buttonStopAll.className = "buttonStop";
-        this.buttonStopAll.innerHTML = "■";
-        this.buttonStopAll.title = "Stop all playing Generators";
-        this.buttonStopAll.disabled = true;
+        this.stopAllButton = document.createElement("button");
+        this.stopAllButton.id = "stopAllButton";
+        this.stopAllButton.className = "buttonStop";
+        this.stopAllButton.innerHTML = "■";
+        this.stopAllButton.title = "Stop all playing Generators";
+        this.stopAllButton.disabled = true;
 
-        this.buttonPlayAll = document.createElement("button");
-        this.buttonPlayAll.id = "buttonPlayAll";
-        this.buttonPlayAll.innerHTML = "▶";
-        this.buttonPlayAll.title = "Play all generated Sequences";
-        this.buttonPlayAll.disabled = true;
+        this.playAllButton = document.createElement("button");
+        this.playAllButton.id = "playAllButton";
+        this.playAllButton.innerHTML = "▶";
+        this.playAllButton.title = "Play all generated Sequences";
+        this.playAllButton.disabled = true;
 
         let chordContainer = document.createElement("div");
         chordContainer.id = "chordContainer";
@@ -512,8 +527,8 @@ class MainModule {
 
         this.clickClockSelect = document.createElement("select");
         this.clickClockSelect.id = "clickClockSelect";
-        this.clickClockSelect.title = "Select whether MIDI Clock messages should be "
-            + "used (instead of regular MIDI messages) and "
+        this.clickClockSelect.title = "Select whether MIDI Clock messages "
+            + "should be used (instead of regular MIDI messages) and "
             + "be in send or receive state";
         this.clickClockSelect.options[0] = new Option('none');
         this.clickClockSelect.options[1] = new Option('send');
@@ -531,14 +546,14 @@ class MainModule {
         clickBusContainer.appendChild(this.clickClockSelect);
         mainButtonContainer.appendChild(mainButtonSubContainer1);
         mainButtonContainer.appendChild(mainButtonSubContainer2);
-        mainButtonSubContainer1.appendChild(this.buttonChangeBackward);
-        mainButtonSubContainer1.appendChild(this.buttonChangeForward);
+        mainButtonSubContainer1.appendChild(this.changeBackwardButton);
+        mainButtonSubContainer1.appendChild(this.changeForwardButton);
         mainButtonSubContainer1.appendChild(this.generateLoopButton);
         mainButtonSubContainer1.appendChild(this.bpmTextfield);
-        mainButtonSubContainer2.appendChild(this.buttonGenerateAll);
-        mainButtonSubContainer2.appendChild(this.buttonPlayAll);
-        mainButtonSubContainer2.appendChild(this.buttonStopAll);
-        mainButtonSubContainer2.appendChild(buttonAdd);
+        mainButtonSubContainer2.appendChild(this.generateAllButton);
+        mainButtonSubContainer2.appendChild(this.playAllButton);
+        mainButtonSubContainer2.appendChild(this.stopAllButton);
+        mainButtonSubContainer2.appendChild(addButton);
         chordContainer.appendChild(selectChords);
         chordContainer.appendChild(chords);
         chords.appendChild(table);
@@ -553,23 +568,23 @@ class MainModule {
         tableTd4.appendChild(this.chord4);
 
         const mainContainer = document.getElementById("mainContainer");
-        mainContainer.appendChild(mainSubContainer);
+        mainContainer.appendChild(modulesContainer);
 
-        mainSubContainer.appendChild(mainModuleContainer);
+        modulesContainer.appendChild(mainModuleContainer);
 
-        this.buttonGenerateAll.addEventListener('click', function() {
+        this.generateAllButton.addEventListener('click', function() {
             this.generateAll()}.bind(this));
         this.generateLoopButton.addEventListener('click', function() {
             this.generateLoop()}.bind(this));
-        buttonAdd.addEventListener('click', function() {
+        addButton.addEventListener('click', function() {
             this.addModule()}.bind(this));
-        this.buttonStopAll.addEventListener('click', function() {
+        this.stopAllButton.addEventListener('click', function() {
             this.stopAll()}.bind(this));
-        this.buttonPlayAll.addEventListener('click', function() {
+        this.playAllButton.addEventListener('click', function() {
             this.playAll()}.bind(this));
-        this.buttonChangeForward.addEventListener('click', function(e) {
+        this.changeForwardButton.addEventListener('click', function(e) {
             this.changeScene("forward", e.target)}.bind(this));
-        this.buttonChangeBackward.addEventListener('click', function(e) {
+        this.changeBackwardButton.addEventListener('click', function(e) {
             this.changeScene("backward", e.target)}.bind(this));
         clickVolumeSlider.addEventListener("input", function(e) {
             this.changeClickVolume(e.target.value/100)}.bind(this));
@@ -606,25 +621,20 @@ class MainModule {
 // -------------------------------------------------------------------------
 
 function initializeDarkModeAndUtilities(main) {
-    const controlButtonDiv = document.createElement("div");
-    controlButtonDiv.id = "controlButtonDiv";
-    controlButtonDiv.className = "left";
+    const globalControlsContainer = document.createElement("div");
+    globalControlsContainer.id = "globalControlsContainer";
+    globalControlsContainer.className = "left";
 
     const helpButton = document.createElement("button");
     helpButton.id = "helpButton";
     helpButton.innerHTML = "?";
-    helpButton.title = "Show the Help Screen";
+    helpButton.title = "Welcome to MMAI! Click here for help :)";
     helpButton.addEventListener('click', function(){showHelp()});
 
     const fullscreenButton = document.createElement("button");
     fullscreenButton.id = "fullscreenButton";
     fullscreenButton.innerHTML = "◱";
     fullscreenButton.title = "Toggle Fullscreen on/off";
-
-    const logoButton = document.createElement("button");
-    logoButton.id = "logoButton";
-    logoButton.innerHTML = "◱";
-    logoButton.title = "Welcome to MMAI";
 
     const positionButton = document.createElement("button");
     positionButton.id = "positionButton";
@@ -642,16 +652,16 @@ function initializeDarkModeAndUtilities(main) {
         main.mapMidi();
     });
 
-    const darkModeSwitcher = document.createElement("button");
-    darkModeSwitcher.id = "darkModeSwitcher";
-    darkModeSwitcher.innerHTML = "☾";
-    darkModeSwitcher.title = "Switch to Dark/Light Mode";
-    darkModeSwitcher.addEventListener("click", function() {
+    const darkModeButton = document.createElement("button");
+    darkModeButton.id = "darkModeButton";
+    darkModeButton.innerHTML = "☾";
+    darkModeButton.title = "Switch to Dark/Light Mode";
+    darkModeButton.addEventListener("click", function() {
         main.switchDarkMode(!main.isDarkMode);
     });
 
     fullscreenButton.addEventListener("click", function() {
-        controlButtonDiv
+        globalControlsContainer
         if (document.fullscreenElement) {
             fullscreenButton.innerHTML = "◱";
             document.exitFullscreen()
@@ -662,42 +672,41 @@ function initializeDarkModeAndUtilities(main) {
     });
 
     positionButton.addEventListener("click", function() {
-        const mainSubCon = document.getElementById("mainSubContainer");
+        const mainSubCon = document.getElementById("modulesContainer");
         const mainCon = document.getElementById("mainContainer");
-        switch (controlButtonDiv.className) {
+        switch (globalControlsContainer.className) {
             case "left":
                 positionButton.innerHTML = "⬒";
-                controlButtonDiv.className = "top";
-                mainSubCon.className = "mainSubContainerTopBottom";
+                globalControlsContainer.className = "top";
+                mainSubCon.className = "modulesContainerTopBottom";
                 break;
             case "top":
                 positionButton.innerHTML = "◨";
-                controlButtonDiv.className = "right";
-                mainSubCon.className = "mainSubContainerLeftRight";
+                globalControlsContainer.className = "right";
+                mainSubCon.className = "modulesContainerLeftRight";
                 break;
             case "right":
                 positionButton.innerHTML = "⬓";
-                controlButtonDiv.className = "bottom";
-                mainSubCon.className = "mainSubContainerTopBottom";
-                mainCon.appendChild(controlButtonDiv);
+                globalControlsContainer.className = "bottom";
+                mainSubCon.className = "modulesContainerTopBottom";
+                mainCon.appendChild(globalControlsContainer);
                 break;
             case "bottom":
                 positionButton.innerHTML = "◧";
-                controlButtonDiv.className = "left";
-                mainSubCon.className = "mainSubContainerLeftRight";
-                mainCon.insertBefore(controlButtonDiv,mainCon.childNodes[0]);
+                globalControlsContainer.className = "left";
+                mainSubCon.className = "modulesContainerLeftRight";
+                mainCon.insertBefore(globalControlsContainer,mainCon.childNodes[0]);
                 break;
         }
     });
 
-    controlButtonDiv.appendChild(logoButton);
-    controlButtonDiv.appendChild(darkModeSwitcher);
-    controlButtonDiv.appendChild(helpButton);
-    controlButtonDiv.appendChild(fullscreenButton);
-    controlButtonDiv.appendChild(midiMapButton);
-    controlButtonDiv.appendChild(positionButton);
+    globalControlsContainer.appendChild(helpButton);
+    globalControlsContainer.appendChild(darkModeButton);
+    globalControlsContainer.appendChild(fullscreenButton);
+    globalControlsContainer.appendChild(midiMapButton);
+    globalControlsContainer.appendChild(positionButton);
     const mainCon = document.getElementById("mainContainer");
-    mainCon.insertBefore(controlButtonDiv, mainCon.childNodes[0]);
+    mainCon.insertBefore(globalControlsContainer, mainCon.childNodes[0]);
     addHelp();
 }
 
@@ -711,7 +720,7 @@ function addHelp() {
 
     let helpTitleDiv = document.createElement("div");
     helpTitleDiv.id = "helpTitleDiv";
-    helpTitleDiv.innerHTML = "Help";
+    helpTitleDiv.innerHTML = "MMAI";
 
     let helpTextDiv = document.createElement("div");
     helpTextDiv.id = "helpTextDiv";
@@ -720,7 +729,7 @@ function addHelp() {
         "send them each to any of your systems MIDI Ports so you can " +
         "listen to your own AI band!<br/><br/>Hover over any UI Element " +
         "to see the tooltip.<br/><br/>This is the project MMAI by Jakob " +
-        "Sudau for his Master at the HAW Hamburg called Sound/Vision." +
+        "Sudau for his Master Sound/Vision at the HAW Hamburg." +
         "<br/><br/><br/>Enjoy!";
 
     let helpBottomTextDiv = document.createElement("div");
@@ -728,32 +737,33 @@ function addHelp() {
     helpBottomTextDiv.innerHTML = "Copyright © Jakob Sudau, 2019, " +
         "jakob.sudau@icloud.com";
 
-    let deleteButton = document.createElement("button");
-    deleteButton.className = "deleteButton";
-    deleteButton.innerHTML = "X";
-    deleteButton.title = "Close the Help Screen";
-    deleteButton.addEventListener('click', function(){showHelp()});
+    let helpDeleteButton = document.createElement("button");
+    helpDeleteButton.id = "helpDeleteButton";
+    helpDeleteButton.className = "deleteButton";
+    helpDeleteButton.innerHTML = "X";
+    helpDeleteButton.title = "Close the Help Screen";
+    helpDeleteButton.addEventListener('click', function(){showHelp()});
 
     helpContainer.appendChild(helpTitleDiv);
     helpContainer.appendChild(helpTextDiv);
     helpContainer.appendChild(helpBottomTextDiv);
-    helpContainer.appendChild(deleteButton);
+    helpContainer.appendChild(helpDeleteButton);
     overlay.appendChild(helpContainer);
     document.body.appendChild(overlay);
 }
 
 function showHelp() {
-    const mainSubContainer = document.getElementById("mainSubContainer");
-    const controlButtonDiv = document.getElementById("controlButtonDiv");
+    const modulesContainer = document.getElementById("modulesContainer");
+    const globalControlsContainer = document.getElementById("globalControlsContainer");
     const overlay = document.getElementById("overlay");
     if (overlay.style.display == "block") {
         overlay.style.display = "none";
-        mainSubContainer.style.filter = "blur(0px)";
-        controlButtonDiv.style.filter = "blur(0px)";
+        modulesContainer.style.filter = "blur(0px)";
+        globalControlsContainer.style.filter = "blur(0px)";
     } else {
         overlay.style.display = "block";
-        mainSubContainer.style.filter = "blur(5px)";
-        controlButtonDiv.style.filter = "blur(5px)";
+        modulesContainer.style.filter = "blur(5px)";
+        globalControlsContainer.style.filter = "blur(5px)";
     }
 }
 

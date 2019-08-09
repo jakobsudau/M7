@@ -41,7 +41,7 @@
     background: var(--backgroundColor);
 }
 
-#controlButtonDiv {
+#globalControlsContainer {
     background-color: var(--moduleBackgroundColor);
 }
 
@@ -110,7 +110,7 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
     border: 2px solid  var(--btnOverlaySelectedColor);
 }
 
-#mainButtonContainer, .generatorButtonDiv, .bottom {
+#mainButtonContainer, .generatorButtonDivContainer, .bottom {
     border-top: 2px solid var(--borderColor);
 }
 
@@ -166,7 +166,7 @@ html, body {
     transition: background-color .2s linear, filter .2s linear;
 }
 
-#controlButtonDiv {
+#globalControlsContainer {
     text-align: center;
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -188,7 +188,7 @@ html, body {
     width: 100%;
 }
 
-#mainSubContainer {
+#modulesContainer {
     padding-left: 0.8em;
     padding-top: 0.8em;
     -webkit-user-select: none;
@@ -196,12 +196,12 @@ html, body {
     overflow: auto;
 }
 
-.mainSubContainerLeftRight {
+.modulesContainerLeftRight {
     width: calc(100% - 5.2em);
     height: calc(100% - 0.8em);
 }
 
-.mainSubContainerTopBottom {
+.modulesContainerTopBottom {
     width: calc(100% - 0.8em);
     height: calc(100% - 4.2em);
 }
@@ -210,8 +210,8 @@ button, #mainModuleContainer, #generatorModuleContainer {
     -webkit-app-region: no-drag;
 }
 
-#darkModeSwitcher, #helpButton, #fullscreenButton,
-#positionButton, #midiMapButton, #logoButton, #clickButton {
+#darkModeButton, #helpButton, #fullscreenButton,
+#positionButton, #midiMapButton, #clickButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
@@ -225,7 +225,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     font-size: 1.3635em;
 }
 
-#logoButton {
+#helpButton {
     border: none;
     background-image: var(--logo);
     background-repeat: none;
@@ -283,7 +283,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
 }
 
 #mainModuleContainer, #generatorModuleContainer,
-#helpContainer, #controlButtonDiv {
+#helpContainer, #globalControlsContainer {
     box-shadow: 0 4px 8px 0 var(--shadow1), 0 6px 20px 0 var(--shadow2);
 }
 
@@ -344,7 +344,7 @@ button:focus, div:focus, input:focus, select:focus{
     padding: 0;
 }
 
-#buttonAdd, #generateLoopButton, .deleteButton {
+#addButton, #generateLoopButton, .deleteButton {
     font-weight: bold;
 }
 
@@ -439,7 +439,7 @@ select {
     align-items: center;
 }
 
-.mainButtonDiv, .generatorButtonDiv {
+.mainButtonDiv, .generatorButtonDivContainer {
     width: 100%;
     text-align: center;
     display:flex;
@@ -451,7 +451,7 @@ select {
     margin-bottom: 0;
 }
 
-#buttonGenerateAll, .generateButton {
+#generateAllButton, .generateButton {
     font-weight: 550;
 }
 
@@ -459,7 +459,7 @@ select {
     flex-direction: column;
 }
 
-.generatorButtonDiv, #mainButtonContainer {
+.generatorButtonDivContainer, #mainButtonContainer {
     position: absolute;
     left: 0;
     bottom: 0;

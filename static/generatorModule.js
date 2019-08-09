@@ -71,8 +71,8 @@ class GeneratorModule {
     }
 
     deleteModule() {
-        const mainSubContainer =document.getElementById("mainSubContainer");
-        mainSubContainer.removeChild(this.generatorModuleContainer);
+        const modulesContainer =document.getElementById("modulesContainer");
+        modulesContainer.removeChild(this.generatorModuleContainer);
         this.mainModule.deleteModule(this.id);
         this.connector.delete(this.id);
 
@@ -165,34 +165,32 @@ class GeneratorModule {
     }
 
     generateSequence(chords) {
-        this.generateButton.disabled = true;
-        this.generationTime = Date.now();
+        return new Promise(function(resolve, reject) {
+            this.generateButton.disabled = true;
+            this.generationTime = Date.now();
 
-        this.connector.generateSequence({
-            cmd: "generate",
-            seq: this.inputSequence,
-            temp: this.heat,
-            chords: chords,
-            outputBars: this.outputBars,
-            id: this.id,
-            addBassProg: this.addBassProg,
-            model: this.modelSelect.selectedIndex});
-    }
-
-    // callback from server when generating is done,
-    // expecting json formatted sequence
-    generateSequenceCallback(data) {
-        console.log("generator " + this.id + ": generating on server " +
-        "took: " + ((Date.now() - this.generationTime)/1000) + "s");
-        this.generatedSeq = data.data;
-        this.generatedSmf = this.convertToSmf(this.generatedSeq);
-        this.generateButton.disabled = false;
-        this.generateButton.style.background =
-            `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
-
-        if (this.generatedSeq != undefined && !this.playing) {
-            this.playButton.disabled = false;
-        }
+            this.connector.generateSequence({
+                cmd: "generate",
+                seq: this.inputSequence,
+                temp: this.heat,
+                chords: chords,
+                outputBars: this.outputBars,
+                id: this.id,
+                addBassProg: this.addBassProg,
+                model: this.modelSelect.selectedIndex}).then((data) => {
+                    console.log("generator " + this.id + ": generating on server " +
+                    "took: " + ((Date.now() - this.generationTime)/1000) + "s");
+                    this.generatedSeq = data.data;
+                    this.generatedSmf = this.convertToSmf(this.generatedSeq);
+                    this.generateButton.disabled = false;
+                    this.generateButton.style.background =
+                        `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
+                    if (this.generatedSeq != undefined && !this.playing) {
+                        this.playButton.disabled = false;
+                    }
+                    resolve("done");
+                });
+        }.bind(this));
     }
 
     convertToSmf(seq) {
@@ -215,6 +213,9 @@ class GeneratorModule {
         delete this.jzzPlayer;
         this.jzzPlayer = this.generatedSmf.player();
         this.jzzPlayer.connect(this.jzzMidiOut);
+        if (!this.mainModule.metronome.isPlaying) {
+            this.jzzPlayer.loop(true);
+        }
         this.jzzPlayer.play();
 
         if (!this.playing && this.shouldPlay) {
@@ -371,6 +372,8 @@ class GeneratorModule {
         this.playButton.disabled = true;
         if (this.mainModule.metronome.isPlaying) {
             this.barCounter = 0;
+        } else {
+            this.playGeneratedSequence();
         }
     }
 
@@ -414,8 +417,8 @@ class GeneratorModule {
         generatorModuleTitleDiv.title = "Set your custom name for this " +
             "Generator Module";
 
-        let generatorButtonDiv = document.createElement("div");
-        generatorButtonDiv.className = "generatorButtonDiv";
+        let generatorButtonDivContainer = document.createElement("div");
+        generatorButtonDivContainer.className = "generatorButtonDivContainer";
 
         let playContainer = document.createElement("div");
         playContainer.className = "container";
@@ -576,9 +579,6 @@ class GeneratorModule {
         modelContainer.id = "modelContainer";
         modelContainer.className = "container";
 
-        let modelSelectContainer = document.createElement("div");
-        modelSelectContainer.className = "modelSelectContainer";
-
         let modelText = document.createElement("div");
         modelText.innerHTML = "Model";
         modelText.title = "Select different model for sequence generation";
@@ -611,10 +611,10 @@ class GeneratorModule {
             "'erratic' or 'simple' the generated sequence should be, min " +
             "is very simple and max is very erratic";
 
-        generatorButtonDiv.appendChild(this.generateButton);
-        generatorButtonDiv.appendChild(this.playButton);
-        generatorButtonDiv.appendChild(this.stopButton);
-        generatorButtonDiv.appendChild(this.mutateButton);
+        generatorButtonDivContainer.appendChild(this.generateButton);
+        generatorButtonDivContainer.appendChild(this.playButton);
+        generatorButtonDivContainer.appendChild(this.stopButton);
+        generatorButtonDivContainer.appendChild(this.mutateButton);
         midiOutContainer.appendChild(midiOutText);
         midiOutContainer.appendChild(this.midiOutBusSelect);
         midiInContainer.appendChild(midiInSelectContainer);
@@ -643,9 +643,8 @@ class GeneratorModule {
         outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
         heatContainer.appendChild(heatSlider);
         heatContainer.appendChild(heatTitleDiv);
-        modelContainer.appendChild(modelSelectContainer);
-        modelSelectContainer.appendChild(modelText);
-        modelSelectContainer.appendChild(this.modelSelect);
+        modelContainer.appendChild(modelText);
+        modelContainer.appendChild(this.modelSelect);
         modelAndHeatContainer.appendChild(heatContainer);
         modelAndHeatContainer.appendChild(modelContainer);
         this.generatorModuleContainer.appendChild(generatorModuleTitleDiv);
@@ -653,11 +652,11 @@ class GeneratorModule {
         this.generatorModuleContainer.appendChild(modelAndHeatContainer);
         this.generatorModuleContainer.appendChild(midiContainer);
 
-        this.generatorModuleContainer.appendChild(generatorButtonDiv);
+        this.generatorModuleContainer.appendChild(generatorButtonDivContainer);
         this.generatorModuleContainer.appendChild(deleteButton);
 
-        const mainSubContainer =document.getElementById("mainSubContainer");
-        mainSubContainer.appendChild(this.generatorModuleContainer);
+        const modulesContainer =document.getElementById("modulesContainer");
+        modulesContainer.appendChild(this.generatorModuleContainer);
 
         this.playButton.addEventListener('click', function() {
             this.setPlayActive()}.bind(this));
