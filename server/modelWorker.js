@@ -8,12 +8,17 @@ const models = [new mm.MusicRNN(improvCheckpoint),
 				new mm.MusicRNN(melodyCheckpoint),
 				new mm.MusicVAE(vaeCheckpoint)];
 
+// models[0].initialize().then(() =>
+// 	models[1].initialize().then(() =>
+// 		models[2].initialize().then(() =>
+// 			parentPort.postMessage({data: "finishedInitialization",
+// 			cmd: "initDone",
+// 			id: id}))));
 models[0].initialize().then(() =>
-	models[1].initialize().then(() =>
-		models[2].initialize().then(() =>
-			parentPort.postMessage({data: "finishedInitialization",
-			cmd: "initDone",
-			id: id}))));
+	parentPort.postMessage({data: "finishedInitialization",
+	cmd: "initDone",
+	id: id}));
+
 
 
 // --------------------------------------------------------------------------
