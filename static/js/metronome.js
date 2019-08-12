@@ -117,7 +117,7 @@ class Metronome {
         this.gainNode.connect(this.audioContext.destination);
         this.gainNode.gain.value = 0.8;
         this.timerWorker = null;
-        this.timerWorker = new Worker("metronomeWorker.js");
+        this.timerWorker = new Worker("../js/metronomeWorker.js");
         this.timerWorker.onmessage = function(e) {
             if (e.data.tick) {this.scheduler(e.data.tick)}}.bind(this);
         this.timerWorker.postMessage({"interval": this.lookahead});

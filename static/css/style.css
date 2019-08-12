@@ -1,6 +1,6 @@
 /* ------------------- Dark Mode & Coloring Code Start ------------------- */
 :root[theme='dark'] {
-    --logo: url("img/logoDark.png");
+    --logo: url("../img/logoDark.png");
     --borderColor: #ebebeb;
     --chordsColor: #3a3a3a;
     --backgroundColor: #262626;
@@ -19,7 +19,7 @@
 }
 
 :root[theme='light'] {
-    --logo: url("img/logoLight.png");
+    --logo: url("../img/logoLight.png");
     --borderColor: black;
     --chordsColor: #faf8f8;
     --backgroundColor: white;

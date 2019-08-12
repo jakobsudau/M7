@@ -26,7 +26,7 @@ function createBgWindow() {
             backgroundThrottling: false
         }
     });
-    result.loadURL('file://' + __dirname + '/electron/background.html');
+    result.loadURL('file://' + __dirname + '/background.html');
     result.on('closed', () => {
         console.log('background window closed')});
     return result;
@@ -48,7 +48,7 @@ app.on('ready', function() {
         }
     });
     main.webContents.openDevTools();
-    main.loadURL('file://' + __dirname + '/static/indexElectron.html');
+    main.loadURL('file://' + __dirname + '/../static/html/indexElectron.html');
     main.show();
     // main.webContents.on('did-finish-load', () => {
     //     main.webContents.send('test','This is a test')});
