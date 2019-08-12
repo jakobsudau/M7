@@ -7,7 +7,7 @@ let clientsAndWorkers = new Map();
 const { Worker } = require("worker_threads");
 
 app.get('/', function(req, res){
-    res.sendFile(path.join(__dirname, '..', 'static/indexNode.html'));
+    res.sendFile(path.join(__dirname, '..', 'static/html/indexNode.html'));
 });
 
 app.use(express.static("../static"));
