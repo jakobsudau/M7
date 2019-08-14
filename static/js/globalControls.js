@@ -1,81 +1,11 @@
 // -------------------------------------------------------------------------
 // GlobalControls
 // -------------------------------------------------------------------------
-class GlobalControls {
-    constructor(mainModule, darkMode) {
-        this.isDarkMode = darkMode;
-        this.initialize(mainModule);
-    }
-
-    initialize(mainModule) {
-        const globalControlsContainer = document.createElement("div");
-        globalControlsContainer.id = "globalControlsContainer";
-        globalControlsContainer.className = "left";
-
-        const helpButton = document.createElement("button");
-        helpButton.id = "helpButton";
-        helpButton.innerHTML = "?";
-        helpButton.title = "Welcome to MMAI! Click here for help :)";
-        helpButton.addEventListener('click', function() {
-            this.showHelp()}.bind(this));
-
-        const fullscreenButton = document.createElement("button");
-        fullscreenButton.id = "fullscreenButton";
-        fullscreenButton.innerHTML = "◱";
-        fullscreenButton.title = "Toggle Fullscreen on/off";
-
-        const positionButton = document.createElement("button");
-        positionButton.id = "positionButton";
-        positionButton.innerHTML = "◧";
-        positionButton.title = "Move control button bar to top/right/left";
-        positionButton.addEventListener("click", function() {
-            this.switchBarPosition()}.bind(this));
-
-        const midiMapButton = document.createElement("button");
-        midiMapButton.id = "midiMapButton";
-        midiMapButton.className = "midiMapButton inactive";
-        midiMapButton.innerHTML = "⚇";
-        midiMapButton.title = "Map controls to MIDI. Click on the desired " +
-            " button and play the MIDI note to map. " +
-            "Double Click on mapped button to delete.";
-        midiMapButton.addEventListener("click", function() {
-            mainModule.mapMidi();
-        });
-
-        const darkModeButton = document.createElement("button");
-        darkModeButton.id = "darkModeButton";
-        darkModeButton.innerHTML = "☾";
-        darkModeButton.title = "Switch to Dark/Light Mode";
-        darkModeButton.addEventListener("click", function() {
-            this.isDarkMode = !this.isDarkMode;
-            if(!this.isDarkMode){
-                document.documentElement.setAttribute('theme', 'light');
-                darkModeButton.innerHTML = "☾";
-            } else {
-                document.documentElement.setAttribute('theme', 'dark');
-                darkModeButton.innerHTML = "☀";
-            }
-        }.bind(this));
-
-        fullscreenButton.addEventListener("click", function() {
-            globalControlsContainer
-            if (document.fullscreenElement) {
-                fullscreenButton.innerHTML = "◱";
-                document.exitFullscreen()
-            } else {
-                fullscreenButton.innerHTML = "◳";
-                document.body.requestFullscreen();
-            }
-        });
-
-        globalControlsContainer.appendChild(helpButton);
-        globalControlsContainer.appendChild(darkModeButton);
-        globalControlsContainer.appendChild(fullscreenButton);
-        globalControlsContainer.appendChild(midiMapButton);
-        globalControlsContainer.appendChild(positionButton);
-        const mainCon = document.getElementById("mainContainer");
-        mainCon.insertBefore(globalControlsContainer, mainCon.childNodes[0]);
-        this.addHelp();
+class GlobalControlModule {
+    constructor() {
+        document.documentElement.setAttribute('theme', 'light');
+        this.isDarkMode = false;
+        this.createUIElements();
     }
 
     switchBarPosition() {
@@ -107,7 +37,54 @@ class GlobalControls {
         }
     }
 
-    addHelp() {
+    showHelp() {
+        const modulesContainer = document.getElementById("modulesContainer");
+        const globalControlsContainer = document.getElementById("globalControlsContainer");
+        const overlay = document.getElementById("overlay");
+        if (overlay.style.display == "block") {
+            overlay.style.display = "none";
+            modulesContainer.style.filter = "blur(0px)";
+            globalControlsContainer.style.filter = "blur(0px)";
+        } else {
+            overlay.style.display = "block";
+            modulesContainer.style.filter = "blur(5px)";
+            globalControlsContainer.style.filter = "blur(5px)";
+        }
+    }
+
+    createUIElements() {
+        const globalControlsContainer = document.createElement("div");
+        globalControlsContainer.id = "globalControlsContainer";
+        globalControlsContainer.className = "left";
+
+        const helpButton = document.createElement("button");
+        helpButton.id = "helpButton";
+        helpButton.innerHTML = "?";
+        helpButton.title = "Welcome to MMAI! Click here for help :)";
+
+        const fullscreenButton = document.createElement("button");
+        fullscreenButton.id = "fullscreenButton";
+        fullscreenButton.innerHTML = "◱";
+        fullscreenButton.title = "Toggle Fullscreen on/off";
+
+        const positionButton = document.createElement("button");
+        positionButton.id = "positionButton";
+        positionButton.innerHTML = "◧";
+        positionButton.title = "Move control button bar to top/right/left";
+
+        const midiMapButton = document.createElement("button");
+        midiMapButton.id = "midiMapButton";
+        midiMapButton.className = "midiMapButton inactive";
+        midiMapButton.innerHTML = "⚇";
+        midiMapButton.title = "Map controls to MIDI. Click on the desired " +
+            " button and play the MIDI note to map. " +
+            "Double Click on mapped button to delete.";
+
+        const darkModeButton = document.createElement("button");
+        darkModeButton.id = "darkModeButton";
+        darkModeButton.innerHTML = "☾";
+        darkModeButton.title = "Switch to Dark/Light Mode";
+
         let overlay = document.createElement("div");
         overlay.id = "overlay";
 
@@ -139,29 +116,54 @@ class GlobalControls {
         helpDeleteButton.className = "deleteButton";
         helpDeleteButton.innerHTML = "X";
         helpDeleteButton.title = "Close the Help Screen";
-        helpDeleteButton.addEventListener('click', function() {
-            this.showHelp()}.bind(this));
 
+        globalControlsContainer.appendChild(helpButton);
+        globalControlsContainer.appendChild(darkModeButton);
+        globalControlsContainer.appendChild(fullscreenButton);
+        globalControlsContainer.appendChild(midiMapButton);
+        globalControlsContainer.appendChild(positionButton);
         helpContainer.appendChild(helpTitleDiv);
         helpContainer.appendChild(helpTextDiv);
         helpContainer.appendChild(helpBottomTextDiv);
         helpContainer.appendChild(helpDeleteButton);
         overlay.appendChild(helpContainer);
         document.body.appendChild(overlay);
-    }
+        const mainCon = document.getElementById("mainContainer");
+        mainCon.insertBefore(globalControlsContainer, mainCon.childNodes[0]);
 
-    showHelp() {
-        const modulesContainer = document.getElementById("modulesContainer");
-        const globalControlsContainer = document.getElementById("globalControlsContainer");
-        const overlay = document.getElementById("overlay");
-        if (overlay.style.display == "block") {
-            overlay.style.display = "none";
-            modulesContainer.style.filter = "blur(0px)";
-            globalControlsContainer.style.filter = "blur(0px)";
-        } else {
-            overlay.style.display = "block";
-            modulesContainer.style.filter = "blur(5px)";
-            globalControlsContainer.style.filter = "blur(5px)";
-        }
+        helpDeleteButton.addEventListener('click', function() {
+            this.showHelp()}.bind(this));
+
+        positionButton.addEventListener("click", function() {
+            this.switchBarPosition()}.bind(this));
+
+        midiMapButton.addEventListener("click", function() {
+            mainModule.mapMidi();
+        });
+
+        helpButton.addEventListener('click', function() {
+            this.showHelp()}.bind(this));
+
+        darkModeButton.addEventListener("click", function() {
+            this.isDarkMode = !this.isDarkMode;
+            if(!this.isDarkMode){
+                document.documentElement.setAttribute('theme', 'light');
+                darkModeButton.innerHTML = "☾";
+            } else {
+                document.documentElement.setAttribute('theme', 'dark');
+                darkModeButton.innerHTML = "☀";
+            }
+        }.bind(this));
+
+        fullscreenButton.addEventListener("click", function() {
+            globalControlsContainer
+            if (document.fullscreenElement) {
+                fullscreenButton.innerHTML = "◱";
+                document.exitFullscreen()
+            } else {
+                fullscreenButton.innerHTML = "◳";
+                document.body.requestFullscreen();
+            }
+        });
     }
 }
