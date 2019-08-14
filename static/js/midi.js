@@ -26,6 +26,8 @@ class Midi {
         this.mainModule = mainModule;
         this.midiAccess = midiAccess;
         this.hookUpMIDIInput();
+        midiAccess.onstatechange = function() {
+            this.hookUpMIDIInput()}.bind(this);
     }
 
     hookUpMIDIInput() {

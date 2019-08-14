@@ -3,6 +3,7 @@ class Connector {
         this.socket;
         this.parent = module;
         this.id;
+        this.electron;
         this.once = true;
         this.isElectron =
             navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
@@ -11,15 +12,16 @@ class Connector {
     initialize(id) {
         return new Promise(function(resolve, reject) {
             if (this.isElectron) {
+                this.electron = require('electron');
                 if (id == 0) {
                     // support for native dark mode on macOS
-                    electron.ipcRenderer.on('to-mainModule', (evt, arg) => {
+                    this.electron.ipcRenderer.on('to-mainModule', (evt, arg) => {
                         this.parent.switchDarkMode(arg)});
                     resolve({data: id});
                 } else {
-                    electron.ipcRenderer.send('initialize',
+                    this.electron.ipcRenderer.send('initialize',
                     {cmd: "initialize", id: id});
-                    electron.ipcRenderer.on('status',
+                    this.electron.ipcRenderer.on('status',
                     (event, threads, tasks) => {
                         if (this.once) {
                             this.once = false;
@@ -30,9 +32,22 @@ class Connector {
                 }
             } else {
                 if (id != 0) {
-                    this.socket = io();
-                    this.socket.emit('initialize', 0);
-                    this.socket.on('initDone', function(msg){resolve(msg)});
+                    if (id == 1) {
+                        let socketScript = document.createElement("script");
+                        socketScript.type = "text/javascript";
+                        socketScript.src = "/socket.io/socket.io.js";
+                        socketScript.addEventListener("load", function() {
+                            console.log("done loading");
+                            this.socket = io();
+                            this.socket.emit('initialize', 0);
+                            this.socket.on('initDone', function(msg){resolve(msg)});
+                        }.bind(this));
+                        document.getElementById("mainContainer").appendChild(socketScript);
+                    } else {
+                        this.socket = io();
+                        this.socket.emit('initialize', 0);
+                        this.socket.on('initDone', function(msg){resolve(msg)});
+                    }
                 }
             }
         }.bind(this));
@@ -41,9 +56,9 @@ class Connector {
     generateSequence(data) {
         return new Promise(function(resolve, reject) {
             if (this.isElectron) {
-                electron.ipcRenderer.send('assign-task', data);
+                this.electron.ipcRenderer.send('assign-task', data);
                 let test = 'to-renderer' + this.id;
-                electron.ipcRenderer.on(test, (event, arg) => {
+                this.electron.ipcRenderer.on(test, (event, arg) => {
                     resolve(arg);
                 });
             } else {
@@ -57,7 +72,7 @@ class Connector {
 
     delete(id) {
         if (this.isElectron) {
-            electron.ipcRenderer.send('delete', id);
+            this.electron.ipcRenderer.send('delete', id);
         } else {
             this.socket.disconnect();
         }

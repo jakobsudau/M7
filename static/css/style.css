@@ -3,6 +3,7 @@
     --logo: url("../img/logoDark.png");
     --borderColor: #ebebeb;
     --chordsColor: #3a3a3a;
+    --chordsTextColor: white;
     --backgroundColor: #262626;
     --moduleBackgroundColor: #464646;
     --color: #ebebeb;
@@ -22,6 +23,7 @@
     --logo: url("../img/logoLight.png");
     --borderColor: black;
     --chordsColor: #faf8f8;
+    --chordsTextColor: black;
     --backgroundColor: white;
     --moduleBackgroundColor: #efefef;
     --color: black;

@@ -10,7 +10,6 @@ class MainModule {
 
         MainModule.instance = this;
         this.spaceSwitch = false;
-        this.isDarkMode = false;
         this.midiMapMode = false;
         this.midiMapSelection;
         this.midiMapParams = new Map();
@@ -120,27 +119,26 @@ class MainModule {
 		}
 
         let allGood = true;
-        let darkMode = this.isDarkMode ? "white" : "black";
 		if (isGood(chords[0])) {
-			this.chord1.style.color = darkMode;
+			this.chord1.style.color = "var(--chordsTextColor)";
 		} else {
 			this.chord1.style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[1])) {
-			this.chord2.style.color = darkMode;
+			this.chord2.style.color = "var(--chordsTextColor)";
 		} else {
 			this.chord2.style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[2])) {
-			this.chord3.style.color = darkMode;
+			this.chord3.style.color = "var(--chordsTextColor)";
 		} else {
 			this.chord3.style.color = 'red';
 			allGood = false;
 		}
 		if (isGood(chords[3])) {
-			this.chord4.style.color = darkMode;
+			this.chord4.style.color = "var(--chordsTextColor)";
 		} else {
 			this.chord4.style.color = 'red';
 			allGood = false;
@@ -227,8 +225,7 @@ class MainModule {
             this.generators.forEach((generator, id) => {
                 generator.changeBpm(value);
             });
-            this.bpmTextfield.style.color =
-                this.isDarkMode ? "white" : "black";
+            this.bpmTextfield.style.color = "var(--chordsTextColor)";
 		} else {
             this.bpmTextfield.style.color = 'red';
             if (focusOut) {
@@ -238,7 +235,7 @@ class MainModule {
                     this.metronome.bpm = 60;
                 }
                 this.bpmTextfield.value = this.metronome.bpm;
-                this.bpmTextfield.style.color = 'black';
+                this.bpmTextfield.style.color = "var(--chordsTextColor)";
             }
         }
     }
@@ -294,28 +291,6 @@ class MainModule {
 
             document.getElementById("changeBackwardButton").disabled =
                 this.sceneCounter == 0;
-        }
-    }
-
-    switchDarkMode(darkMode) {
-        if (this.isDarkMode != darkMode) {
-            if(document.documentElement.getAttribute('theme') == "dark"){
-                document.documentElement.setAttribute('theme', 'light');
-                darkModeButton.innerHTML = "☾";
-            } else {
-                document.documentElement.setAttribute('theme', 'dark');
-                darkModeButton.innerHTML = "☀";
-            }
-
-            this.isDarkMode = darkMode;
-
-            let chords = document.getElementsByClassName("chords");
-            for(let i=0, len=chords.length; i<len; i++) {
-                if (chords[i].style.color != 'red') {
-                    chords[i].style.color =
-                        this.isDarkMode ? "white" : "black";
-                }
-            }
         }
     }
 
@@ -614,200 +589,4 @@ class MainModule {
             this.changeClickPort(this.clickBusSelect.selectedIndex);
         }.bind(this));
     }
-}
-
-// -------------------------------------------------------------------------
-// Start
-// -------------------------------------------------------------------------
-
-function initializeDarkModeAndUtilities(main) {
-    const globalControlsContainer = document.createElement("div");
-    globalControlsContainer.id = "globalControlsContainer";
-    globalControlsContainer.className = "left";
-
-    const helpButton = document.createElement("button");
-    helpButton.id = "helpButton";
-    helpButton.innerHTML = "?";
-    helpButton.title = "Welcome to MMAI! Click here for help :)";
-    helpButton.addEventListener('click', function(){showHelp()});
-
-    const fullscreenButton = document.createElement("button");
-    fullscreenButton.id = "fullscreenButton";
-    fullscreenButton.innerHTML = "◱";
-    fullscreenButton.title = "Toggle Fullscreen on/off";
-
-    const positionButton = document.createElement("button");
-    positionButton.id = "positionButton";
-    positionButton.innerHTML = "◧";
-    positionButton.title = "Move control button bar to top/right/left";
-
-    const midiMapButton = document.createElement("button");
-    midiMapButton.id = "midiMapButton";
-    midiMapButton.className = "midiMapButton inactive";
-    midiMapButton.innerHTML = "⚇";
-    midiMapButton.title = "Map controls to MIDI. Click on the desired " +
-        " button and play the MIDI note to map. " +
-        "Double Click on mapped button to delete.";
-    midiMapButton.addEventListener("click", function() {
-        main.mapMidi();
-    });
-
-    const darkModeButton = document.createElement("button");
-    darkModeButton.id = "darkModeButton";
-    darkModeButton.innerHTML = "☾";
-    darkModeButton.title = "Switch to Dark/Light Mode";
-    darkModeButton.addEventListener("click", function() {
-        main.switchDarkMode(!main.isDarkMode);
-    });
-
-    fullscreenButton.addEventListener("click", function() {
-        globalControlsContainer
-        if (document.fullscreenElement) {
-            fullscreenButton.innerHTML = "◱";
-            document.exitFullscreen()
-        } else {
-            fullscreenButton.innerHTML = "◳";
-            document.body.requestFullscreen();
-        }
-    });
-
-    positionButton.addEventListener("click", function() {
-        const mainSubCon = document.getElementById("modulesContainer");
-        const mainCon = document.getElementById("mainContainer");
-        switch (globalControlsContainer.className) {
-            case "left":
-                positionButton.innerHTML = "⬒";
-                globalControlsContainer.className = "top";
-                mainSubCon.className = "modulesContainerTopBottom";
-                break;
-            case "top":
-                positionButton.innerHTML = "◨";
-                globalControlsContainer.className = "right";
-                mainSubCon.className = "modulesContainerLeftRight";
-                break;
-            case "right":
-                positionButton.innerHTML = "⬓";
-                globalControlsContainer.className = "bottom";
-                mainSubCon.className = "modulesContainerTopBottom";
-                mainCon.appendChild(globalControlsContainer);
-                break;
-            case "bottom":
-                positionButton.innerHTML = "◧";
-                globalControlsContainer.className = "left";
-                mainSubCon.className = "modulesContainerLeftRight";
-                mainCon.insertBefore(globalControlsContainer,mainCon.childNodes[0]);
-                break;
-        }
-    });
-
-    globalControlsContainer.appendChild(helpButton);
-    globalControlsContainer.appendChild(darkModeButton);
-    globalControlsContainer.appendChild(fullscreenButton);
-    globalControlsContainer.appendChild(midiMapButton);
-    globalControlsContainer.appendChild(positionButton);
-    const mainCon = document.getElementById("mainContainer");
-    mainCon.insertBefore(globalControlsContainer, mainCon.childNodes[0]);
-    addHelp();
-}
-
-function addHelp() {
-    let overlay = document.createElement("div");
-    overlay.id = "overlay";
-
-    let helpContainer = document.createElement("div");
-    helpContainer.id = "helpContainer";
-    helpContainer.className = "container";
-
-    let helpTitleDiv = document.createElement("div");
-    helpTitleDiv.id = "helpTitleDiv";
-    helpTitleDiv.innerHTML = "MMAI";
-
-    let helpTextDiv = document.createElement("div");
-    helpTextDiv.id = "helpTextDiv";
-    helpTextDiv.innerHTML = "Generate your own melodies in sync with " +
-        "click with as many Generators as your system can handle and " +
-        "send them each to any of your systems MIDI Ports so you can " +
-        "listen to your own AI band!<br/><br/>Hover over any UI Element " +
-        "to see the tooltip.<br/><br/>This is the project MMAI by Jakob " +
-        "Sudau for his Master Sound/Vision at the HAW Hamburg." +
-        "<br/><br/><br/>Enjoy!";
-
-    let helpBottomTextDiv = document.createElement("div");
-    helpBottomTextDiv.id = "helpBottomTextDiv";
-    helpBottomTextDiv.innerHTML = "Copyright © Jakob Sudau, 2019, " +
-        "jakob.sudau@icloud.com";
-
-    let helpDeleteButton = document.createElement("button");
-    helpDeleteButton.id = "helpDeleteButton";
-    helpDeleteButton.className = "deleteButton";
-    helpDeleteButton.innerHTML = "X";
-    helpDeleteButton.title = "Close the Help Screen";
-    helpDeleteButton.addEventListener('click', function(){showHelp()});
-
-    helpContainer.appendChild(helpTitleDiv);
-    helpContainer.appendChild(helpTextDiv);
-    helpContainer.appendChild(helpBottomTextDiv);
-    helpContainer.appendChild(helpDeleteButton);
-    overlay.appendChild(helpContainer);
-    document.body.appendChild(overlay);
-}
-
-function showHelp() {
-    const modulesContainer = document.getElementById("modulesContainer");
-    const globalControlsContainer = document.getElementById("globalControlsContainer");
-    const overlay = document.getElementById("overlay");
-    if (overlay.style.display == "block") {
-        overlay.style.display = "none";
-        modulesContainer.style.filter = "blur(0px)";
-        globalControlsContainer.style.filter = "blur(0px)";
-    } else {
-        overlay.style.display = "block";
-        modulesContainer.style.filter = "blur(5px)";
-        globalControlsContainer.style.filter = "blur(5px)";
-    }
-}
-
-var electron; // used in connector.js
-
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess().then( onMIDIInit, onMIDIReject );
-} else {
-    alert("No MIDI support present in your browser.");
-}
-
-function onMIDIInit(midi) {
-    midiAccess = midi;
-
-    if (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1) {
-        electron = require('electron');
-    } else {
-        let socketScript = document.createElement("script");
-        socketScript.type = "text/javascript";
-        socketScript.src = "/socket.io/socket.io.js";
-        socketScript.addEventListener("load", function() {
-            console.log("done loading");
-        });
-        document.getElementById("mainContainer").appendChild(socketScript);
-    }
-
-    // if (isElectron) {
-    //     electron = require('electron');
-    // } else {
-    //     let socketScript = document.createElement("script");
-    //     socketScript.type = "text/javascript";
-    //     socketScript.src = "/socket.io/socket.io.js";
-    //     socketScript.addEventListener("load", function() {
-    //         console.log("done loading");
-    //     });
-    //     document.getElementById("mainContainer").appendChild(socketScript);
-    // }
-
-    document.documentElement.setAttribute('theme', 'light');
-    const main = new MainModule(midiAccess);
-    midiAccess.onstatechange = function() {main.midi.hookUpMIDIInput()};
-    initializeDarkModeAndUtilities(main);
-}
-
-function onMIDIReject(err) {
-    alert("The MIDI system failed to start.");
 }
