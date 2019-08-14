@@ -778,7 +778,7 @@ if (navigator.requestMIDIAccess) {
 function onMIDIInit(midi) {
     midiAccess = midi;
 
-    if (isElectron) {
+    if (navigator.userAgent.toLowerCase().indexOf(' electron/') > -1) {
         electron = require('electron');
     } else {
         let socketScript = document.createElement("script");
@@ -789,6 +789,18 @@ function onMIDIInit(midi) {
         });
         document.getElementById("mainContainer").appendChild(socketScript);
     }
+
+    // if (isElectron) {
+    //     electron = require('electron');
+    // } else {
+    //     let socketScript = document.createElement("script");
+    //     socketScript.type = "text/javascript";
+    //     socketScript.src = "/socket.io/socket.io.js";
+    //     socketScript.addEventListener("load", function() {
+    //         console.log("done loading");
+    //     });
+    //     document.getElementById("mainContainer").appendChild(socketScript);
+    // }
 
     document.documentElement.setAttribute('theme', 'light');
     const main = new MainModule(midiAccess);

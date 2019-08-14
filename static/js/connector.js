@@ -4,11 +4,13 @@ class Connector {
         this.parent = module;
         this.id;
         this.once = true;
+        this.isElectron =
+            navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
     }
 
     initialize(id) {
         return new Promise(function(resolve, reject) {
-            if (isElectron) {
+            if (this.isElectron) {
                 if (id == 0) {
                     // support for native dark mode on macOS
                     electron.ipcRenderer.on('to-mainModule', (evt, arg) => {
@@ -38,7 +40,7 @@ class Connector {
 
     generateSequence(data) {
         return new Promise(function(resolve, reject) {
-            if (isElectron) {
+            if (this.isElectron) {
                 electron.ipcRenderer.send('assign-task', data);
                 let test = 'to-renderer' + this.id;
                 electron.ipcRenderer.on(test, (event, arg) => {
@@ -54,7 +56,7 @@ class Connector {
     }
 
     delete(id) {
-        if (isElectron) {
+        if (this.isElectron) {
             electron.ipcRenderer.send('delete', id);
         } else {
             this.socket.disconnect();

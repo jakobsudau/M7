@@ -48,7 +48,7 @@ app.on('ready', function() {
         }
     });
     main.webContents.openDevTools();
-    main.loadURL('file://' + __dirname + '/../static/html/indexElectron.html');
+    main.loadURL('file://' + __dirname + '/../static/html/index.html');
     main.show();
     // main.webContents.on('did-finish-load', () => {
     //     main.webContents.send('test','This is a test')});
