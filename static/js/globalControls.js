@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------------
 // GlobalControls
 // -------------------------------------------------------------------------
-class GlobalControlModule {
+class GlobalControlsModule {
     constructor() {
         document.documentElement.setAttribute('theme', 'light');
         this.isDarkMode = false;
@@ -11,51 +11,51 @@ class GlobalControlModule {
     switchBarPosition() {
         const mainSubCon = document.getElementById("modulesContainer");
         const mainCon = document.getElementById("mainContainer");
-        switch (globalControlsContainer.className) {
+        switch (globalControlsModuleContainer.className) {
             case "left":
                 positionButton.innerHTML = "⬒";
-                globalControlsContainer.className = "top";
+                globalControlsModuleContainer.className = "top";
                 mainSubCon.className = "modulesContainerTopBottom";
                 break;
             case "top":
                 positionButton.innerHTML = "◨";
-                globalControlsContainer.className = "right";
+                globalControlsModuleContainer.className = "right";
                 mainSubCon.className = "modulesContainerLeftRight";
                 break;
             case "right":
                 positionButton.innerHTML = "⬓";
-                globalControlsContainer.className = "bottom";
+                globalControlsModuleContainer.className = "bottom";
                 mainSubCon.className = "modulesContainerTopBottom";
-                mainCon.appendChild(globalControlsContainer);
+                mainCon.appendChild(globalControlsModuleContainer);
                 break;
             case "bottom":
                 positionButton.innerHTML = "◧";
-                globalControlsContainer.className = "left";
+                globalControlsModuleContainer.className = "left";
                 mainSubCon.className = "modulesContainerLeftRight";
-                mainCon.insertBefore(globalControlsContainer,mainCon.childNodes[0]);
+                mainCon.insertBefore(globalControlsModuleContainer,mainCon.childNodes[0]);
                 break;
         }
     }
 
     showHelp() {
         const modulesContainer = document.getElementById("modulesContainer");
-        const globalControlsContainer = document.getElementById("globalControlsContainer");
-        const overlay = document.getElementById("overlay");
-        if (overlay.style.display == "block") {
-            overlay.style.display = "none";
+        const globalControlsModuleContainer = document.getElementById("globalControlsModuleContainer");
+        const overlayContainer = document.getElementById("overlayContainer");
+        if (overlayContainer.style.display == "block") {
+            overlayContainer.style.display = "none";
             modulesContainer.style.filter = "blur(0px)";
-            globalControlsContainer.style.filter = "blur(0px)";
+            globalControlsModuleContainer.style.filter = "blur(0px)";
         } else {
-            overlay.style.display = "block";
+            overlayContainer.style.display = "block";
             modulesContainer.style.filter = "blur(5px)";
-            globalControlsContainer.style.filter = "blur(5px)";
+            globalControlsModuleContainer.style.filter = "blur(5px)";
         }
     }
 
     createUIElements() {
-        const globalControlsContainer = document.createElement("div");
-        globalControlsContainer.id = "globalControlsContainer";
-        globalControlsContainer.className = "left";
+        const globalControlsModuleContainer = document.createElement("div");
+        globalControlsModuleContainer.id = "globalControlsModuleContainer";
+        globalControlsModuleContainer.className = "left";
 
         const helpButton = document.createElement("button");
         helpButton.id = "helpButton";
@@ -85,8 +85,8 @@ class GlobalControlModule {
         darkModeButton.innerHTML = "☾";
         darkModeButton.title = "Switch to Dark/Light Mode";
 
-        let overlay = document.createElement("div");
-        overlay.id = "overlay";
+        let overlayContainer = document.createElement("div");
+        overlayContainer.id = "overlayContainer";
 
         let helpContainer = document.createElement("div");
         helpContainer.id = "helpContainer";
@@ -117,19 +117,19 @@ class GlobalControlModule {
         helpDeleteButton.innerHTML = "X";
         helpDeleteButton.title = "Close the Help Screen";
 
-        globalControlsContainer.appendChild(helpButton);
-        globalControlsContainer.appendChild(darkModeButton);
-        globalControlsContainer.appendChild(fullscreenButton);
-        globalControlsContainer.appendChild(midiMapButton);
-        globalControlsContainer.appendChild(positionButton);
+        globalControlsModuleContainer.appendChild(helpButton);
+        globalControlsModuleContainer.appendChild(darkModeButton);
+        globalControlsModuleContainer.appendChild(fullscreenButton);
+        globalControlsModuleContainer.appendChild(midiMapButton);
+        globalControlsModuleContainer.appendChild(positionButton);
         helpContainer.appendChild(helpTitleDiv);
         helpContainer.appendChild(helpTextDiv);
         helpContainer.appendChild(helpBottomTextDiv);
         helpContainer.appendChild(helpDeleteButton);
-        overlay.appendChild(helpContainer);
-        document.body.appendChild(overlay);
+        overlayContainer.appendChild(helpContainer);
+        document.body.appendChild(overlayContainer);
         const mainCon = document.getElementById("mainContainer");
-        mainCon.insertBefore(globalControlsContainer, mainCon.childNodes[0]);
+        mainCon.insertBefore(globalControlsModuleContainer, mainCon.childNodes[0]);
 
         helpDeleteButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));
@@ -156,7 +156,7 @@ class GlobalControlModule {
         }.bind(this));
 
         fullscreenButton.addEventListener("click", function() {
-            globalControlsContainer
+            globalControlsModuleContainer
             if (document.fullscreenElement) {
                 fullscreenButton.innerHTML = "◱";
                 document.exitFullscreen()

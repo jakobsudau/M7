@@ -122,25 +122,25 @@ class MainModule {
 		if (isGood(chords[0])) {
 			this.chord1.style.color = "var(--chordsTextColor)";
 		} else {
-			this.chord1.style.color = 'red';
+			this.chord1.style.color = "var(--chordsErrorColor)";
 			allGood = false;
 		}
 		if (isGood(chords[1])) {
 			this.chord2.style.color = "var(--chordsTextColor)";
 		} else {
-			this.chord2.style.color = 'red';
+			this.chord2.style.color = "var(--chordsErrorColor)";
 			allGood = false;
 		}
 		if (isGood(chords[2])) {
 			this.chord3.style.color = "var(--chordsTextColor)";
 		} else {
-			this.chord3.style.color = 'red';
+			this.chord3.style.color = "var(--chordsErrorColor)";
 			allGood = false;
 		}
 		if (isGood(chords[3])) {
 			this.chord4.style.color = "var(--chordsTextColor)";
 		} else {
-			this.chord4.style.color = 'red';
+			this.chord4.style.color = "var(--chordsErrorColor)";
 			allGood = false;
 		}
 
@@ -227,7 +227,7 @@ class MainModule {
             });
             this.bpmTextfield.style.color = "var(--chordsTextColor)";
 		} else {
-            this.bpmTextfield.style.color = 'red';
+            this.bpmTextfield.style.color = "var(--chordsErrorColor)";
             if (focusOut) {
                 if (value >= 60) {
                     this.metronome.bpm = 240;

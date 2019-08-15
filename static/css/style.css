@@ -4,6 +4,7 @@
     --borderColor: #ebebeb;
     --chordsColor: #3a3a3a;
     --chordsTextColor: white;
+    --chordsErrorColor: red;
     --backgroundColor: #262626;
     --moduleBackgroundColor: #464646;
     --color: #ebebeb;
@@ -24,6 +25,7 @@
     --borderColor: black;
     --chordsColor: #faf8f8;
     --chordsTextColor: black;
+    --chordsErrorColor: red;
     --backgroundColor: white;
     --moduleBackgroundColor: #efefef;
     --color: black;
@@ -43,7 +45,7 @@
     background: var(--backgroundColor);
 }
 
-#globalControlsContainer {
+#globalControlsModuleContainer {
     background-color: var(--moduleBackgroundColor);
 }
 
@@ -168,7 +170,7 @@ html, body {
     transition: background-color .2s linear, filter .2s linear;
 }
 
-#globalControlsContainer {
+#globalControlsModuleContainer {
     text-align: center;
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -240,7 +242,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     height: 100%;
 }
 
-#overlay {
+#overlayContainer {
     position: fixed;
     display: none;
     width: 100%;
@@ -285,7 +287,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
 }
 
 #mainModuleContainer, #generatorModuleContainer,
-#helpContainer, #globalControlsContainer {
+#helpContainer, #globalControlsModuleContainer {
     box-shadow: 0 4px 8px 0 var(--shadow1), 0 6px 20px 0 var(--shadow2);
 }
 
