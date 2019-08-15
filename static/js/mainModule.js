@@ -353,7 +353,6 @@ class MainModule {
 
         let mainButtonContainer = document.createElement("div");
         mainButtonContainer.id = "mainButtonContainer";
-        mainButtonContainer.className = "mainButtonDiv";
 
         let mainButtonSubContainer1 = document.createElement("div");
         mainButtonSubContainer1.id = "mainButtonSubContainer1";
@@ -422,22 +421,12 @@ class MainModule {
         let chordContainer = document.createElement("div");
         chordContainer.id = "chordContainer";
 
-        let selectChords = document.createElement("div");
-        selectChords.id = "selectChords";
-        selectChords.innerHTML = "Select a chord sequence:";
+        let chordTitleDiv = document.createElement("div");
+        chordTitleDiv.id = "chordTitleDiv";
+        chordTitleDiv.innerHTML = "Select a chord sequence:";
 
         let chords = document.createElement("div");
-        chords.id = "chords";
-
-        let table = document.createElement("table");
-        table.className = "center";
-
-        let tableTr = document.createElement("tr");
-
-        let tableTd1 = document.createElement("td");
-        let tableTd2 = document.createElement("td");
-        let tableTd3 = document.createElement("td");
-        let tableTd4 = document.createElement("td");
+        chords.id = "chordsDiv";
 
         const chordTitle = "Change chord according to major/minor/" +
             "augmented/diminished for all 12 root pitch classes, " +
@@ -529,18 +518,12 @@ class MainModule {
         mainButtonSubContainer2.appendChild(this.playAllButton);
         mainButtonSubContainer2.appendChild(this.stopAllButton);
         mainButtonSubContainer2.appendChild(addButton);
-        chordContainer.appendChild(selectChords);
+        chordContainer.appendChild(chordTitleDiv);
         chordContainer.appendChild(chords);
-        chords.appendChild(table);
-        table.appendChild(tableTr);
-        tableTr.appendChild(tableTd1);
-        tableTr.appendChild(tableTd2);
-        tableTr.appendChild(tableTd3);
-        tableTr.appendChild(tableTd4);
-        tableTd1.appendChild(this.chord1);
-        tableTd2.appendChild(this.chord2);
-        tableTd3.appendChild(this.chord3);
-        tableTd4.appendChild(this.chord4);
+        chords.appendChild(this.chord1);
+        chords.appendChild(this.chord2);
+        chords.appendChild(this.chord3);
+        chords.appendChild(this.chord4);
 
         const mainContainer = document.getElementById("mainContainer");
         mainContainer.appendChild(modulesContainer);

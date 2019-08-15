@@ -350,7 +350,7 @@ button:focus, div:focus, input:focus, select:focus{
     font-weight: bold;
 }
 
-#selectChords {
+#chordTitleDiv {
     margin-bottom: 0.3em;
     text-align: center;
 }
@@ -443,9 +443,7 @@ select {
 
 .mainButtonDiv, .generatorButtonDivContainer {
     width: 100%;
-    text-align: center;
     display:flex;
-    align-items: center;
     justify-content: space-evenly;
 }
 
@@ -457,33 +455,24 @@ select {
     font-weight: 550;
 }
 
-#mainButtonContainer {
-    flex-direction: column;
-}
-
 .generatorButtonDivContainer, #mainButtonContainer {
     position: absolute;
     left: 0;
     bottom: 0;
-}
-
-table {
     width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin-bottom: 0.5em;
 }
-
-td {
-    text-align: center;
-}
-
 
 .chords {
     width: 4em;
     font-family: monospace;
     text-align: center;
     font-size: 1em;
+}
+
+#chordsDiv {
+    display:flex;
+    align-items: center;
+    justify-content: space-evenly;
 }
 
 /* ---------------------------- Slider Styling --------------------------- */
