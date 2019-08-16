@@ -3,7 +3,12 @@
 // -------------------------------------------------------------------------
 class GlobalControlsModule {
     constructor() {
+        if (!!GlobalControlsModule.instance) {
+            return GlobalControlsModule.instance;
+        }
+
         document.documentElement.setAttribute('theme', 'light');
+        GlobalControlsModule.instance = this;
         this.isDarkMode = false;
         this.createUIElements();
     }
