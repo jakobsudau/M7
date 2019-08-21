@@ -16,6 +16,8 @@ class Connector {
                 if (id == 0) {
                     // support for native dark mode on macOS
                     this.electron.ipcRenderer.on('to-mainModule', (evt, arg) => {
+                        console.log("switch it!");
+                        console.log(this.parent);
                         this.parent.switchDarkMode(arg)});
                     resolve({data: id});
                 } else {

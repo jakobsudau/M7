@@ -4,6 +4,11 @@
 
 class Metronome {
     constructor(mainModule) {
+        if (!!Metronome.instance) {
+            return Metronome.instance;
+        }
+
+        Metronome.instance = this;
         this.isPlaying = false;         // Are we currently playing?
         this.lookahead = 24.0;          // How frequently to call scheduling
                                         // function (in milliseconds)
@@ -23,8 +28,19 @@ class Metronome {
         this.isSeqStart = false;
         this.startTime = 0;
         this.currentTime = 0;
+        this.volume = 0.8;
         // this.once = true;
         this.mainModule = mainModule;
+    }
+
+    initialize() {
+        this.gainNode.connect(this.audioContext.destination);
+        this.gainNode.gain.value = this.volume;
+        this.timerWorker = null;
+        this.timerWorker = new Worker("../js/metronomeWorker.js");
+        this.timerWorker.onmessage = function(e) {
+            if (e.data.tick) {this.scheduler(e.data.tick)}}.bind(this);
+        this.timerWorker.postMessage({"interval": this.lookahead});
     }
 
     startStop(){
@@ -52,7 +68,10 @@ class Metronome {
     }
 
     setVolume(value) {
-        this.gainNode.gain.value = value;
+        this.volume = value;
+        if (this.outputId == "internal") {
+            this.gainNode.gain.value = value;
+        }
     }
 
     nextNote() { //Advance current note and time by a quater note...
@@ -77,15 +96,14 @@ class Metronome {
         } else {
             if (beatNumber % 16 == 0){
                 this.playClick(true, time);
-                this.mainModule.playTick(true);
             }else{
                 this.playClick(false, time);
-                this.mainModule.playTick(false);
             }
         }
     }
 
     playClick(isStart, time) {
+        this.mainModule.playTick(isStart);
         if (this.playOutput) {
             if (this.outputId == "internal") {
                 let osc;
@@ -97,7 +115,7 @@ class Metronome {
                 osc.onended = function() {osc.disconnect()};
             } else {
                 this.mainModule.midi.sendMIDIMetronomeMessage(isStart,
-                    this.outputId, this.gainNode.gain.value);
+                    this.outputId, this.volume);
             }
         }
     }
@@ -111,15 +129,5 @@ class Metronome {
                             this.nextNoteTime, data);
             this.nextNote();
         }
-    }
-
-    initialize() {
-        this.gainNode.connect(this.audioContext.destination);
-        this.gainNode.gain.value = 0.8;
-        this.timerWorker = null;
-        this.timerWorker = new Worker("../js/metronomeWorker.js");
-        this.timerWorker.onmessage = function(e) {
-            if (e.data.tick) {this.scheduler(e.data.tick)}}.bind(this);
-        this.timerWorker.postMessage({"interval": this.lookahead});
     }
 }

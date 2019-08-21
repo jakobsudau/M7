@@ -2,11 +2,11 @@
 :root[theme='dark'] {
     --logo: url("../img/logoDark.png");
     --borderColor: #ebebeb;
-    --chordsColor: #3a3a3a;
     --chordsTextColor: white;
     --chordsErrorColor: red;
     --backgroundColor: #262626;
     --moduleBackgroundColor: #464646;
+    --buttonBackgroundColor: #3a3a3a;
     --color: #ebebeb;
     --deleteColor: #6E3232;
     --highlightStartColor: #008000;
@@ -23,11 +23,11 @@
 :root[theme='light'] {
     --logo: url("../img/logoLight.png");
     --borderColor: black;
-    --chordsColor: #faf8f8;
     --chordsTextColor: black;
     --chordsErrorColor: red;
     --backgroundColor: white;
     --moduleBackgroundColor: #efefef;
+    --buttonBackgroundColor: #faf8f8;
     --color: black;
     --deleteColor: #FB8D8D;
     --highlightStartColor: #008000;
@@ -45,10 +45,6 @@
     background: var(--backgroundColor);
 }
 
-#globalControlsModuleContainer {
-    background-color: var(--moduleBackgroundColor);
-}
-
 .left {
     border-right: 2px solid var(--borderColor);
 }
@@ -62,13 +58,18 @@
 }
 
 #mainModuleContainer, #generatorModuleContainer, #helpContainer,
-button, .chords, .generatorTitleDiv, #bpmTextfield {
+.chords, .generatorTitleDiv, #globalControlsModuleContainer {
     color: var(--color);
     background: var(--moduleBackgroundColor);
 }
 
+button, #bpmTextfield {
+    color: var(--color);
+    background: var(--buttonBackgroundColor);
+}
+
 .chords {
-    background: var(--chordsColor);
+    background: var(--buttonBackgroundColor);
 }
 
 .container, .chords, button, #bpmTextfield {
@@ -80,7 +81,7 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 }
 
 .click.disabled, .listenButton.disabled, .mutateButton.disabled {
-    background: var(--moduleBackgroundColor);
+    background: var(--buttonBackgroundColor);
     color: var(--color);
 }
 
@@ -127,7 +128,7 @@ button, .chords, .generatorTitleDiv, #bpmTextfield {
 }
 
 .midiMapButton.inactive {
-    background: var(--moduleBackgroundColor);
+    background: var(--buttonBackgroundColor);
     }
 
 button:active, .midiMapButton.active {

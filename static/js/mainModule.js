@@ -23,15 +23,10 @@ class MainModule {
         this.clickBusSelect;
         this.selectedClickBusId = "internal";
         this.metronomeOn = false;
-        this.chord1;
-        this.chord2;
-        this.chord3;
-        this.chord4;
+        this.chords = ["C", "G", "Am", "F"];
         this.bpmTextfield;
         this.maxScenes = 2;
         this.generators = new Map();
-        this.connector = new Connector(this);
-        this.connector.initialize(0);
         this.generatorCounter = 1;
         this.sceneCounter = 0;
         this.generateAllCounter = 0;
@@ -48,12 +43,15 @@ class MainModule {
         const generator = new GeneratorModule(this, this.generatorCounter);
         generator.initialize().then((id) => {
             this.generators.set(id, generator);
-            this.generateAllButton.disabled = false;
-            this.changeForwardButton.disabled = false;
-            this.playAllButton.disabled = false;
-            this.stopAllButton.disabled = false;
-            this.bpmTextfield.disabled = false;
-            this.generateLoopButton.disabled = false;
+            generator.chords = this.chords;
+            if (this.generators.size == 1) {
+                this.generateAllButton.disabled = false;
+                this.changeForwardButton.disabled = false;
+                this.playAllButton.disabled = false;
+                this.stopAllButton.disabled = false;
+                this.bpmTextfield.disabled = false;
+                this.generateLoopButton.disabled = false;
+            }
         });
         this.generatorCounter++;
     }
@@ -66,6 +64,15 @@ class MainModule {
                 this.midiMapParams.delete(button);
             }
         });
+
+        if (this.generators.size == 0) {
+            this.generateAllButton.disabled = true;
+            this.changeForwardButton.disabled = true;
+            this.playAllButton.disabled = true;
+            this.stopAllButton.disabled = true;
+            this.bpmTextfield.disabled = true;
+            this.generateLoopButton.disabled = true;
+        }
     }
 
     startStopNote(note, velocity, isStart, input) {
@@ -94,23 +101,17 @@ class MainModule {
         }
     }
 
-    checkChords() {
+    checkChord(chord, i) {
+        this.generateAllButton.disabled = true;
         this.generators.forEach((generator, id) => {
             generator.generateButton.disabled = true;
         });
 
-        const chords = [
-            this.chord1.value,
-            this.chord2.value,
-            this.chord3.value,
-            this.chord4.value
-        ];
-
-		const isGood = (chord) => {
-            if (!chord) {return false}
+		const isGood = (chordToCheck) => {
+            if (!chordToCheck) {return false}
 
             try {
-                mm.chords.ChordSymbols.pitches(chord);
+                mm.chords.ChordSymbols.pitches(chordToCheck);
                 return true;
             }
             catch(e) {
@@ -119,35 +120,33 @@ class MainModule {
 		}
 
         let allGood = true;
-		if (isGood(chords[0])) {
-			this.chord1.style.color = "var(--chordsTextColor)";
+		if (isGood(chord.value)) {
+			chord.style.color = "var(--chordsTextColor)";
 		} else {
-			this.chord1.style.color = "var(--chordsErrorColor)";
-			allGood = false;
-		}
-		if (isGood(chords[1])) {
-			this.chord2.style.color = "var(--chordsTextColor)";
-		} else {
-			this.chord2.style.color = "var(--chordsErrorColor)";
-			allGood = false;
-		}
-		if (isGood(chords[2])) {
-			this.chord3.style.color = "var(--chordsTextColor)";
-		} else {
-			this.chord3.style.color = "var(--chordsErrorColor)";
-			allGood = false;
-		}
-		if (isGood(chords[3])) {
-			this.chord4.style.color = "var(--chordsTextColor)";
-		} else {
-			this.chord4.style.color = "var(--chordsErrorColor)";
+			chord.style.color = "var(--chordsErrorColor)";
 			allGood = false;
 		}
 
         if (allGood) {
+            this.chords[i] = chord.value;
+            this.generateAllButton.disabled = false;
             this.generators.forEach((generator, id) => {
                 generator.generateButton.disabled = false;
             });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    saveChord(chord, i) {
+        if (this.checkChord(chord)) {
+            this.generators.forEach((generator, id) => {
+                generator.chords[i] = chord.value;
+            });
+        } else {
+            chord.value = this.chords[i];
+            this.checkChord(chord);
         }
     }
 
@@ -207,6 +206,33 @@ class MainModule {
         this.metronome.setVolume(volume);
     }
 
+    checkBpm(value) {
+        if (value >= 60 && value <= 240) {
+            this.bpmTextfield.style.color = "var(--chordsTextColor)";
+            return true;
+		} else {
+            this.bpmTextfield.style.color = "var(--chordsErrorColor)";
+            return false;
+        }
+    }
+
+    saveBpm(value) {
+        if (this.checkBpm(value)) {
+            this.metronome.bpm = value;
+            this.generators.forEach((generator, id) => {
+                generator.changeBpm(value);
+            });
+        } else {
+            if (value >= 60) {
+                this.metronome.bpm = 240;
+            } else if (value <= 240) {
+                this.metronome.bpm = 60;
+            }
+            this.bpmTextfield.value = this.metronome.bpm;
+            this.bpmTextfield.style.color = "var(--chordsTextColor)";
+        }
+    }
+
     playAll() {
         this.generators.forEach((generator, id) => {
             generator.setPlayActive();
@@ -219,39 +245,12 @@ class MainModule {
         });
     }
 
-    changeBpm(value, focusOut) {
-        if (value >= 60 && value <= 240) {
-            this.metronome.bpm = value;
-            this.generators.forEach((generator, id) => {
-                generator.changeBpm(value);
-            });
-            this.bpmTextfield.style.color = "var(--chordsTextColor)";
-		} else {
-            this.bpmTextfield.style.color = "var(--chordsErrorColor)";
-            if (focusOut) {
-                if (value >= 60) {
-                    this.metronome.bpm = 240;
-                } else if (value <= 240) {
-                    this.metronome.bpm = 60;
-                }
-                this.bpmTextfield.value = this.metronome.bpm;
-                this.bpmTextfield.style.color = "var(--chordsTextColor)";
-            }
-        }
-    }
-
     generateAll() {
         this.generateAllButton.disabled = true;
         this.generateAllCounter = 0;
-        const chords = [
-            this.chord1.value,
-            this.chord2.value,
-            this.chord3.value,
-            this.chord4.value
-        ];
 
         this.generators.forEach((generator, id) => {
-            generator.generateSequence(chords).then((data) => {
+            generator.generateSequence(this.chords).then((data) => {
                 this.generateAllCounter++;
 
                 if (this.generateAllCounter == this.generators.size) {
@@ -266,16 +265,10 @@ class MainModule {
     }
 
     generateLoop() {
-        const chords = [
-            this.chord1.value,
-            this.chord2.value,
-            this.chord3.value,
-            this.chord4.value
-        ];
         this.generators.forEach((generator, id) => {
             generator.startStopListening();
             generator.mutate();
-            generator.generateSequence(chords);
+            generator.generateSequence(this.chords);
         });
     }
 
@@ -425,40 +418,22 @@ class MainModule {
         chordTitleDiv.id = "chordTitleDiv";
         chordTitleDiv.innerHTML = "Select a chord sequence:";
 
-        let chords = document.createElement("div");
-        chords.id = "chordsDiv";
+        let chordsDiv = document.createElement("div");
+        chordsDiv.id = "chordsDiv";
 
-        const chordTitle = "Change chord according to major/minor/" +
-            "augmented/diminished for all 12 root pitch classes, " +
-            "e.g. C5 / Am / Eb5, ...";
+        let chordInputs = [];
 
-        this.chord1 = document.createElement("input");
-        this.chord1.id = "chord1";
-        this.chord1.className = "chords";
-        this.chord1.type = "text";
-        this.chord1.value = "C";
-        this.chord1.title = chordTitle;
-
-        this.chord2 = document.createElement("input");
-        this.chord2.id = "chord2";
-        this.chord2.className = "chords";
-        this.chord2.type = "text";
-        this.chord2.value = "G";
-        this.chord2.title = chordTitle;
-
-        this.chord3 = document.createElement("input");
-        this.chord3.id = "chord3";
-        this.chord3.className = "chords";
-        this.chord3.type = "text";
-        this.chord3.value = "Am";
-        this.chord3.title = chordTitle;
-
-        this.chord4 = document.createElement("input");
-        this.chord4.id = "chord4";
-        this.chord4.className = "chords";
-        this.chord4.type = "text";
-        this.chord4.value = "F";
-        this.chord4.title = chordTitle;
+        for (let [i, chord] of this.chords.entries()) {
+        let chordInput = document.createElement("input");
+        chordInput.id = "chord" + i;
+        chordInput.className = "chords";
+        chordInput.type = "text";
+        chordInput.value = chord;
+        chordInput.title = "Change chord according to major/minor/" +
+        "augmented/diminished for all 12 root pitch classes, " +
+        "e.g. C5 / Am / Eb5, ...";
+        chordInputs.push(chordInput);
+        }
 
         let clickContainer = document.createElement("div");
         clickContainer.id = "clickContainer";
@@ -519,11 +494,10 @@ class MainModule {
         mainButtonSubContainer2.appendChild(this.stopAllButton);
         mainButtonSubContainer2.appendChild(addButton);
         chordContainer.appendChild(chordTitleDiv);
-        chordContainer.appendChild(chords);
-        chords.appendChild(this.chord1);
-        chords.appendChild(this.chord2);
-        chords.appendChild(this.chord3);
-        chords.appendChild(this.chord4);
+        chordContainer.appendChild(chordsDiv);
+        for (let chordInput of chordInputs) {
+            chordsDiv.appendChild(chordInput);
+        }
 
         const mainContainer = document.getElementById("mainContainer");
         mainContainer.appendChild(modulesContainer);
@@ -546,21 +520,24 @@ class MainModule {
             this.changeScene("backward", e.target)}.bind(this));
         clickVolumeSlider.addEventListener("input", function(e) {
             this.changeClickVolume(e.target.value/100)}.bind(this));
-        this.chord1.addEventListener('input', function() {
-            this.checkChords()}.bind(this));
-        this.chord2.addEventListener('input', function() {
-            this.checkChords()}.bind(this));
-        this.chord3.addEventListener('input', function() {
-            this.checkChords()}.bind(this));
-        this.chord4.addEventListener('input', function() {
-            this.checkChords()}.bind(this));
+        for (let [i, chord] of chordInputs.entries()) {
+            chord.addEventListener('input', function(e) {
+                this.checkChord(e.target, i)}.bind(this));
+            chord.addEventListener('focusout', function(e) {
+                this.saveChord(e.target, i)}.bind(this));
+                chord.addEventListener('keypress', function(e) {
+                if (e.keyCode == 13) {
+                    this.saveChord(e.target, i);
+                    document.activeElement.blur();
+                }}.bind(this));
+        }
         this.bpmTextfield.addEventListener('input', function(e) {
-            this.changeBpm(e.target.value, false)}.bind(this));
+            this.checkBpm(e.target.value)}.bind(this));
         this.bpmTextfield.addEventListener('focusout', function(e) {
-            this.changeBpm(e.target.value, true)}.bind(this));
+            this.saveBpm(e.target.value)}.bind(this));
         this.bpmTextfield.addEventListener('keypress', function(e) {
             if (e.keyCode == 13) {
-                this.changeBpm(e.target.value, true);
+                this.saveBpm(e.target.value);
                 document.activeElement.blur();
             }}.bind(this));
         this.clickButton.addEventListener('click', function(){

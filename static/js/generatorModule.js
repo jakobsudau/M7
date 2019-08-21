@@ -31,6 +31,7 @@ class GeneratorModule {
         this.selectedInput = this.mainModule.midi.availableInputs[0];
         this.inQueue = false;
         this.listening = false;
+        this.chords;
         this.generationTime = Date.now();
         this.inputStartTime = Date.now();
         this.heat = 1.00;
@@ -99,6 +100,7 @@ class GeneratorModule {
         delete this.selectedInput;
         delete this.inQueue;
         delete this.listening;
+        delete this.chords;
         delete this.generationTime;
         delete this.inputStartTime;
         delete this.heat;
@@ -164,7 +166,7 @@ class GeneratorModule {
         }
     }
 
-    generateSequence(chords) {
+    generateSequence() {
         return new Promise(function(resolve, reject) {
             this.generateButton.disabled = true;
             this.generationTime = Date.now();
@@ -173,7 +175,7 @@ class GeneratorModule {
                 cmd: "generate",
                 seq: this.inputSequence,
                 temp: this.heat,
-                chords: chords,
+                chords: this.chords,
                 outputBars: this.outputBars,
                 id: this.id,
                 addBassProg: this.addBassProg,
@@ -224,13 +226,7 @@ class GeneratorModule {
             this.barCounter = 0;
 
             if (this.keepMutating) {
-                const chords = [
-                    document.getElementById("chord1").value,
-                    document.getElementById("chord2").value,
-                    document.getElementById("chord3").value,
-                    document.getElementById("chord4").value
-                ];
-                this.generateSequence(chords);
+                this.generateSequence();
             }
 
             if (this.listening) {
@@ -246,13 +242,7 @@ class GeneratorModule {
     //     if (!this.playing && this.shouldPlay) {
     //         this.player.requestMIDIAccess().then(() => {
     //             if (this.keepMutating) {
-    //                 const chords = [
-    //                     document.getElementById("chord1").value,
-    //                     document.getElementById("chord2").value,
-    //                     document.getElementById("chord3").value,
-    //                     document.getElementById("chord4").value
-    //                 ];
-    //                 this.generateSequence(chords);
+    //                 this.generateSequence();
     //             }
 
     //             this.playButton.disabled = true;
@@ -354,13 +344,7 @@ class GeneratorModule {
         this.keepMutating = !this.keepMutating;
 
         if (this.keepMutating) {
-            const chords = [
-                document.getElementById("chord1").value,
-                document.getElementById("chord2").value,
-                document.getElementById("chord3").value,
-                document.getElementById("chord4").value
-            ];
-            this.generateSequence(chords);
+            this.generateSequence();
             this.mutateButton.className = "mutateButton enabled";
         } else {
             this.mutateButton.className = "mutateButton disabled";
@@ -690,10 +674,7 @@ class GeneratorModule {
 
         // eventlistener for the generate and play model button
         this.generateButton.addEventListener('click', function(){
-            this.generateSequence([document.getElementById("chord1").value,
-                document.getElementById("chord2").value,
-                document.getElementById("chord3").value,
-                document.getElementById("chord4").value]);}.bind(this));
+            this.generateSequence()}.bind(this));
 
         // input and output bars lengths
         const that = this;

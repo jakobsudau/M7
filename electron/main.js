@@ -18,7 +18,7 @@ function doIt() {
 }
 
 // Create a hidden background window
-function createBgWindow() {
+function createBackgroundProcessWindow() {
     result = new BrowserWindow({
         "show": false,
         webPreferences: {
@@ -26,7 +26,7 @@ function createBgWindow() {
             backgroundThrottling: false
         }
     });
-    result.loadURL('file://' + __dirname + '/background.html');
+    result.loadURL('file://' + __dirname + '/backgroundProcess.html');
     result.on('closed', () => {
         console.log('background window closed')});
     return result;
@@ -91,7 +91,7 @@ app.on('ready', function() {
     });
 
     ipcMain.on('initialize', (event, arg) => {
-        if (available.length < cpus) {createBgWindow()}
+        if (available.length < cpus) {createBackgroundProcessWindow()}
     });
 
     ipcMain.on('delete', (event, arg) => {

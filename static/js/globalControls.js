@@ -2,7 +2,7 @@
 // GlobalControls
 // -------------------------------------------------------------------------
 class GlobalControlsModule {
-    constructor() {
+    constructor(mainModule) {
         if (!!GlobalControlsModule.instance) {
             return GlobalControlsModule.instance;
         }
@@ -10,7 +10,10 @@ class GlobalControlsModule {
         document.documentElement.setAttribute('theme', 'light');
         GlobalControlsModule.instance = this;
         this.isDarkMode = false;
-        this.createUIElements();
+        this.createUIElements(mainModule);
+
+        this.connector = new Connector(this);
+        this.connector.initialize(0);
     }
 
     switchBarPosition() {
@@ -57,7 +60,18 @@ class GlobalControlsModule {
         }
     }
 
-    createUIElements() {
+    switchDarkMode(value) {
+        this.isDarkMode = value;
+            if(!this.isDarkMode){
+                document.documentElement.setAttribute('theme', 'light');
+                darkModeButton.innerHTML = "☾";
+            } else {
+                document.documentElement.setAttribute('theme', 'dark');
+                darkModeButton.innerHTML = "☀";
+            }
+    }
+
+    createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
         globalControlsModuleContainer.className = "left";
@@ -150,15 +164,7 @@ class GlobalControlsModule {
             this.showHelp()}.bind(this));
 
         darkModeButton.addEventListener("click", function() {
-            this.isDarkMode = !this.isDarkMode;
-            if(!this.isDarkMode){
-                document.documentElement.setAttribute('theme', 'light');
-                darkModeButton.innerHTML = "☾";
-            } else {
-                document.documentElement.setAttribute('theme', 'dark');
-                darkModeButton.innerHTML = "☀";
-            }
-        }.bind(this));
+            this.switchDarkMode(!this.isDarkMode);}.bind(this));
 
         fullscreenButton.addEventListener("click", function() {
             globalControlsModuleContainer
