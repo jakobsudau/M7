@@ -60,7 +60,7 @@ app.on('ready', function() {
         systemPreferences.subscribeNotification(
             'AppleInterfaceThemeChangedNotification',
             function theThemeHasChanged () {
-                main.webContents.send(('to-mainModule'),
+                main.webContents.send(('to-GlobalControlsModule'),
                     systemPreferences.isDarkMode());
             }
         );

@@ -42,7 +42,7 @@ class Midi {
                 input = inputs.next()) {
             updatedAvailableInputs.push(input.value);
             input.value.onmidimessage = function(e) {
-                that.mIDIMessageEventHandler(event, that)};
+                that.midiMessageEventHandler(event, that)};
         }
 
         const outputs = this.midiAccess.outputs.values();
@@ -67,7 +67,7 @@ class Midi {
         }
     }
 
-    mIDIMessageEventHandler(event, that) {
+    midiMessageEventHandler(event, that) {
         let input = event.currentTarget;
         // Mask off the lower nibble (MIDI channel, not used)
         switch (event.data[0] & 0xf0) {
@@ -85,7 +85,7 @@ class Midi {
         }
     }
 
-    sendMIDIMetronomeMessage(isBarStart, portId, volume) {
+    sendMIDIMetronomeMessage(isBarStart, portId, volume, midiClockStatus) {
         this.midiAccess.outputs.get(portId).send(
             [0x90, (isBarStart ? 90 : 80), (volume * 127)]);
         this.midiAccess.outputs.get(portId).send(

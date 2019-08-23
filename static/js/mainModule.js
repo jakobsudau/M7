@@ -174,6 +174,10 @@ class MainModule {
         }
     }
 
+    changeMidiClock(msg) {
+        this.metronome.midiClockStatus = msg;
+    }
+
     midiPortListUpdated() {
         if(this.midi != undefined) {
             // move "internal" option into click midi output options
@@ -300,7 +304,6 @@ class MainModule {
             .getElementsByTagName("button");
         for (const button of buttons) {
             if (this.midiMapMode) {
-                console.log("midi map it!");
                 let btnOverlay = document.createElement("div");
                 btnOverlay.className = "btnOverlay";
                 const mapped = this.midiMapParams.get(button);
@@ -547,6 +550,10 @@ class MainModule {
         this.midiPortListUpdated();
         this.clickBusSelect.addEventListener("change", function() {
             this.changeClickPort(this.clickBusSelect.selectedIndex);
+        }.bind(this));
+
+        this.clickClockSelect.addEventListener("change", function(e) {
+            this.changeMidiClock(e.target[e.target.selectedIndex].text);
         }.bind(this));
     }
 }

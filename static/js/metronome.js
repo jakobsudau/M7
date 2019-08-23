@@ -29,6 +29,7 @@ class Metronome {
         this.startTime = 0;
         this.currentTime = 0;
         this.volume = 0.8;
+        this.midiClockStatus = "none";
         // this.once = true;
         this.mainModule = mainModule;
     }
@@ -115,7 +116,7 @@ class Metronome {
                 osc.onended = function() {osc.disconnect()};
             } else {
                 this.mainModule.midi.sendMIDIMetronomeMessage(isStart,
-                    this.outputId, this.volume);
+                    this.outputId, this.volume, this.midiClockStatus);
             }
         }
     }

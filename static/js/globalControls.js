@@ -71,6 +71,20 @@ class GlobalControlsModule {
             }
     }
 
+    switchFullScreen() {
+        if (document.fullscreenElement) {
+            fullscreenButton.innerHTML = "◱";
+            document.exitFullscreen()
+        } else {
+            fullscreenButton.innerHTML = "◳";
+            document.body.requestFullscreen();
+        }
+    }
+
+    mapMidi(mainModule) {
+        mainModule.mapMidi();
+    }
+
     createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
@@ -157,8 +171,8 @@ class GlobalControlsModule {
             this.switchBarPosition()}.bind(this));
 
         midiMapButton.addEventListener("click", function() {
-            mainModule.mapMidi();
-        });
+            this.mapMidi(mainModule);
+        }.bind(this));
 
         helpButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));
@@ -167,14 +181,7 @@ class GlobalControlsModule {
             this.switchDarkMode(!this.isDarkMode);}.bind(this));
 
         fullscreenButton.addEventListener("click", function() {
-            globalControlsModuleContainer
-            if (document.fullscreenElement) {
-                fullscreenButton.innerHTML = "◱";
-                document.exitFullscreen()
-            } else {
-                fullscreenButton.innerHTML = "◳";
-                document.body.requestFullscreen();
-            }
-        });
+            this.switchFullScreen();
+        }.bind(this));
     }
 }

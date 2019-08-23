@@ -455,32 +455,6 @@ class GeneratorModule {
 
         let inputBarsOptionsContainer = document.createElement("div");
 
-        const inputBarsTitle = "Bar length of the input sequences";
-
-        let inputBarsOptions = [];
-
-        inputBarsOptions[0] = document.createElement("input");
-        inputBarsOptions[0].className = "radioButton";
-        inputBarsOptions[0].name = "inputBarsOption" + this.id;
-        inputBarsOptions[0].type = "radio";
-        inputBarsOptions[0].value = "2";
-        inputBarsOptions[0].title = inputBarsTitle;
-
-        inputBarsOptions[1] = document.createElement("input");
-        inputBarsOptions[1].className = "radioButton";
-        inputBarsOptions[1].name = "inputBarsOption" + this.id;
-        inputBarsOptions[1].type = "radio";
-        inputBarsOptions[1].value = "4";
-        inputBarsOptions[1].checked = "checked";
-        inputBarsOptions[1].title = inputBarsTitle;
-
-        inputBarsOptions[2] = document.createElement("input");
-        inputBarsOptions[2].className = "radioButton";
-        inputBarsOptions[2].name = "inputBarsOption" + this.id;
-        inputBarsOptions[2].type = "radio";
-        inputBarsOptions[2].value = "8";
-        inputBarsOptions[2].title = inputBarsTitle;
-
         let outputBarsContainer = document.createElement("div");
         outputBarsContainer.id = "outputBarsContainer";
         outputBarsContainer.className = "container";
@@ -490,39 +464,29 @@ class GeneratorModule {
 
         let outputBarsOptionsContainer = document.createElement("div");
 
-        const outputBarsTitle = "Bar length of the output sequences";
-
+        let inputBarsOptions = [];
         let outputBarsOptions = [];
+        let optionTexts = [];
 
-        outputBarsOptions[0] = document.createElement("input");
-        outputBarsOptions[0].className = "radioButton";
-        outputBarsOptions[0].name = "outputBarsOption" + this.id;
-        outputBarsOptions[0].type = "radio";
-        outputBarsOptions[0].value = "2";
-        outputBarsOptions[0].title = outputBarsTitle;
-
-        outputBarsOptions[1] = document.createElement("input");
-        outputBarsOptions[1].className = "radioButton";
-        outputBarsOptions[1].name = "outputBarsOption" + this.id;
-        outputBarsOptions[1].type = "radio";
-        outputBarsOptions[1].value = "4";
-        outputBarsOptions[1].checked = "checked";
-        outputBarsOptions[1].title = outputBarsTitle;
-
-        outputBarsOptions[2] = document.createElement("input");
-        outputBarsOptions[2].className = "radioButton";
-        outputBarsOptions[2].name = "outputBarsOption" + this.id;
-        outputBarsOptions[2].type = "radio";
-        outputBarsOptions[2].value = "8";
-        outputBarsOptions[2].title = outputBarsTitle;
-
-        let outputBarsOption1Text = document.createTextNode("2");
-        let outputBarsOption2Text = document.createTextNode("4");
-        let outputBarsOption3Text = document.createTextNode("8");
-
-        let inputBarsOption1Text = document.createTextNode("2");
-        let inputBarsOption2Text = document.createTextNode("4");
-        let inputBarsOption3Text = document.createTextNode("8");
+        for (const options of ["input", "output"]) {
+            for (const value of ["2", "4", "8"]) {
+                const option = document.createElement("input");
+                option.className = "radioButton";
+                option.name = options + "BarsOption" + this.id;
+                option.type = "radio";
+                option.value = value;
+                if (value == "4") {
+                    option.checked = "checked";
+                }
+                option.title = "Bar length of the " + options + " sequences";
+                optionTexts.push(document.createTextNode(value));
+                if (options == "input") {
+                    inputBarsOptions.push(option);
+                } else {
+                    outputBarsOptions.push(option);
+                }
+            }
+        }
 
         let midiOutContainer = document.createElement("div");
         midiOutContainer.id = "midiOutContainer";
@@ -614,17 +578,17 @@ class GeneratorModule {
         outputBarsContainer.appendChild(outputBarsContainerText);
         outputBarsContainer.appendChild(outputBarsOptionsContainer);
         inputBarsOptionsContainer.appendChild(inputBarsOptions[0]);
-        inputBarsOptionsContainer.appendChild(inputBarsOption1Text);
+        inputBarsOptionsContainer.appendChild(optionTexts[0]);
         inputBarsOptionsContainer.appendChild(inputBarsOptions[1]);
-        inputBarsOptionsContainer.appendChild(inputBarsOption2Text);
+        inputBarsOptionsContainer.appendChild(optionTexts[1]);
         inputBarsOptionsContainer.appendChild(inputBarsOptions[2]);
-        inputBarsOptionsContainer.appendChild(inputBarsOption3Text);
+        inputBarsOptionsContainer.appendChild(optionTexts[2]);
         outputBarsOptionsContainer.appendChild(outputBarsOptions[0]);
-        outputBarsOptionsContainer.appendChild(outputBarsOption1Text);
+        outputBarsOptionsContainer.appendChild(optionTexts[3]);
         outputBarsOptionsContainer.appendChild(outputBarsOptions[1]);
-        outputBarsOptionsContainer.appendChild(outputBarsOption2Text);
+        outputBarsOptionsContainer.appendChild(optionTexts[4]);
         outputBarsOptionsContainer.appendChild(outputBarsOptions[2]);
-        outputBarsOptionsContainer.appendChild(outputBarsOption3Text);
+        outputBarsOptionsContainer.appendChild(optionTexts[5]);
         heatContainer.appendChild(heatSlider);
         heatContainer.appendChild(heatTitleDiv);
         modelContainer.appendChild(modelText);
