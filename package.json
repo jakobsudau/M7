@@ -12,7 +12,7 @@
         "start": "node server/server.js"
     },
     "dependencies": {
-        "@magenta/music": "../libs/magenta-js/music",
+        "@magenta/music": "file:../libs/magenta-js/music",
         "express": "^4.17.1",
         "http": "^0.0.0",
         "socket.io": "^2.2.0"
