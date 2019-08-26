@@ -4,6 +4,7 @@
     "version": "0.0.1",
     "license": "MIT",
     "author": "Jakob Sudau",
+    "start": "node server.js",
     "dependencies": {
         "@magenta/music": "../libs/magenta-js/music",
         "express": "^4.17.1",
