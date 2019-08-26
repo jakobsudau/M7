@@ -8,6 +8,7 @@
         "installProject": "cd libs/magenta-js/music && yarn install && yarn build && cd ../../../ && cd server/ && yarn install && cd ../ && cd electron/ && yarn install",
         "startElectron": "cd ./electron && yarn start",
         "buildElectron": "cd ./electron && yarn build",
-        "startNode": "cd ./server && npm run start --scripts-prepend-node-path"
+        "startNode": "cd ./server && npm run start --scripts-prepend-node-path",
+        "start": "cd ./server && npm run start --scripts-prepend-node-path"
     }
 }

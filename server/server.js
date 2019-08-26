@@ -3,6 +3,7 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const path = require("path");
+const port = process.env.PORT || 3000;
 let clientsAndWorkers = new Map();
 const { Worker } = require("worker_threads");
 
@@ -44,6 +45,6 @@ io.on('connection', function(socket){
     });
 });
 
-http.listen(3000, function(){
+http.listen(port, function(){
     console.log('listening on *:3000');
 });
