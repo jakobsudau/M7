@@ -9,6 +9,6 @@
         "startElectron": "cd ./electron && yarn start",
         "buildElectron": "cd ./electron && yarn build",
         "startNode": "cd ./server && npm run start --scripts-prepend-node-path",
-        "start": "cd ./server && npm run start --scripts-prepend-node-path"
+        "start": "node server/server.js"
     }
 }
