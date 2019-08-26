@@ -1,6 +1,7 @@
 const { workerData, parentPort, isMainThread } = require("worker_threads");
-const mm = require('@magenta/music');
 const id = workerData;
+
+const mm = require('@magenta/music');
 const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
 const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
@@ -18,31 +19,6 @@ models[0].initialize().then(() =>
 	parentPort.postMessage({data: "finishedInitialization",
 	cmd: "initDone",
 	id: id}));
-
-
-
-// --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
-// let OCTAVES = 7;
-// let NOTES_PER_OCTAVE = 12;
-// const bonusNotes = OCTAVES > 6 ? 4 : 0;  // starts on an A, ends on a C.
-//   const totalNotes = NOTES_PER_OCTAVE * OCTAVES + bonusNotes;
-// let keyWhitelist = Array(totalNotes).fill().map((x,i) => {
-//     if (OCTAVES > 6) return i;
-// 	// Starting 3 semitones up on small screens (on a C),
-// 	// and a whole octave up.
-//     return i + 3 + NOTES_PER_OCTAVE;
-//   });
-// const genie = new mm.PianoGenie('https://storage.googleapis.com/magentadata/js/checkpoints/piano_genie/model/epiano/stp_iq_auto_contour_dt_166006');
-// genie.initialize().then(() => {
-// 	console.log('genie ready!');
-// 	// Slow to start up, so do a fake prediction to warm up the model.
-// 	const note = genie.nextFromKeyWhitelist(0, keyWhitelist, 1.0);
-// 	console.log(note);
-// 	genie.resetState();
-//   });
-// --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
 
 // You can do any heavy stuff here, in a synchronous way
 // without blocking the "main thread"

@@ -3,7 +3,7 @@ class Connector {
         this.socket;
         this.parent = module;
         this.id;
-        this.electron;
+        this.ipcRenderer;
         this.once = true;
         this.isElectron =
             navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
@@ -12,17 +12,16 @@ class Connector {
     initialize(id) {
         return new Promise(function(resolve, reject) {
             if (this.isElectron) {
-                this.electron = require('electron');
+                this.ipcRenderer = require('electron').ipcRenderer;
                 if (id == 0) {
                     // support for native dark mode on macOS
-                    this.electron.ipcRenderer.on('to-GlobalControlsModule', (evt, arg) => {
+                    this.ipcRenderer.once('to-GlobalControlsModule', (evt, arg) => {
                         console.log(this.parent);
                         this.parent.switchDarkMode(arg)});
                     resolve({data: id});
                 } else {
-                    this.electron.ipcRenderer.send('initialize',
-                    {cmd: "initialize", id: id});
-                    this.electron.ipcRenderer.on('status',
+                    this.ipcRenderer.send('initialize');
+                    this.ipcRenderer.once('status',
                     (event, threads, tasks) => {
                         if (this.once) {
                             this.once = false;
@@ -57,9 +56,9 @@ class Connector {
     generateSequence(data) {
         return new Promise(function(resolve, reject) {
             if (this.isElectron) {
-                this.electron.ipcRenderer.send('assign-task', data);
-                let test = 'to-renderer' + this.id;
-                this.electron.ipcRenderer.on(test, (event, arg) => {
+                this.ipcRenderer.send('generate-sequence', data);
+                let test = 'to-connector' + this.id;
+                this.ipcRenderer.once(test, (event, arg) => {
                     resolve(arg);
                 });
             } else {
@@ -73,7 +72,7 @@ class Connector {
 
     delete(id) {
         if (this.isElectron) {
-            this.electron.ipcRenderer.send('delete', id);
+            this.ipcRenderer.send('delete', id);
         } else {
             this.socket.disconnect();
         }

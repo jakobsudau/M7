@@ -1,8 +1,8 @@
 <h1>BackgroundProcess</h1>
 <script type="text/javascript">
 	const {ipcRenderer} = require('electron');
-	const mm = require('@magenta/music');
 
+	const mm = require('@magenta/music');
 	const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 	const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
 	const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
@@ -42,7 +42,7 @@
 		ready();
 	});
 
-	ipcRenderer.on('task', (event, arg) => {
+	ipcRenderer.on('generate-task', (event, arg) => {
 		log('starting generation on bg thread from generator ' + arg.id);
 		generate(arg);
 	})

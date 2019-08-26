@@ -9,7 +9,7 @@ var available = [];
 var tasks = [];
 
 // hand the tasks out to waiting threads
-function doIt() {
+function executeTask() {
     while (available.length > 0 && tasks.length > 0) {
         var task = tasks.shift();
         available.shift().send(task[0], task[1]);
@@ -23,7 +23,7 @@ function createBackgroundProcessWindow() {
         "show": false,
         webPreferences: {
             nodeIntegration: true,
-            backgroundThrottling: false
+            backgroundThrottling: false,
         }
     });
     result.loadURL('file://' + __dirname + '/backgroundProcess.html');
@@ -44,7 +44,6 @@ app.on('ready', function() {
         webPreferences: {
             nodeIntegration: true,
             backgroundThrottling: false,
-            webSecurity: false
         }
     });
     main.webContents.openDevTools();
@@ -75,19 +74,13 @@ app.on('ready', function() {
     ipcMain.on('for-renderer', (event, arg) => {
         console.log("got generated data from bg thread, send it to " +
             "generator " + arg.id);
-        main.webContents.send(('to-renderer' + arg.id), arg);
+        main.webContents.send(('to-connector' + arg.id), arg);
     });
 
-    ipcMain.on('for-background', (event, arg) => {
-        tasks.push(['message', arg]);
-        doIt();
-    });
-
-    // heavy processing done in the background thread
-    // so UI and main threads remain responsive
-    ipcMain.on('assign-task', (event, arg) => {
-        tasks.push(['task', arg]);
-        doIt();
+    // music generation to be done in the background thread
+    ipcMain.on('generate-sequence', (event, arg) => {
+        tasks.push(['generate-task', arg]);
+        executeTask();
     });
 
     ipcMain.on('initialize', (event, arg) => {
@@ -101,6 +94,6 @@ app.on('ready', function() {
     ipcMain.on('ready', (event, arg) => {
         available.push(event.sender);
         console.log("bg thread is ready");
-        doIt();
+        executeTask();
     })
 })
