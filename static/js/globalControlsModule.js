@@ -2,14 +2,16 @@
 // GlobalControls
 // -------------------------------------------------------------------------
 class GlobalControlsModule {
-    constructor(mainModule) {
+    constructor(mainModule, darkmode = false, barPosition = 0) {
         if (!!GlobalControlsModule.instance) {
             return GlobalControlsModule.instance;
         }
 
         document.documentElement.setAttribute('theme', 'light');
         GlobalControlsModule.instance = this;
-        this.isDarkMode = false;
+        this.isDarkMode = darkmode;
+        this.barPositions = ["left", "top", "right", "bottom"]
+        this.barPosition = barPosition;
         this.createUIElements(mainModule);
 
         this.connector = new Connector(this);
@@ -19,28 +21,32 @@ class GlobalControlsModule {
     switchBarPosition(positionButton) {
         const mainSubCon = document.getElementById("modulesContainer");
         const mainCon = document.getElementById("mainContainer");
-        switch (globalControlsModuleContainer.className) {
+        switch (this.barPositions[this.barPosition]) {
             case "left":
                 positionButton.innerHTML = "⬒";
                 globalControlsModuleContainer.className = "top";
                 mainSubCon.className = "modulesContainerTopBottom";
+                this.barPosition = 1;
                 break;
             case "top":
                 positionButton.innerHTML = "◨";
                 globalControlsModuleContainer.className = "right";
                 mainSubCon.className = "modulesContainerLeftRight";
+                this.barPosition = 2;
                 break;
             case "right":
                 positionButton.innerHTML = "⬓";
                 globalControlsModuleContainer.className = "bottom";
                 mainSubCon.className = "modulesContainerTopBottom";
                 mainCon.appendChild(globalControlsModuleContainer);
+                this.barPosition = 3;
                 break;
             case "bottom":
                 positionButton.innerHTML = "◧";
                 globalControlsModuleContainer.className = "left";
                 mainSubCon.className = "modulesContainerLeftRight";
                 mainCon.insertBefore(globalControlsModuleContainer,mainCon.childNodes[0]);
+                this.barPosition = 0;
                 break;
         }
     }
@@ -99,7 +105,7 @@ class GlobalControlsModule {
     createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
-        globalControlsModuleContainer.className = "left";
+        globalControlsModuleContainer.className = this.barPositions[this.barPosition];
 
         const helpButton = document.createElement("button");
         helpButton.className = "globalControlsButton";

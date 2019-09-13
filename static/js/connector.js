@@ -72,8 +72,7 @@ class Connector {
 
     saveSession() {
         if (this.isElectron) {
-            const { dialog } = require('electron').remote;
-            console.log(dialog.showSaveDialog({}));
+            this.ipcRenderer.send('save', 0);
         } else {
             alert("Saving only works within the desktop application!");
         }

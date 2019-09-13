@@ -1,4 +1,4 @@
-const {ipcMain, BrowserWindow, app, systemPreferences} = require('electron');
+const {ipcMain, BrowserWindow, app, systemPreferences, dialog} = require('electron');
 const cpus = require('os').cpus().length;
 console.log('cpus: ' + cpus);
 
@@ -85,6 +85,17 @@ app.on('ready', function() {
 
     ipcMain.on('initialize', (event, arg) => {
         if (available.length < cpus) {createBackgroundProcessWindow()}
+    });
+
+    ipcMain.on('save', (event, arg) => {
+
+        const Store = require('electron-store');
+        const store = new Store();
+        store.set('unicorn', 'test');
+        console.log(store.get('unicorn'));
+
+        console.log("save session in electron!");
+        console.log(dialog.showSaveDialog({}));
     });
 
     ipcMain.on('delete', (event, arg) => {

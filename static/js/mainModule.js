@@ -9,7 +9,6 @@ class MainModule {
         }
 
         MainModule.instance = this;
-        this.spaceSwitch = false;
         this.midiMapMode = false;
         this.midiMapSelection;
         this.midiMapParams = new Map();
@@ -175,7 +174,8 @@ class MainModule {
     }
 
     changeMidiClock(msg) {
-        this.metronome.midiClockStatus = msg;
+        // this.metronome.midiClockStatus = msg;
+        this.metronome.midiClockStatus = msg ? "send" : "none";
     }
 
     midiPortListUpdated() {
@@ -566,7 +566,8 @@ class MainModule {
         }.bind(this));
 
         this.clickClockSelect.addEventListener("change", function(e) {
-            this.changeMidiClock(e.target[e.target.selectedIndex].text);
+            // this.changeMidiClock(e.target[e.target.selectedIndex].text);
+            this.changeMidiClock(e.target.checked);
         }.bind(this));
     }
 }
