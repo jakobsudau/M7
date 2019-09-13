@@ -25,12 +25,11 @@ class Metronome {
         this.playOutput = false;
         this.audioContext = new AudioContext();
         this.gainNode = this.audioContext.createGain();
-        this.isSeqStart = false;
         this.startTime = 0;
         this.currentTime = 0;
         this.volume = 0.8;
         this.midiClockStatus = "none";
-        // this.once = true;
+        this.once = true;
         this.mainModule = mainModule;
     }
 
@@ -58,12 +57,16 @@ class Metronome {
             }
 
             this.nextNoteTime = this.audioContext.currentTime;
-            // this.once = true;
-            // this.midi.sendMIDIClockMessage("start");
+            if (this.outputId != "internal" && this.midiClockStatus == "send") {
+                this.once = true;
+                this.mainModule.midi.sendMIDIClockMessage("start", this.outputId);
+            }
             this.timerWorker.postMessage("start");
         } else {
-            // this.once = false;
-            // this.midi.sendMIDIClockMessage("stop");
+            if (this.outputId != "internal" && this.midiClockStatus == "send") {
+                this.once = false;
+                this.mainModule.midi.sendMIDIClockMessage("stop", this.outputId);
+            }
             this.timerWorker.postMessage("stop");
         }
     }
@@ -92,18 +95,23 @@ class Metronome {
         console.log("time difference to worker event: " +
             timeDifference + "s");
 
+        if (this.once && this.outputId != "internal" && this.midiClockStatus == "send") {
+            this.mainModule.midi.sendMIDIClockMessage("tick", this.outputId);
+            this.once = false;
+        }
+
         if (timeDifference > 0.001) {
             console.log("Too big!!!");
         } else {
             if (beatNumber % 16 == 0){
-                this.playClick(true, time);
+                this.playTick(true, time);
             }else{
-                this.playClick(false, time);
+                this.playTick(false, time);
             }
         }
     }
 
-    playClick(isStart, time) {
+    playTick(isStart, time) {
         this.mainModule.playTick(isStart);
         if (this.playOutput) {
             if (this.outputId == "internal") {

@@ -384,10 +384,10 @@ select {
     width: 7.5em;
 }
 
-#clickClockSelect {
+/* #clickClockSelect {
     width: 5.2em;
     margin-left: 0.4em;
-}
+} */
 
 #modelContainer {
     float: left;

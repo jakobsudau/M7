@@ -4,21 +4,23 @@ const id = workerData;
 const mm = require('@magenta/music');
 const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
-const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
+// const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
+
 const models = [new mm.MusicRNN(improvCheckpoint),
 				new mm.MusicRNN(melodyCheckpoint),
-				new mm.MusicVAE(vaeCheckpoint)];
+				/*new mm.MusicVAE(vaeCheckpoint)*/];
 
-// models[0].initialize().then(() =>
-// 	models[1].initialize().then(() =>
-// 		models[2].initialize().then(() =>
-// 			parentPort.postMessage({data: "finishedInitialization",
-// 			cmd: "initDone",
-// 			id: id}))));
-models[0].initialize().then(() =>
-	parentPort.postMessage({data: "finishedInitialization",
-	cmd: "initDone",
-	id: id}));
+function initializeModel(index) {
+	if (index > 0) {
+		log("init model");
+		models[index-1].initialize().then(() => initializeModel(index-1));
+	} else {
+		parentPort.postMessage({
+			data: "finishedInitialization",
+			cmd: "initDone",
+			id: id});
+	}
+}
 
 // You can do any heavy stuff here, in a synchronous way
 // without blocking the "main thread"
@@ -26,7 +28,8 @@ parentPort.on("message", message => {
     let data = JSON.parse(message);
 	modelGenerate(data).then((seq) => {
 		// send data and message that generation is done
-		parentPort.postMessage({data: seq,
+		parentPort.postMessage({
+			data: seq,
 			cmd: "generateDone",
 			id: id })
 	});

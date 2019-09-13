@@ -82,14 +82,53 @@ class Midi {
                 that.mainModule.startStopNote(
                     event.data[1], event.data[2], false, input);
                 return;
+            case 0xFA:
+                console.log("midi start msg"); // clock start
+                break;
+            case 0xFC:
+                    console.log("midi stop msg"); // clock stop
+                break;
+            case 0xF8:
+                    console.log("midi tick msg"); // clock tick, 24 / quarter
+                break;
+            case 0xF0:
+                console.log("midi ??? msg"); // 240, cubase tick?
+                break;
         }
     }
 
     sendMIDIMetronomeMessage(isBarStart, portId, volume, midiClockStatus) {
-        this.midiAccess.outputs.get(portId).send(
-            [0x90, (isBarStart ? 90 : 80), (volume * 127)]);
-        this.midiAccess.outputs.get(portId).send(
-            [0x80, (isBarStart ? 90 : 80), (volume * 127)], (Date.now()+100));
+        switch (midiClockStatus) {
+            case "none":
+                    this.midiAccess.outputs.get(portId).send(
+                        [0x90, (isBarStart ? 90 : 80), (volume * 127)]);
+                    this.midiAccess.outputs.get(portId).send(
+                        [0x80, (isBarStart ? 90 : 80), (volume * 127)], (Date.now()+100));
+                break;
+            case "send":
+                // this.sendMIDIClockMessage("tick", portId);
+                break;
+            case "receive":
+                // this.sendMIDIClockMessage("tick", portId);
+                break;
+        }
+    }
+
+    sendMIDIClockMessage(command, portId) {
+        let message;
+        switch (command) {
+            case "start": // [0xFA] midi clock start
+                message = [0xFA];
+                break;
+            case "stop": // [0xFC] midi clock stop
+                message = [0xFC];
+                break;
+            case "tick": // [0xF8] midi clock tick
+                message = [0xF8];
+                break;
+        }
+        this.midiAccess.outputs.get(portId).send(message);
+            //omitting timestamp = send immediately
     }
 
     sendMIDISceneChange(number) {

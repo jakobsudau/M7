@@ -460,21 +460,32 @@ class MainModule {
         clickBusContainer.id = "clickBusContainer";
 
         let clickBusText = document.createElement("div");
-        clickBusText.innerHTML = "Click Out Clock";
+        clickBusText.innerHTML = "Click Out";
         clickBusText.title = "Port for outgoing click messages";
 
         this.clickBusSelect = document.createElement("select");
         this.clickBusSelect.id = "clickBusSelect";
         this.clickBusSelect.title = "Port for outgoing click messages";
 
-        this.clickClockSelect = document.createElement("select");
+        let clickClockContainer = document.createElement("div");
+        clickClockContainer.id = "clickClockContainer";
+
+        let clickClockText = document.createElement("div");
+        clickClockText.innerHTML = "Clock";
+        clickClockText.title = "Select whether MIDI Clock messages "
+            + "should be used (instead of regular MIDI messages)"
+            /*+ " and be in send or receive state"*/;
+
+        // this.clickClockSelect = document.createElement("select");
+        this.clickClockSelect = document.createElement("input");
+        this.clickClockSelect.setAttribute("type", "checkbox");
         this.clickClockSelect.id = "clickClockSelect";
         this.clickClockSelect.title = "Select whether MIDI Clock messages "
-            + "should be used (instead of regular MIDI messages) and "
-            + "be in send or receive state";
-        this.clickClockSelect.options[0] = new Option('none');
-        this.clickClockSelect.options[1] = new Option('send');
-        this.clickClockSelect.options[2] = new Option('receive');
+            + "should be used (instead of regular MIDI messages)"
+            /*+ " and be in send or receive state"*/;
+        // this.clickClockSelect.options[0] = new Option('none');
+        // this.clickClockSelect.options[1] = new Option('send');
+        // this.clickClockSelect.options[2] = new Option('receive');
 
         mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordContainer);
@@ -483,9 +494,11 @@ class MainModule {
         clickContainer.appendChild(clickVolumeSlider);
         clickContainer.appendChild(this.clickButton);
         clickContainer.appendChild(clickBusContainer);
+        clickContainer.appendChild(clickClockContainer);
         clickBusContainer.appendChild(clickBusText);
         clickBusContainer.appendChild(this.clickBusSelect);
-        clickBusContainer.appendChild(this.clickClockSelect);
+        clickClockContainer.appendChild(clickClockText);
+        clickClockContainer.appendChild(this.clickClockSelect);
         mainButtonContainer.appendChild(mainButtonSubContainer1);
         mainButtonContainer.appendChild(mainButtonSubContainer2);
         mainButtonSubContainer1.appendChild(this.changeBackwardButton);

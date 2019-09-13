@@ -1,18 +1,26 @@
 <h1>BackgroundProcess</h1>
 <script type="text/javascript">
 	const {ipcRenderer} = require('electron');
-
 	const mm = require('@magenta/music');
+
 	const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 	const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
-	const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
+	// const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
+
 	const models = [new mm.MusicRNN(improvCheckpoint),
 					new mm.MusicRNN(melodyCheckpoint),
-					new mm.MusicVAE(vaeCheckpoint)];
-	// models[0].initialize().then(() =>
-	// 	models[1].initialize().then(() =>
-	// 		models[2].initialize().then(() => ready())));
-	models[0].initialize().then(() =>ready());
+					/*new mm.MusicVAE(vaeCheckpoint)*/];
+
+	function initializeModel(index) {
+		if (index > 0) {
+			log("init model");
+			models[index-1].initialize().then(() => initializeModel(index-1));
+		} else {
+			ready();
+		}
+	}
+
+	initializeModel(models.length);
 
 	// Send logs as messages to the main thread to show on the console
 	function log(value) {

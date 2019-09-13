@@ -301,8 +301,17 @@ class GeneratorModule {
         if (this.barCounter < (this.outputBars-1)) {
             this.barCounter++;
         } else if (this.barCounter == this.outputBars -1) {
-            this.mainModule.metronome.isSeqStart = true;
             this.barCounter = 0;
+        }
+    }
+
+    setPlayActive() {
+        this.shouldPlay = true;
+        this.playButton.disabled = true;
+        if (this.mainModule.metronome.isPlaying) {
+            this.barCounter = 0;
+        } else {
+            this.playGeneratedSequence();
         }
     }
 
@@ -348,16 +357,6 @@ class GeneratorModule {
             this.mutateButton.className = "mutateButton enabled";
         } else {
             this.mutateButton.className = "mutateButton disabled";
-        }
-    }
-
-    setPlayActive() {
-        this.shouldPlay = true;
-        this.playButton.disabled = true;
-        if (this.mainModule.metronome.isPlaying) {
-            this.barCounter = 0;
-        } else {
-            this.playGeneratedSequence();
         }
     }
 
@@ -537,7 +536,7 @@ class GeneratorModule {
 
         this.modelSelect.add(new Option("ImprovRNN", "1"));
         this.modelSelect.add(new Option("MelodyRNN", "2"));
-        this.modelSelect.add(new Option("MusicVAE", "3"));
+        // this.modelSelect.add(new Option("MusicVAE", "3"));
 
         let heatContainer = document.createElement("div");
         heatContainer.id = "heatContainer";
