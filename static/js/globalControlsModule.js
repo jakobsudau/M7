@@ -85,6 +85,17 @@ class GlobalControlsModule {
         mainModule.mapMidi(midiMapButton);
     }
 
+    saveOrLoadSession(shouldSave) {
+        if (shouldSave) {
+            this.connector.saveSession();
+        } else {
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.addEventListener("change", function() {console.log(input.files[0].path)});
+            input.click();
+        }
+    }
+
     createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
@@ -116,6 +127,18 @@ class GlobalControlsModule {
         darkModeButton.className = "globalControlsButton";
         darkModeButton.innerHTML = "☾";
         darkModeButton.title = "Switch to Dark/Light Mode";
+
+        const saveButton = document.createElement("button");
+        saveButton.className = "globalControlsButton";
+        saveButton.innerHTML = "⍗";
+        saveButton.style.textDecoration = "udnerline";
+        saveButton.title = "Save session";
+
+        const loadButton = document.createElement("button");
+        loadButton.className = "globalControlsButton";
+        loadButton.innerHTML = "⍐";
+        loadButton.style.textDecoration = "udnerline";
+        loadButton.title = "Load session";
 
         let overlayContainer = document.createElement("div");
         overlayContainer.id = "overlayContainer";
@@ -154,6 +177,8 @@ class GlobalControlsModule {
         globalControlsModuleContainer.appendChild(fullscreenButton);
         globalControlsModuleContainer.appendChild(midiMapButton);
         globalControlsModuleContainer.appendChild(positionButton);
+        globalControlsModuleContainer.appendChild(saveButton);
+        globalControlsModuleContainer.appendChild(loadButton);
         helpContainer.appendChild(helpTitleDiv);
         helpContainer.appendChild(helpTextDiv);
         helpContainer.appendChild(helpBottomTextDiv);
@@ -162,6 +187,12 @@ class GlobalControlsModule {
         document.body.appendChild(overlayContainer);
         const mainCon = document.getElementById("mainContainer");
         mainCon.insertBefore(globalControlsModuleContainer, mainCon.childNodes[0]);
+
+        saveButton.addEventListener('click', function() {
+            this.saveOrLoadSession(true)}.bind(this));
+
+        loadButton.addEventListener('click', function() {
+            this.saveOrLoadSession(false)}.bind(this));
 
         helpDeleteButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));

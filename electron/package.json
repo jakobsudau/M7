@@ -7,7 +7,7 @@
     "main": "main.js",
     "build": {
         "files": [
-          "../static/**/*"
+            "../static/**/*"
         ]
     },
     "scripts": {
@@ -15,7 +15,8 @@
         "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/"
     },
     "dependencies": {
-        "@magenta/music": "libs/magenta-js/music"
+        "@magenta/music": "libs/magenta-js/music",
+        "electron-json-storage": "^4.1.8"
     },
     "devDependencies": {
         "electron": "^5.0.3",

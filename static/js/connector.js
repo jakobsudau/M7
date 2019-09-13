@@ -70,6 +70,15 @@ class Connector {
         }.bind(this));
     }
 
+    saveSession() {
+        if (this.isElectron) {
+            const { dialog } = require('electron').remote;
+            console.log(dialog.showSaveDialog({}));
+        } else {
+            alert("Saving only works within the desktop application!");
+        }
+    }
+
     delete(id) {
         if (this.isElectron) {
             this.ipcRenderer.send('delete', id);
