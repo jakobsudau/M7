@@ -74,6 +74,23 @@ class MainModule {
         }
     }
 
+    getPersistentState() {
+        let allModuleState = ["test"];
+        // allModuleState.push([
+        //     this.midiMapParams, this.selectedClickBusId,
+        //     this.chords, this.bpmTextfield, this.generators,
+        //     this.generatorCounter]);
+
+        // this.generators.forEach((generator, id) => {
+        //     allModuleState.push(generator.getPersistentState());
+        // });
+        return allModuleState;
+    }
+
+    setPersistentState(persistentState) {
+        console.log("set persistentState of MainModule: " + persistentState);
+    }
+
     startStopNote(note, velocity, isStart, input) {
         if (this.midiMapMode) {
             if (isStart) {

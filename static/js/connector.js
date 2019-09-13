@@ -70,9 +70,9 @@ class Connector {
         }.bind(this));
     }
 
-    saveSession() {
+    saveSession(persistentState) {
         if (this.isElectron) {
-            this.ipcRenderer.send('save', 0);
+            this.ipcRenderer.send('save', persistentState);
         } else {
             alert("Saving only works within the desktop application!");
         }

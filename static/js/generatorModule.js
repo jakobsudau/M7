@@ -117,6 +117,17 @@ class GeneratorModule {
         delete this.addBassProg;
     }
 
+    getPersistentState() {
+        return [this.outputBars, this.inputBars, this.keepMutating,
+            this.generatedSeq, this.generatedSmf, this.bpm, this.id,
+            this.selectedOutput, this.selectedInput, this.listening,
+            this.inputSequence, this.modelSelect.selectedIndex, this.heat];
+    }
+
+    setPersistentState() {
+        console.log("set and update all parameters & UI");
+    }
+
     startStopNote(note, velocity, isStart) {
         // console.log("note: " + note);
         // console.log("velocity: " + velocity);

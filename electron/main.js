@@ -1,4 +1,5 @@
 const {ipcMain, BrowserWindow, app, systemPreferences, dialog} = require('electron');
+const fs = require('fs');
 const cpus = require('os').cpus().length;
 console.log('cpus: ' + cpus);
 
@@ -88,14 +89,21 @@ app.on('ready', function() {
     });
 
     ipcMain.on('save', (event, arg) => {
+        dialog.showSaveDialog((fileName) => {
+            if (fileName === undefined){
+                console.log("You didn't save the file");
+                return;
+            }
 
-        const Store = require('electron-store');
-        const store = new Store();
-        store.set('unicorn', 'test');
-        console.log(store.get('unicorn'));
+            // fileName is a string that contains the path and filename created in the save file dialog.
+            fs.writeFile(fileName, JSON.stringify(arg), (err) => {
+                if(err){
+                    console.log("An error ocurred creating the file "+ err.message);
+                }
 
-        console.log("save session in electron!");
-        console.log(dialog.showSaveDialog({}));
+                console.log("The file has been succesfully saved");
+            });
+        });
     });
 
     ipcMain.on('delete', (event, arg) => {
