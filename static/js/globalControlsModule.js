@@ -89,24 +89,28 @@ class GlobalControlsModule {
         mainModule.mapMidi(midiMapButton);
     }
 
-    saveOrLoadSession(shouldSave, mainModule) {
-        if (shouldSave) {
-            this.connector.saveSession([[this.isDarkMode, this.barPosition],
-                mainModule.getPersistentState()]);
-        } else {
-            let input = document.createElement('input');
-            input.type = 'file';
-            input.addEventListener("change", function() {
-                var reader = new FileReader();
-                reader.addEventListener("load", function() {
-                    var persistentState = JSON.parse(reader.result);
-                    this.setPersistentState(persistentState[0]);
-                    mainModule.setPersistentState(persistentState[1]);
-                }.bind(this));
-                reader.readAsText(input.files[0]);
+    saveSession(mainModule) {
+        this.connector.saveSession([this.getPersistentState(),
+            mainModule.getPersistentState()]);
+    }
+
+    loadSession(mainModule) {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.addEventListener("change", function() {
+            var reader = new FileReader();
+            reader.addEventListener("load", function() {
+                var persistentState = JSON.parse(reader.result);
+                this.setPersistentState(persistentState[0]);
+                mainModule.setPersistentState(persistentState[1]);
             }.bind(this));
-            input.click();
-        }
+            reader.readAsText(input.files[0]);
+        }.bind(this));
+        input.click();
+    }
+
+    getPersistentState() {
+        return [this.isDarkMode, this.barPosition];
     }
 
     setPersistentState(persistentState) {
@@ -208,10 +212,10 @@ class GlobalControlsModule {
         mainCon.insertBefore(globalControlsModuleContainer, mainCon.childNodes[0]);
 
         saveButton.addEventListener('click', function() {
-            this.saveOrLoadSession(true, mainModule)}.bind(this));
+            this.saveSession(mainModule)}.bind(this));
 
         loadButton.addEventListener('click', function() {
-            this.saveOrLoadSession(false, mainModule)}.bind(this));
+            this.loadSession(mainModule)}.bind(this));
 
         helpDeleteButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));
