@@ -291,13 +291,13 @@ class MainModule {
         }
     }
 
-    mapMidi() {
+    mapMidi(midiMapButton) {
         this.midiMapMode = !this.midiMapMode;
 
         if (this.midiMapMode) {
-            midiMapButton.className = "midiMapButton active";
+            midiMapButton.className = "globalControlsButton active";
         } else {
-            midiMapButton.className = "midiMapButton inactive";
+            midiMapButton.className = "globalControlsButton inactive";
         }
 
         const buttons = document.getElementById("modulesContainer")

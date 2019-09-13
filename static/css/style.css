@@ -127,11 +127,11 @@ button, #bpmTextfield {
     background: var(--deleteColor);
 }
 
-.midiMapButton.inactive {
+.globalControlsButton.inactive {
     background: var(--buttonBackgroundColor);
     }
 
-button:active, .midiMapButton.active {
+button:active, .globalControlsButton.active {
     background: var(--buttonActiveColor);
 }
 
@@ -215,8 +215,7 @@ button, #mainModuleContainer, #generatorModuleContainer {
     -webkit-app-region: no-drag;
 }
 
-#darkModeButton, #helpButton, #fullscreenButton,
-#positionButton, #midiMapButton, #clickButton {
+.globalControlsButton, #clickButton {
     height: 1.7em;
     width: 1.7em;
     padding: 0;
