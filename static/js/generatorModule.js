@@ -349,7 +349,7 @@ class GeneratorModule {
         if (isInput) {
             this.selectedInput =
                 this.mainModule.midi.availableInputs[port];
-            this.selectedInputName = this.selectedInputName;
+            this.selectedInputName = this.selectedInput.name;
         } else {
             this.selectedOutput =
                 this.mainModule.midi.availableOutputs[port];

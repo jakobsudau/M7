@@ -40,12 +40,12 @@ class MainModule {
         return this;
     }
 
-    addModule(id, selectedOutput, selectedInput, outputBars, inputBars,
+    addModule(id, selectedOutputName, selectedInputName, outputBars, inputBars,
         selectedModel, heat, keepMutating, listening,
         generatedSeq) {
         const generator = new GeneratorModule(this, id, outputBars,
-            inputBars, selectedModel, heat, selectedOutput, selectedInput,
-            keepMutating, listening, generatedSeq);
+            inputBars, selectedModel, heat, selectedOutputName,
+            selectedInputName, keepMutating, listening, generatedSeq);
         generator.initialize().then((id) => {
             this.generators.push(generator);
             generator.chords = this.chords;
@@ -85,34 +85,28 @@ class MainModule {
     }
 
     getPersistentState() {
-        console.log(this.generators);
-        let allModuleState = [];
-        allModuleState.push([
-            this.midiMapParams,
+        return [this.midiMapParams,
             this.metronome.outputId,
             this.chords,
             this.metronome.bpm,
-            this.generatorCounter,
             this.metronome.midiClockStatus,
             this.metronome.volume,
-            this.generators]);
-
-        return allModuleState;
+            this.generators];
     }
 
     setPersistentState(persistentState) {
+        this.generatorCounter = 1;
         this.generators = [];
-        // this.midiMapParams = persistentState[0][0];
-        this.metronome.outputId = persistentState[0][1];
-        this.chords = persistentState[0][2];
-        this.metronome.bpm = persistentState[0][3];
-        this.generatorCounter = persistentState[0][4];
-        this.metronome.midiClockStatus = persistentState[0][5];
-        this.metronome.volume = persistentState[0][6];
+        // this.midiMapParams = persistentState[0];
+        this.metronome.outputId = persistentState[1];
+        this.chords = persistentState[2];
+        this.metronome.bpm = persistentState[3];
+        this.metronome.midiClockStatus = persistentState[4];
+        this.metronome.volume = persistentState[5];
         console.log("set persistentState of MainModule: " + persistentState);
         console.log(persistentState);
 
-        let savedGenerators = persistentState[0][7];
+        let savedGenerators = persistentState[6];
 
         for (let i = 0; i < savedGenerators.length; i++) {
             this.addModule(this.generatorCounter,
