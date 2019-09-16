@@ -12,7 +12,7 @@
     },
     "scripts": {
         "start": "electron .",
-        "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/"
+        "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/ --extraResource=./../assets/"
     },
     "dependencies": {
         "@magenta/music": "libs/magenta-js/music",
