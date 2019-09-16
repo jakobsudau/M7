@@ -6,7 +6,7 @@ class GeneratorModule {
     constructor(mainModule, id, outputBars = 4, inputBars = 4,
                 selectedModel = 0, heat = 1.00, selectedOutputName,
                 selectedInputName, keepMutating = false, listening = false,
-                generatedSeq) {
+                generatedSeq, title) {
         this.mainModule = mainModule;
         this.connector = new Connector(this);
         this.outputBars = outputBars;
@@ -31,6 +31,7 @@ class GeneratorModule {
         this.midiOutBusSelect;
         this.modelSelect;
         this.id = id;
+        this.title = title;
         this.selectedOutputName = selectedOutputName;
         for (let i = 0; i < mainModule.midi.availableOutputs; i++) {
             if (this.selectedOutputName == mainModule.midi.availableOutputs[i].name) {
@@ -435,6 +436,9 @@ class GeneratorModule {
         generatorModuleTitleDiv.placeholder = "Generator " + this.id;
         generatorModuleTitleDiv.title = "Set your custom name for this " +
             "Generator Module";
+            if (this.title) {
+                generatorModuleTitleDiv.value = this.title;
+            }
 
         let generatorButtonDivContainer = document.createElement("div");
         generatorButtonDivContainer.className = "generatorButtonDivContainer";
@@ -661,11 +665,15 @@ class GeneratorModule {
             this.setPlayActive()}.bind(this));
         deleteButton.addEventListener('click', function() {
             this.deleteModule()}.bind(this));
-            heatSlider.addEventListener("input", function(e) {
+        heatSlider.addEventListener("input", function(e) {
             this.heat = (e.target.value/100);
             heatTitleDiv.innerHTML = "Heat " +
                 this.heat.toFixed(2);
 
+        }.bind(this));
+
+        generatorModuleTitleDiv.addEventListener("input", function(e) {
+            this.title = e.target.value;
         }.bind(this));
 
         this.stopButton.addEventListener('click', function(){

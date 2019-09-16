@@ -42,10 +42,10 @@ class MainModule {
 
     addModule(id, selectedOutputName, selectedInputName, outputBars, inputBars,
         selectedModel, heat, keepMutating, listening,
-        generatedSeq) {
+        generatedSeq, title) {
         const generator = new GeneratorModule(this, id, outputBars,
             inputBars, selectedModel, heat, selectedOutputName,
-            selectedInputName, keepMutating, listening, generatedSeq);
+            selectedInputName, keepMutating, listening, generatedSeq, title);
         generator.initialize().then((id) => {
             this.generators.push(generator);
             generator.chords = this.chords;
@@ -95,8 +95,16 @@ class MainModule {
     }
 
     setPersistentState(persistentState) {
+
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].deleteModule();
+        }
         this.generatorCounter = 1;
+        this.sceneCounter = 0;
         this.generators = [];
+        console.log("generators after deleting");
+        console.log(this.generators);
+
         // this.midiMapParams = persistentState[0];
         this.metronome.outputId = persistentState[1];
         this.chords = persistentState[2];
@@ -114,7 +122,7 @@ class MainModule {
                 savedGenerators[i].selectedInputName,
                 savedGenerators[i].outputBars, savedGenerators[i].inputBars,
                 savedGenerators[i].selectedModel, savedGenerators[i].heat, savedGenerators[i].keepMutating, savedGenerators[i].listening,
-                savedGenerators[i].generatedSeq)
+                savedGenerators[i].generatedSeq, savedGenerators[i].title)
         }
 
         for (let i = 0; i < this.chords.length; i++) {
