@@ -115,8 +115,13 @@ class GlobalControlsModule {
 
     setPersistentState(persistentState) {
         this.barPosition = persistentState[1];
+        this.darkmode = persistentState[0];
+        this.updateUI();
+    }
+
+    updateUI() {
         this.switchBarPosition(this.barPosition);
-        this.switchDarkMode(persistentState[0]);
+        this.switchDarkMode(this.darkmode);
     }
 
     createUIElements(mainModule) {

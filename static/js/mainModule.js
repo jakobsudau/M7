@@ -19,10 +19,12 @@ class MainModule {
         this.changeBackwardButton;
         this.changeForwardButton;
         this.generateLoopButton;
+        this.clickVolumeSlider;
         this.clickBusSelect;
         this.selectedClickBusId = "internal";
         this.metronomeOn = false;
         this.chords = ["C", "G", "Am", "F"];
+        this.chordInputs;
         this.bpmTextfield;
         this.maxScenes = 2;
         this.generators = new Map();
@@ -75,11 +77,16 @@ class MainModule {
     }
 
     getPersistentState() {
-        let allModuleState = ["test"];
-        // allModuleState.push([
-        //     this.midiMapParams, this.selectedClickBusId,
-        //     this.chords, this.bpmTextfield, this.generators,
-        //     this.generatorCounter]);
+        let allModuleState = [];
+        allModuleState.push([
+            this.midiMapParams,
+            this.metronome.outputId,
+            this.chords,
+            this.metronome.bpm,
+            this.generatorCounter,
+            this.metronome.midiClockStatus,
+            this.metronome.volume,
+            /*this.generators*/]);
 
         // this.generators.forEach((generator, id) => {
         //     allModuleState.push(generator.getPersistentState());
@@ -88,7 +95,47 @@ class MainModule {
     }
 
     setPersistentState(persistentState) {
+        this.midiMapParams = persistentState[0][0];
+        this.metronome.outputId = persistentState[0][1];
+        this.chords = persistentState[0][2];
+        this.metronome.bpm = persistentState[0][3];
+        this.generatorCounter = persistentState[0][4];
+        this.metronome.midiClockStatus = persistentState[0][5];
+        this.metronome.volume = persistentState[0][6];
+        // this.generators = persistentState[0][7];
         console.log("set persistentState of MainModule: " + persistentState);
+        console.log(persistentState);
+
+        for (let i = 0; i < this.chords.length; i++) {
+            this.chordInputs[i].value = this.chords[i];
+        }
+
+        this.updateUI();
+    }
+
+    updateUI() {
+        console.log(this.clickVolumeSlider);
+        this.clickClockSelect.checked = this.metronome.midiClockStatus;
+        this.saveBpm(this.metronome.bpm);
+        this.bpmTextfield.value = this.metronome.bpm;
+        this.changeClickVolume(this.metronome.volume);
+        this.clickVolumeSlider.value = (this.metronome.volume * 100);
+
+        for (let i = 0; i < this.clickBusSelect.options.length; i++) {
+            if (this.metronome.outputId == "internal") {
+                this.clickBusSelect.options[0].selected = true;
+                break;
+            }
+
+            if (this.metronome.outputId == this.midi.availableOutputs[i].id) {
+                this.clickBusSelect.options[i+1].selected = true;
+                break;
+            }
+        }
+
+        for (let [i, chord] of this.chordInputs.entries()) {
+            this.saveChord(chord, i);
+        }
     }
 
     startStopNote(note, velocity, isStart, input) {
@@ -441,7 +488,7 @@ class MainModule {
         let chordsDiv = document.createElement("div");
         chordsDiv.id = "chordsDiv";
 
-        let chordInputs = [];
+        this.chordInputs = [];
 
         for (let [i, chord] of this.chords.entries()) {
         let chordInput = document.createElement("input");
@@ -452,21 +499,21 @@ class MainModule {
         chordInput.title = "Change chord according to major/minor/" +
         "augmented/diminished for all 12 root pitch classes, " +
         "e.g. C5 / Am / Eb5, ...";
-        chordInputs.push(chordInput);
+        this.chordInputs.push(chordInput);
         }
 
         let clickContainer = document.createElement("div");
         clickContainer.id = "clickContainer";
         clickContainer.className = "container";
 
-        let clickVolumeSlider = document.createElement("input");
-        clickVolumeSlider.type = "range";
-        clickVolumeSlider.className = "slider";
-        clickVolumeSlider.id = "clickVolumeSlider";
-        clickVolumeSlider.min = "1";
-        clickVolumeSlider.max = "100";
-        clickVolumeSlider.value = "80";
-        clickVolumeSlider.title = "Click Volume";
+        this.clickVolumeSlider = document.createElement("input");
+        this.clickVolumeSlider.type = "range";
+        this.clickVolumeSlider.className = "slider";
+        this.clickVolumeSlider.id = "clickVolumeSlider";
+        this.clickVolumeSlider.min = "1";
+        this.clickVolumeSlider.max = "100";
+        this.clickVolumeSlider.value = "80";
+        this.clickVolumeSlider.title = "Click Volume";
 
         this.clickButton = document.createElement("button");
         this.clickButton.id = "clickButton";
@@ -508,7 +555,7 @@ class MainModule {
         mainModuleContainer.appendChild(chordContainer);
         mainModuleContainer.appendChild(clickContainer);
         mainModuleContainer.appendChild(mainButtonContainer);
-        clickContainer.appendChild(clickVolumeSlider);
+        clickContainer.appendChild(this.clickVolumeSlider);
         clickContainer.appendChild(this.clickButton);
         clickContainer.appendChild(clickBusContainer);
         clickContainer.appendChild(clickClockContainer);
@@ -528,7 +575,7 @@ class MainModule {
         mainButtonSubContainer2.appendChild(addButton);
         chordContainer.appendChild(chordTitleDiv);
         chordContainer.appendChild(chordsDiv);
-        for (let chordInput of chordInputs) {
+        for (let chordInput of this.chordInputs) {
             chordsDiv.appendChild(chordInput);
         }
 
@@ -551,9 +598,9 @@ class MainModule {
             this.changeScene("forward", e.target)}.bind(this));
         this.changeBackwardButton.addEventListener('click', function(e) {
             this.changeScene("backward", e.target)}.bind(this));
-        clickVolumeSlider.addEventListener("input", function(e) {
+        this.clickVolumeSlider.addEventListener("input", function(e) {
             this.changeClickVolume(e.target.value/100)}.bind(this));
-        for (let [i, chord] of chordInputs.entries()) {
+        for (let [i, chord] of this.chordInputs.entries()) {
             chord.addEventListener('input', function(e) {
                 this.checkChord(e.target, i)}.bind(this));
             chord.addEventListener('focusout', function(e) {

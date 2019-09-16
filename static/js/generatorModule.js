@@ -126,6 +126,11 @@ class GeneratorModule {
 
     setPersistentState() {
         console.log("set and update all parameters & UI");
+        this.updateUI();
+    }
+
+    updateUI() {
+        console.log("update UI");
     }
 
     startStopNote(note, velocity, isStart) {
