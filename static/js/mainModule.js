@@ -28,6 +28,7 @@ class MainModule {
         this.bpmTextfield;
         this.maxScenes = 2;
         this.generators = new Map();
+        this.generators2 = [];
         this.generatorCounter = 1;
         this.sceneCounter = 0;
         this.generateAllCounter = 0;
@@ -40,10 +41,15 @@ class MainModule {
         return this;
     }
 
-    addModule() {
-        const generator = new GeneratorModule(this, this.generatorCounter);
+    addModule(id, selectedOutput, selectedInput, outputBars, inputBars,
+        selectedModel, heat, keepMutating, listening,
+        generatedSeq) {
+        const generator = new GeneratorModule(this, id, outputBars,
+            inputBars, selectedModel, heat, selectedOutput, selectedInput,
+            keepMutating, listening, generatedSeq);
         generator.initialize().then((id) => {
             this.generators.set(id, generator);
+            this.generators2.push(generator);
             generator.chords = this.chords;
             if (this.generators.size == 1) {
                 this.generateAllButton.disabled = false;
@@ -86,25 +92,33 @@ class MainModule {
             this.generatorCounter,
             this.metronome.midiClockStatus,
             this.metronome.volume,
-            /*this.generators*/]);
+            this.generators2]);
 
-        // this.generators.forEach((generator, id) => {
-        //     allModuleState.push(generator.getPersistentState());
-        // });
         return allModuleState;
     }
 
     setPersistentState(persistentState) {
-        this.midiMapParams = persistentState[0][0];
+        this.generators2 = [];
+        // this.midiMapParams = persistentState[0][0];
         this.metronome.outputId = persistentState[0][1];
         this.chords = persistentState[0][2];
         this.metronome.bpm = persistentState[0][3];
         this.generatorCounter = persistentState[0][4];
         this.metronome.midiClockStatus = persistentState[0][5];
         this.metronome.volume = persistentState[0][6];
-        // this.generators = persistentState[0][7];
+        this.generators2 = persistentState[0][7];
         console.log("set persistentState of MainModule: " + persistentState);
         console.log(persistentState);
+        console.log(this.generators2);
+
+        for (let i = 0; i < this.generators2.length; i++) {
+            this.addModule(this.generatorCounter,
+                this.generators2[i].selectedOutputName,
+                this.generators2[i].selectedInputName,
+                this.generators2[i].outputBars, this.generators2[i].inputBars,
+                this.generators2[i].selectedModel, this.generators2[i].heat, this.generators2[i].keepMutating, this.generators2[i].listening,
+                this.generators2[i].generatedSeq)
+        }
 
         for (let i = 0; i < this.chords.length; i++) {
             this.chordInputs[i].value = this.chords[i];
@@ -114,7 +128,6 @@ class MainModule {
     }
 
     updateUI() {
-        console.log(this.clickVolumeSlider);
         this.clickClockSelect.checked = this.metronome.midiClockStatus;
         this.saveBpm(this.metronome.bpm);
         this.bpmTextfield.value = this.metronome.bpm;
@@ -123,12 +136,12 @@ class MainModule {
 
         for (let i = 0; i < this.clickBusSelect.options.length; i++) {
             if (this.metronome.outputId == "internal") {
-                this.clickBusSelect.options[0].selected = true;
+                this.clickBusSelect.selectedIndex = 0;
                 break;
             }
 
             if (this.metronome.outputId == this.midi.availableOutputs[i].id) {
-                this.clickBusSelect.options[i+1].selected = true;
+                this.clickBusSelect.selectedIndex = (i+1);
                 break;
             }
         }
@@ -589,7 +602,9 @@ class MainModule {
         this.generateLoopButton.addEventListener('click', function() {
             this.generateLoop()}.bind(this));
         addButton.addEventListener('click', function() {
-            this.addModule()}.bind(this));
+            this.addModule(this.generatorCounter,
+                            this.midi.availableOutputs[0].name,
+                            this.midi.availableInputs[0].name)}.bind(this));
         this.stopAllButton.addEventListener('click', function() {
             this.stopAll()}.bind(this));
         this.playAllButton.addEventListener('click', function() {

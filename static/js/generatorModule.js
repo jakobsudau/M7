@@ -3,18 +3,22 @@
 // -------------------------------------------------------------------------
 
 class GeneratorModule {
-    constructor(mainModule, id) {
+    constructor(mainModule, id, outputBars = 4, inputBars = 4,
+                selectedModel = 0, heat = 1.00, selectedOutputName,
+                selectedInputName, keepMutating = false, listening = false,
+                generatedSeq) {
         this.mainModule = mainModule;
         this.connector = new Connector(this);
-        this.outputBars = 4;
-        this.inputBars = 4;
+        this.outputBars = outputBars;
+        this.inputBars = inputBars;
+        this.selectedModel = selectedModel;
         this.barCounter = 0;
         this.looping = true;
         this.playing = false;
         this.stopNext = false;
-        this.keepMutating = false;
+        this.keepMutating = keepMutating;
         this.addBassProg;
-        this.generatedSeq;
+        this.generatedSeq = generatedSeq;
         this.generatedSmf;
         this.playButton;
         this.bpm = mainModule.metronome.bpm;
@@ -27,16 +31,28 @@ class GeneratorModule {
         this.midiOutBusSelect;
         this.modelSelect;
         this.id = id;
-        this.selectedOutput = this.mainModule.midi.availableOutputs[0];
-        this.selectedInput = this.mainModule.midi.availableInputs[0];
+        this.selectedOutputName = selectedOutputName;
+        for (let i = 0; i < mainModule.midi.availableOutputs; i++) {
+            if (this.selectedOutputName == mainModule.midi.availableOutputs[i].name) {
+                this.selectedOutput = mainModule.midi.availableOutputs[i];
+                break;
+            }
+        }
+        this.selectedInputName = selectedInputName;
+        for (let i = 0; i < mainModule.midi.availableInputs; i++) {
+            if (this.selectedInputName == mainModule.midi.availableInputs[i].name) {
+                this.selectedInput = mainModule.midi.availableInputs[i];
+                break;
+            }
+        }
         this.inQueue = false;
-        this.listening = false;
+        this.listening = listening;
         this.chords;
         this.generationTime = Date.now();
         this.inputStartTime = Date.now();
-        this.heat = 1.00;
+        this.heat = heat;
         this.shouldPlay = false;
-        this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutput.name);
+        this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutputName);
         this.jzzPlayer;
         // this.player = new mm.MIDIPlayer();
         this.inputSequence = {
@@ -61,6 +77,10 @@ class GeneratorModule {
         this.connector.initialize(this.id).then((msg) => {
             if (this.id) {
                 this.generateButton.disabled = false;
+                if (this.generatedSeq) {
+                    this.playButton.disabled = false;
+                    this.generatedSmf = this.convertToSmf(this.generatedSeq);
+                }
                 this.addBassProg = (this.id == 1);
                 this.id = msg.data;
                 console.log("model " + this.id + " initialization done, " +
@@ -115,22 +135,6 @@ class GeneratorModule {
         delete this.midiOutBusSelect;
         delete this.modelSelect;
         delete this.addBassProg;
-    }
-
-    getPersistentState() {
-        return [this.outputBars, this.inputBars, this.keepMutating,
-            this.generatedSeq, this.generatedSmf, this.bpm, this.id,
-            this.selectedOutput, this.selectedInput, this.listening,
-            this.inputSequence, this.modelSelect.selectedIndex, this.heat];
-    }
-
-    setPersistentState() {
-        console.log("set and update all parameters & UI");
-        this.updateUI();
-    }
-
-    updateUI() {
-        console.log("update UI");
     }
 
     startStopNote(note, velocity, isStart) {
@@ -345,11 +349,13 @@ class GeneratorModule {
         if (isInput) {
             this.selectedInput =
                 this.mainModule.midi.availableInputs[port];
+            this.selectedInputName = this.selectedInputName;
         } else {
             this.selectedOutput =
                 this.mainModule.midi.availableOutputs[port];
-                this.jzzMidiOut =
-                    JZZ().openMidiOut(this.selectedOutput.name);
+            this.selectedOutputName = this.selectedOutput.name;
+            this.jzzMidiOut =
+                    JZZ().openMidiOut(this.selectedOutputName);
         }
     }
 
@@ -390,16 +396,30 @@ class GeneratorModule {
             .map(i =>`<option>${i.name}</option>`).join('');
         this.midiInBusSelect.innerHTML = midi.availableInputs
             .map(i =>`<option>${i.name}</option>`).join('');
-    }
+
+        for (let i = 0; i < this.midiOutBusSelect.options.length; i++) {
+            if (this.selectedOutputName == this.midiOutBusSelect.options[i].label) {
+                this.midiOutBusSelect.selectedIndex = i;
+                break;
+            }
+        }
+
+        for (let i = 0; i < this.midiInBusSelect.options.length; i++) {
+            if (this.selectedInputName == this.midiInBusSelect.options[i].label) {
+                this.midiInBusSelect.selectedIndex = i;
+                break;
+            }
+        }
+}
 
     startStopListening() {
         this.listening = !this.listening;
         this.inputStartTime = Date.now();
-        if (this.listening == true) {
+        if (this.listening) {
             this.listenButton.className = "listenButton enabled";
             this.inputSequence.notes = [];
             this.inputSequence.totalQuantizedSteps = 1;
-        } else if (this.listening == false) {
+        } else {
             this.listenButton.className = "listenButton disabled";
         }
     }
@@ -428,6 +448,10 @@ class GeneratorModule {
         this.generateButton.title = "Generate a sequence based on an " +
             "input sequence and chords";
         this.generateButton.disabled = true;
+        if (this.generatedSeq) {
+            this.generateButton.style.background =
+                        `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
+        }
 
         this.playButton = document.createElement("button");
         this.playButton.className = "playButton";
@@ -443,15 +467,23 @@ class GeneratorModule {
             "after sequence is finished";
 
         this.mutateButton = document.createElement("button");
-        this.mutateButton.className = "mutateButton";
         this.mutateButton.innerHTML = "↻";
         this.mutateButton.title = "Keep generating new sequences";
+        if (this.keepMutating) {
+            this.mutateButton.className = "mutateButton enabled";
+        } else {
+            this.mutateButton.className = "mutateButton disabled";
+        }
 
         this.listenButton = document.createElement("button");
-        this.listenButton.className = "listenButton";
         this.listenButton.innerHTML = "●";
         this.listenButton.title = "Listen for input MIDI on the selected " +
             "MIDI In Port";
+        if (this.listening) {
+            this.listenButton.className = "listenButton enabled";
+        } else {
+            this.listenButton.className = "listenButton disabled";
+        }
 
         let deleteButton = document.createElement("button");
         deleteButton.className = "deleteButton";
@@ -490,14 +522,17 @@ class GeneratorModule {
                 option.name = options + "BarsOption" + this.id;
                 option.type = "radio";
                 option.value = value;
-                if (value == "4") {
-                    option.checked = "checked";
-                }
                 option.title = "Bar length of the " + options + " sequences";
                 optionTexts.push(document.createTextNode(value));
                 if (options == "input") {
+                    if (value == this.inputBars) {
+                        option.checked = "checked";
+                    }
                     inputBarsOptions.push(option);
                 } else {
+                    if (value == this.outputBars) {
+                        option.checked = "checked";
+                    }
                     outputBarsOptions.push(option);
                 }
             }
@@ -553,6 +588,7 @@ class GeneratorModule {
         this.modelSelect.add(new Option("ImprovRNN", "1"));
         this.modelSelect.add(new Option("MelodyRNN", "2"));
         // this.modelSelect.add(new Option("MusicVAE", "3"));
+        this.modelSelect.selectedIndex = this.selectedModel;
 
         let heatContainer = document.createElement("div");
         heatContainer.id = "heatContainer";
@@ -563,7 +599,7 @@ class GeneratorModule {
         heatSlider.className = "heatSlider";
         heatSlider.min = "0";
         heatSlider.max = "200";
-        heatSlider.value = "100";
+        heatSlider.value = this.heat * 100;
 
         heatSlider.title = "Controls the heat level from " +
             "0 to 2";
@@ -641,6 +677,10 @@ class GeneratorModule {
         // listen for input functionality
         this.listenButton.addEventListener('click', function(){
             this.startStopListening()}.bind(this));
+
+        this.modelSelect.addEventListener("change", function() {
+            this.selectedModel = this.modelSelect.selectedIndex;
+        }.bind(this));
 
         // Populate the MidiOut and MidiIn lists
         this.midiPortListUpdated();
