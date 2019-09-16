@@ -85,6 +85,7 @@ class MainModule {
     }
 
     getPersistentState() {
+        console.log(this.generators);
         let allModuleState = [];
         allModuleState.push([
             this.midiMapParams,
@@ -108,23 +109,25 @@ class MainModule {
         this.generatorCounter = persistentState[0][4];
         this.metronome.midiClockStatus = persistentState[0][5];
         this.metronome.volume = persistentState[0][6];
-        this.generators = persistentState[0][7];
         console.log("set persistentState of MainModule: " + persistentState);
         console.log(persistentState);
-        console.log(this.generators);
 
-        for (let i = 0; i < this.generators.length; i++) {
+        let savedGenerators = persistentState[0][7];
+
+        for (let i = 0; i < savedGenerators.length; i++) {
             this.addModule(this.generatorCounter,
-                this.generators[i].selectedOutputName,
-                this.generators[i].selectedInputName,
-                this.generators[i].outputBars, this.generators[i].inputBars,
-                this.generators[i].selectedModel, this.generators[i].heat, this.generators[i].keepMutating, this.generators[i].listening,
-                this.generators[i].generatedSeq)
+                savedGenerators[i].selectedOutputName,
+                savedGenerators[i].selectedInputName,
+                savedGenerators[i].outputBars, savedGenerators[i].inputBars,
+                savedGenerators[i].selectedModel, savedGenerators[i].heat, savedGenerators[i].keepMutating, savedGenerators[i].listening,
+                savedGenerators[i].generatedSeq)
         }
 
         for (let i = 0; i < this.chords.length; i++) {
             this.chordInputs[i].value = this.chords[i];
         }
+
+        console.log(this.generators);
 
         this.updateUI();
     }
