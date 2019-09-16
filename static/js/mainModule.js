@@ -27,8 +27,7 @@ class MainModule {
         this.chordInputs;
         this.bpmTextfield;
         this.maxScenes = 2;
-        this.generators = new Map();
-        this.generators2 = [];
+        this.generators = [];
         this.generatorCounter = 1;
         this.sceneCounter = 0;
         this.generateAllCounter = 0;
@@ -48,10 +47,9 @@ class MainModule {
             inputBars, selectedModel, heat, selectedOutput, selectedInput,
             keepMutating, listening, generatedSeq);
         generator.initialize().then((id) => {
-            this.generators.set(id, generator);
-            this.generators2.push(generator);
+            this.generators.push(generator);
             generator.chords = this.chords;
-            if (this.generators.size == 1) {
+            if (this.generators.length == 1) {
                 this.generateAllButton.disabled = false;
                 this.changeForwardButton.disabled = false;
                 this.playAllButton.disabled = false;
@@ -64,7 +62,11 @@ class MainModule {
     }
 
     deleteModule(id) {
-        this.generators.delete(id);
+        for (let i = 0; i < this.generators.length; i++) {
+            if (this.generators[i].id == id) {
+                this.generators.splice(i, 1);
+            }
+        }
         // delete any mapped parameters
         this.midiMapParams.forEach((noteAndInput, button) => {
             if (!(document.body.contains(button))) {
@@ -72,7 +74,7 @@ class MainModule {
             }
         });
 
-        if (this.generators.size == 0) {
+        if (this.generators.length == 0) {
             this.generateAllButton.disabled = true;
             this.changeForwardButton.disabled = true;
             this.playAllButton.disabled = true;
@@ -92,13 +94,13 @@ class MainModule {
             this.generatorCounter,
             this.metronome.midiClockStatus,
             this.metronome.volume,
-            this.generators2]);
+            this.generators]);
 
         return allModuleState;
     }
 
     setPersistentState(persistentState) {
-        this.generators2 = [];
+        this.generators = [];
         // this.midiMapParams = persistentState[0][0];
         this.metronome.outputId = persistentState[0][1];
         this.chords = persistentState[0][2];
@@ -106,18 +108,18 @@ class MainModule {
         this.generatorCounter = persistentState[0][4];
         this.metronome.midiClockStatus = persistentState[0][5];
         this.metronome.volume = persistentState[0][6];
-        this.generators2 = persistentState[0][7];
+        this.generators = persistentState[0][7];
         console.log("set persistentState of MainModule: " + persistentState);
         console.log(persistentState);
-        console.log(this.generators2);
+        console.log(this.generators);
 
-        for (let i = 0; i < this.generators2.length; i++) {
+        for (let i = 0; i < this.generators.length; i++) {
             this.addModule(this.generatorCounter,
-                this.generators2[i].selectedOutputName,
-                this.generators2[i].selectedInputName,
-                this.generators2[i].outputBars, this.generators2[i].inputBars,
-                this.generators2[i].selectedModel, this.generators2[i].heat, this.generators2[i].keepMutating, this.generators2[i].listening,
-                this.generators2[i].generatedSeq)
+                this.generators[i].selectedOutputName,
+                this.generators[i].selectedInputName,
+                this.generators[i].outputBars, this.generators[i].inputBars,
+                this.generators[i].selectedModel, this.generators[i].heat, this.generators[i].keepMutating, this.generators[i].listening,
+                this.generators[i].generatedSeq)
         }
 
         for (let i = 0; i < this.chords.length; i++) {
@@ -159,12 +161,12 @@ class MainModule {
                     {note: note, input: input});
             }
         } else {
-            this.generators.forEach((generator, id) => {
-                if (generator.listening &&
-                    generator.selectedInput == input) {
-                    generator.startStopNote(note, velocity, isStart);
+            for (let i = 0; i < this.generators.length; i++) {
+                if (this.generators[i].listening &&
+                    this.generators[i].selectedInput == input) {
+                    this.generators[i].startStopNote(note, velocity, isStart);
                 }
-            });
+            }
 
             if (isStart) {
                 this.midiMapParams.forEach((noteAndInput, button) => {
@@ -179,9 +181,9 @@ class MainModule {
 
     checkChord(chord, i) {
         this.generateAllButton.disabled = true;
-        this.generators.forEach((generator, id) => {
-            generator.generateButton.disabled = true;
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].generateButton.disabled = true;
+        }
 
 		const isGood = (chordToCheck) => {
             if (!chordToCheck) {return false}
@@ -206,9 +208,9 @@ class MainModule {
         if (allGood) {
             this.chords[i] = chord.value;
             this.generateAllButton.disabled = false;
-            this.generators.forEach((generator, id) => {
-                generator.generateButton.disabled = false;
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].generateButton.disabled = false;
+            }
             return true;
         } else {
             return false;
@@ -217,9 +219,9 @@ class MainModule {
 
     saveChord(chord, i) {
         if (this.checkChord(chord)) {
-            this.generators.forEach((generator, id) => {
-                generator.chords[i] = chord.value;
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].chords[i] = chord.value;
+            }
         } else {
             chord.value = this.chords[i];
             this.checkChord(chord);
@@ -230,9 +232,9 @@ class MainModule {
         let highlight = " highlighted";
         if (isStart) {
             highlight = " highlightedStart";
-            this.generators.forEach((generator, id) => {
-                generator.playTick();
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].playTick();
+            }
         }
 
         let clickClass = this.metronomeOn ? "click enabled":"click disabled";
@@ -267,9 +269,9 @@ class MainModule {
     }
 
     generatorPortListUpdated() {
-        this.generators.forEach((generator, id) => {
-            generator.midiPortListUpdated();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].midiPortListUpdated();
+        }
     }
 
     startStopClick() {
@@ -300,9 +302,9 @@ class MainModule {
     saveBpm(value) {
         if (this.checkBpm(value)) {
             this.metronome.bpm = value;
-            this.generators.forEach((generator, id) => {
-                generator.changeBpm(value);
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].changeBpm(value);
+            }
         } else {
             if (value >= 60) {
                 this.metronome.bpm = 240;
@@ -315,26 +317,26 @@ class MainModule {
     }
 
     playAll() {
-        this.generators.forEach((generator, id) => {
-            generator.setPlayActive();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].setPlayActive();
+        }
     }
 
     stopAll() {
-        this.generators.forEach((generator, id) => {
-            generator.stopPlayback();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].stopPlayback();
+        }
     }
 
     generateAll() {
         this.generateAllButton.disabled = true;
         this.generateAllCounter = 0;
 
-        this.generators.forEach((generator, id) => {
-            generator.generateSequence(this.chords).then((data) => {
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].generateSequence(this.chords).then((data) => {
                 this.generateAllCounter++;
 
-                if (this.generateAllCounter == this.generators.size) {
+                if (this.generateAllCounter == this.generators.length) {
                     this.generateAllButton.disabled = false;
                     this.generateAllButton.style.backgroundImage =
                         `linear-gradient(to bottom right, ` +
@@ -342,15 +344,15 @@ class MainModule {
                         `hsla(${Math.random() * 360}, 80%, 70%, 0.3))`;
                 }
             });
-        });
+        }
     }
 
     generateLoop() {
-        this.generators.forEach((generator, id) => {
-            generator.startStopListening();
-            generator.mutate();
-            generator.generateSequence(this.chords);
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].startStopListening();
+            this.generators[i].mutate();
+            this.generators[i].generateSequence(this.chords);
+        }
     }
 
     changeScene(direction, sender) {
