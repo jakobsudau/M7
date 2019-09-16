@@ -9,7 +9,6 @@ class MainModule {
         }
 
         MainModule.instance = this;
-        this.spaceSwitch = false;
         this.midiMapMode = false;
         this.midiMapSelection;
         this.midiMapParams = new Map();
@@ -20,13 +19,15 @@ class MainModule {
         this.changeBackwardButton;
         this.changeForwardButton;
         this.generateLoopButton;
+        this.clickVolumeSlider;
         this.clickBusSelect;
         this.selectedClickBusId = "internal";
         this.metronomeOn = false;
         this.chords = ["C", "G", "Am", "F"];
+        this.chordInputs;
         this.bpmTextfield;
         this.maxScenes = 2;
-        this.generators = new Map();
+        this.generators = [];
         this.generatorCounter = 1;
         this.sceneCounter = 0;
         this.generateAllCounter = 0;
@@ -39,12 +40,16 @@ class MainModule {
         return this;
     }
 
-    addModule() {
-        const generator = new GeneratorModule(this, this.generatorCounter);
+    addModule(id, selectedOutputName, selectedInputName, outputBars, inputBars,
+        selectedModel, heat, keepMutating, listening,
+        generatedSeq, title) {
+        const generator = new GeneratorModule(this, id, outputBars,
+            inputBars, selectedModel, heat, selectedOutputName,
+            selectedInputName, keepMutating, listening, generatedSeq, title);
         generator.initialize().then((id) => {
-            this.generators.set(id, generator);
+            this.generators.push(generator);
             generator.chords = this.chords;
-            if (this.generators.size == 1) {
+            if (this.generators.length == 1) {
                 this.generateAllButton.disabled = false;
                 this.changeForwardButton.disabled = false;
                 this.playAllButton.disabled = false;
@@ -57,7 +62,11 @@ class MainModule {
     }
 
     deleteModule(id) {
-        this.generators.delete(id);
+        for (let i = 0; i < this.generators.length; i++) {
+            if (this.generators[i].id == id) {
+                this.generators.splice(i, 1);
+            }
+        }
         // delete any mapped parameters
         this.midiMapParams.forEach((noteAndInput, button) => {
             if (!(document.body.contains(button))) {
@@ -65,13 +74,87 @@ class MainModule {
             }
         });
 
-        if (this.generators.size == 0) {
+        if (this.generators.length == 0) {
             this.generateAllButton.disabled = true;
             this.changeForwardButton.disabled = true;
             this.playAllButton.disabled = true;
             this.stopAllButton.disabled = true;
             this.bpmTextfield.disabled = true;
             this.generateLoopButton.disabled = true;
+        }
+    }
+
+    getPersistentState() {
+        return [this.midiMapParams,
+            this.metronome.outputId,
+            this.chords,
+            this.metronome.bpm,
+            this.metronome.midiClockStatus,
+            this.metronome.volume,
+            this.generators];
+    }
+
+    setPersistentState(persistentState) {
+
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].deleteModule();
+        }
+        this.generatorCounter = 1;
+        this.sceneCounter = 0;
+        this.generators = [];
+        console.log("generators after deleting");
+        console.log(this.generators);
+
+        // this.midiMapParams = persistentState[0];
+        this.metronome.outputId = persistentState[1];
+        this.chords = persistentState[2];
+        this.metronome.bpm = persistentState[3];
+        this.metronome.midiClockStatus = persistentState[4];
+        this.metronome.volume = persistentState[5];
+        console.log("set persistentState of MainModule: " + persistentState);
+        console.log(persistentState);
+
+        let savedGenerators = persistentState[6];
+
+        for (let i = 0; i < savedGenerators.length; i++) {
+            this.addModule(this.generatorCounter,
+                savedGenerators[i].selectedOutputName,
+                savedGenerators[i].selectedInputName,
+                savedGenerators[i].outputBars, savedGenerators[i].inputBars,
+                savedGenerators[i].selectedModel, savedGenerators[i].heat, savedGenerators[i].keepMutating, savedGenerators[i].listening,
+                savedGenerators[i].generatedSeq, savedGenerators[i].title)
+        }
+
+        for (let i = 0; i < this.chords.length; i++) {
+            this.chordInputs[i].value = this.chords[i];
+        }
+
+        console.log(this.generators);
+
+        this.updateUI();
+    }
+
+    updateUI() {
+        this.clickClockSelect.checked = this.metronome.midiClockStatus;
+        this.saveBpm(this.metronome.bpm);
+        this.bpmTextfield.value = this.metronome.bpm;
+        this.changeClickVolume(this.metronome.volume);
+        this.clickVolumeSlider.value = (this.metronome.volume * 100);
+
+        for (let i = 0; i < this.clickBusSelect.options.length; i++) {
+            if (this.metronome.outputId == "internal") {
+                this.clickBusSelect.selectedIndex = 0;
+                break;
+            }
+
+            if (this.metronome.outputId == this.midi.availableOutputs[i].id) {
+                this.clickBusSelect.selectedIndex = (i+1);
+                break;
+            }
+        }
+
+        for (let [i, chord] of this.chordInputs.entries()) {
+            this.saveChord(chord, i);
         }
     }
 
@@ -83,12 +166,12 @@ class MainModule {
                     {note: note, input: input});
             }
         } else {
-            this.generators.forEach((generator, id) => {
-                if (generator.listening &&
-                    generator.selectedInput == input) {
-                    generator.startStopNote(note, velocity, isStart);
+            for (let i = 0; i < this.generators.length; i++) {
+                if (this.generators[i].listening &&
+                    this.generators[i].selectedInput == input) {
+                    this.generators[i].startStopNote(note, velocity, isStart);
                 }
-            });
+            }
 
             if (isStart) {
                 this.midiMapParams.forEach((noteAndInput, button) => {
@@ -103,9 +186,9 @@ class MainModule {
 
     checkChord(chord, i) {
         this.generateAllButton.disabled = true;
-        this.generators.forEach((generator, id) => {
-            generator.generateButton.disabled = true;
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].generateButton.disabled = true;
+        }
 
 		const isGood = (chordToCheck) => {
             if (!chordToCheck) {return false}
@@ -130,9 +213,9 @@ class MainModule {
         if (allGood) {
             this.chords[i] = chord.value;
             this.generateAllButton.disabled = false;
-            this.generators.forEach((generator, id) => {
-                generator.generateButton.disabled = false;
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].generateButton.disabled = false;
+            }
             return true;
         } else {
             return false;
@@ -141,9 +224,9 @@ class MainModule {
 
     saveChord(chord, i) {
         if (this.checkChord(chord)) {
-            this.generators.forEach((generator, id) => {
-                generator.chords[i] = chord.value;
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].chords[i] = chord.value;
+            }
         } else {
             chord.value = this.chords[i];
             this.checkChord(chord);
@@ -154,9 +237,9 @@ class MainModule {
         let highlight = " highlighted";
         if (isStart) {
             highlight = " highlightedStart";
-            this.generators.forEach((generator, id) => {
-                generator.playTick();
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].playTick();
+            }
         }
 
         let clickClass = this.metronomeOn ? "click enabled":"click disabled";
@@ -175,7 +258,8 @@ class MainModule {
     }
 
     changeMidiClock(msg) {
-        this.metronome.midiClockStatus = msg;
+        // this.metronome.midiClockStatus = msg;
+        this.metronome.midiClockStatus = msg ? "send" : "none";
     }
 
     midiPortListUpdated() {
@@ -190,9 +274,9 @@ class MainModule {
     }
 
     generatorPortListUpdated() {
-        this.generators.forEach((generator, id) => {
-            generator.midiPortListUpdated();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].midiPortListUpdated();
+        }
     }
 
     startStopClick() {
@@ -223,9 +307,9 @@ class MainModule {
     saveBpm(value) {
         if (this.checkBpm(value)) {
             this.metronome.bpm = value;
-            this.generators.forEach((generator, id) => {
-                generator.changeBpm(value);
-            });
+            for (let i = 0; i < this.generators.length; i++) {
+                this.generators[i].changeBpm(value);
+            }
         } else {
             if (value >= 60) {
                 this.metronome.bpm = 240;
@@ -238,26 +322,26 @@ class MainModule {
     }
 
     playAll() {
-        this.generators.forEach((generator, id) => {
-            generator.setPlayActive();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].setPlayActive();
+        }
     }
 
     stopAll() {
-        this.generators.forEach((generator, id) => {
-            generator.stopPlayback();
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].stopPlayback();
+        }
     }
 
     generateAll() {
         this.generateAllButton.disabled = true;
         this.generateAllCounter = 0;
 
-        this.generators.forEach((generator, id) => {
-            generator.generateSequence(this.chords).then((data) => {
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].generateSequence(this.chords).then((data) => {
                 this.generateAllCounter++;
 
-                if (this.generateAllCounter == this.generators.size) {
+                if (this.generateAllCounter == this.generators.length) {
                     this.generateAllButton.disabled = false;
                     this.generateAllButton.style.backgroundImage =
                         `linear-gradient(to bottom right, ` +
@@ -265,15 +349,15 @@ class MainModule {
                         `hsla(${Math.random() * 360}, 80%, 70%, 0.3))`;
                 }
             });
-        });
+        }
     }
 
     generateLoop() {
-        this.generators.forEach((generator, id) => {
-            generator.startStopListening();
-            generator.mutate();
-            generator.generateSequence(this.chords);
-        });
+        for (let i = 0; i < this.generators.length; i++) {
+            this.generators[i].startStopListening();
+            this.generators[i].mutate();
+            this.generators[i].generateSequence(this.chords);
+        }
     }
 
     changeScene(direction, sender) {
@@ -424,7 +508,7 @@ class MainModule {
         let chordsDiv = document.createElement("div");
         chordsDiv.id = "chordsDiv";
 
-        let chordInputs = [];
+        this.chordInputs = [];
 
         for (let [i, chord] of this.chords.entries()) {
         let chordInput = document.createElement("input");
@@ -435,21 +519,21 @@ class MainModule {
         chordInput.title = "Change chord according to major/minor/" +
         "augmented/diminished for all 12 root pitch classes, " +
         "e.g. C5 / Am / Eb5, ...";
-        chordInputs.push(chordInput);
+        this.chordInputs.push(chordInput);
         }
 
         let clickContainer = document.createElement("div");
         clickContainer.id = "clickContainer";
         clickContainer.className = "container";
 
-        let clickVolumeSlider = document.createElement("input");
-        clickVolumeSlider.type = "range";
-        clickVolumeSlider.className = "slider";
-        clickVolumeSlider.id = "clickVolumeSlider";
-        clickVolumeSlider.min = "1";
-        clickVolumeSlider.max = "100";
-        clickVolumeSlider.value = "80";
-        clickVolumeSlider.title = "Click Volume";
+        this.clickVolumeSlider = document.createElement("input");
+        this.clickVolumeSlider.type = "range";
+        this.clickVolumeSlider.className = "slider";
+        this.clickVolumeSlider.id = "clickVolumeSlider";
+        this.clickVolumeSlider.min = "1";
+        this.clickVolumeSlider.max = "100";
+        this.clickVolumeSlider.value = "80";
+        this.clickVolumeSlider.title = "Click Volume";
 
         this.clickButton = document.createElement("button");
         this.clickButton.id = "clickButton";
@@ -491,7 +575,7 @@ class MainModule {
         mainModuleContainer.appendChild(chordContainer);
         mainModuleContainer.appendChild(clickContainer);
         mainModuleContainer.appendChild(mainButtonContainer);
-        clickContainer.appendChild(clickVolumeSlider);
+        clickContainer.appendChild(this.clickVolumeSlider);
         clickContainer.appendChild(this.clickButton);
         clickContainer.appendChild(clickBusContainer);
         clickContainer.appendChild(clickClockContainer);
@@ -511,7 +595,7 @@ class MainModule {
         mainButtonSubContainer2.appendChild(addButton);
         chordContainer.appendChild(chordTitleDiv);
         chordContainer.appendChild(chordsDiv);
-        for (let chordInput of chordInputs) {
+        for (let chordInput of this.chordInputs) {
             chordsDiv.appendChild(chordInput);
         }
 
@@ -525,7 +609,9 @@ class MainModule {
         this.generateLoopButton.addEventListener('click', function() {
             this.generateLoop()}.bind(this));
         addButton.addEventListener('click', function() {
-            this.addModule()}.bind(this));
+            this.addModule(this.generatorCounter,
+                            this.midi.availableOutputs[0].name,
+                            this.midi.availableInputs[0].name)}.bind(this));
         this.stopAllButton.addEventListener('click', function() {
             this.stopAll()}.bind(this));
         this.playAllButton.addEventListener('click', function() {
@@ -534,9 +620,9 @@ class MainModule {
             this.changeScene("forward", e.target)}.bind(this));
         this.changeBackwardButton.addEventListener('click', function(e) {
             this.changeScene("backward", e.target)}.bind(this));
-        clickVolumeSlider.addEventListener("input", function(e) {
+        this.clickVolumeSlider.addEventListener("input", function(e) {
             this.changeClickVolume(e.target.value/100)}.bind(this));
-        for (let [i, chord] of chordInputs.entries()) {
+        for (let [i, chord] of this.chordInputs.entries()) {
             chord.addEventListener('input', function(e) {
                 this.checkChord(e.target, i)}.bind(this));
             chord.addEventListener('focusout', function(e) {
@@ -566,7 +652,8 @@ class MainModule {
         }.bind(this));
 
         this.clickClockSelect.addEventListener("change", function(e) {
-            this.changeMidiClock(e.target[e.target.selectedIndex].text);
+            // this.changeMidiClock(e.target[e.target.selectedIndex].text);
+            this.changeMidiClock(e.target.checked);
         }.bind(this));
     }
 }

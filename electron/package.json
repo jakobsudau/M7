@@ -7,15 +7,16 @@
     "main": "main.js",
     "build": {
         "files": [
-          "../static/**/*"
+            "../static/**/*"
         ]
     },
     "scripts": {
         "start": "electron .",
-        "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/"
+        "build": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/ --extraResource=./../assets/"
     },
     "dependencies": {
-        "@magenta/music": "libs/magenta-js/music"
+        "@magenta/music": "libs/magenta-js/music",
+        "electron-store": "^5.0.0"
     },
     "devDependencies": {
         "electron": "^5.0.3",

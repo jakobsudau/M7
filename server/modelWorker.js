@@ -12,7 +12,7 @@ const models = [new mm.MusicRNN(improvCheckpoint),
 
 function initializeModel(index) {
 	if (index > 0) {
-		log("init model");
+		console.log("init model");
 		models[index-1].initialize().then(() => initializeModel(index-1));
 	} else {
 		parentPort.postMessage({
@@ -21,6 +21,8 @@ function initializeModel(index) {
 			id: id});
 	}
 }
+
+initializeModel(models.length);
 
 // You can do any heavy stuff here, in a synchronous way
 // without blocking the "main thread"

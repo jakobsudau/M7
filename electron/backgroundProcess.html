@@ -3,8 +3,8 @@
 	const {ipcRenderer} = require('electron');
 	const mm = require('@magenta/music');
 
-	const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
-	const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
+	const improvCheckpoint = '../assets/models/improv_rnn';
+	const melodyCheckpoint = '../assets/models/melody_rnn';
 	// const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
 
 	const models = [new mm.MusicRNN(improvCheckpoint),

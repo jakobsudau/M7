@@ -1,4 +1,5 @@
-const {ipcMain, BrowserWindow, app, systemPreferences} = require('electron');
+const {ipcMain, BrowserWindow, app, systemPreferences, dialog} = require('electron');
+const fs = require('fs');
 const cpus = require('os').cpus().length;
 console.log('cpus: ' + cpus);
 
@@ -85,6 +86,24 @@ app.on('ready', function() {
 
     ipcMain.on('initialize', (event, arg) => {
         if (available.length < cpus) {createBackgroundProcessWindow()}
+    });
+
+    ipcMain.on('save', (event, arg) => {
+        dialog.showSaveDialog((fileName) => {
+            if (fileName === undefined){
+                console.log("You didn't save the file");
+                return;
+            }
+
+            // fileName is a string that contains the path and filename created in the save file dialog.
+            fs.writeFile(fileName + ".json", JSON.stringify(arg), (err) => {
+                if(err){
+                    console.log("An error ocurred creating the file "+ err.message);
+                }
+
+                console.log("The file has been succesfully saved");
+            });
+        });
     });
 
     ipcMain.on('delete', (event, arg) => {

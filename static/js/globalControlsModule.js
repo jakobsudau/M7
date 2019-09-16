@@ -2,45 +2,49 @@
 // GlobalControls
 // -------------------------------------------------------------------------
 class GlobalControlsModule {
-    constructor(mainModule) {
+    constructor(mainModule, darkmode = false, barPosition = 0) {
         if (!!GlobalControlsModule.instance) {
             return GlobalControlsModule.instance;
         }
 
         document.documentElement.setAttribute('theme', 'light');
         GlobalControlsModule.instance = this;
-        this.isDarkMode = false;
+        this.isDarkMode = darkmode;
+        this.barPositions = ["left", "top", "right", "bottom"]
+        this.barPosition = barPosition;
+        this.darkModeButton;
+        this.positionButton;
         this.createUIElements(mainModule);
 
         this.connector = new Connector(this);
         this.connector.initialize(0);
     }
 
-    switchBarPosition(positionButton) {
+    switchBarPosition(position) {
         const mainSubCon = document.getElementById("modulesContainer");
         const mainCon = document.getElementById("mainContainer");
-        switch (globalControlsModuleContainer.className) {
+        switch (this.barPositions[position]) {
             case "left":
-                positionButton.innerHTML = "⬒";
-                globalControlsModuleContainer.className = "top";
-                mainSubCon.className = "modulesContainerTopBottom";
-                break;
-            case "top":
-                positionButton.innerHTML = "◨";
-                globalControlsModuleContainer.className = "right";
-                mainSubCon.className = "modulesContainerLeftRight";
-                break;
-            case "right":
-                positionButton.innerHTML = "⬓";
-                globalControlsModuleContainer.className = "bottom";
-                mainSubCon.className = "modulesContainerTopBottom";
-                mainCon.appendChild(globalControlsModuleContainer);
-                break;
-            case "bottom":
-                positionButton.innerHTML = "◧";
+                this.positionButton.innerHTML = "◧";
                 globalControlsModuleContainer.className = "left";
                 mainSubCon.className = "modulesContainerLeftRight";
                 mainCon.insertBefore(globalControlsModuleContainer,mainCon.childNodes[0]);
+                break;
+            case "top":
+                this.positionButton.innerHTML = "⬒";
+                globalControlsModuleContainer.className = "top";
+                mainSubCon.className = "modulesContainerTopBottom";
+                break;
+            case "right":
+                this.positionButton.innerHTML = "◨";
+                globalControlsModuleContainer.className = "right";
+                mainSubCon.className = "modulesContainerLeftRight";
+                break;
+            case "bottom":
+                this.positionButton.innerHTML = "⬓";
+                globalControlsModuleContainer.className = "bottom";
+                mainSubCon.className = "modulesContainerTopBottom";
+                mainCon.appendChild(globalControlsModuleContainer);
                 break;
         }
     }
@@ -60,14 +64,14 @@ class GlobalControlsModule {
         }
     }
 
-    switchDarkMode(value, darkModeButton) {
+    switchDarkMode(value) {
         this.isDarkMode = value;
             if(!this.isDarkMode){
                 document.documentElement.setAttribute('theme', 'light');
-                darkModeButton.innerHTML = "☾";
+                this.darkModeButton.innerHTML = "☾";
             } else {
                 document.documentElement.setAttribute('theme', 'dark');
-                darkModeButton.innerHTML = "☀";
+                this.darkModeButton.innerHTML = "☀";
             }
     }
 
@@ -85,10 +89,45 @@ class GlobalControlsModule {
         mainModule.mapMidi(midiMapButton);
     }
 
+    saveSession(mainModule) {
+        this.connector.saveSession([this.getPersistentState(),
+            mainModule.getPersistentState()]);
+    }
+
+    loadSession(mainModule) {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.addEventListener("change", function() {
+            var reader = new FileReader();
+            reader.addEventListener("load", function() {
+                var persistentState = JSON.parse(reader.result);
+                this.setPersistentState(persistentState[0]);
+                mainModule.setPersistentState(persistentState[1]);
+            }.bind(this));
+            reader.readAsText(input.files[0]);
+        }.bind(this));
+        input.click();
+    }
+
+    getPersistentState() {
+        return [this.isDarkMode, this.barPosition];
+    }
+
+    setPersistentState(persistentState) {
+        this.barPosition = persistentState[1];
+        this.darkmode = persistentState[0];
+        this.updateUI();
+    }
+
+    updateUI() {
+        this.switchBarPosition(this.barPosition);
+        this.switchDarkMode(this.darkmode);
+    }
+
     createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
-        globalControlsModuleContainer.className = "left";
+        globalControlsModuleContainer.className = this.barPositions[this.barPosition];
 
         const helpButton = document.createElement("button");
         helpButton.className = "globalControlsButton";
@@ -100,10 +139,10 @@ class GlobalControlsModule {
         fullscreenButton.innerHTML = "◱";
         fullscreenButton.title = "Toggle Fullscreen on/off";
 
-        const positionButton = document.createElement("button");
-        positionButton.className = "globalControlsButton";
-        positionButton.innerHTML = "◧";
-        positionButton.title = "Move control button bar to top/right/left";
+        this.positionButton = document.createElement("button");
+        this.positionButton.className = "globalControlsButton";
+        this.positionButton.innerHTML = "◧";
+        this.positionButton.title = "Move control button bar to top/right/left";
 
         const midiMapButton = document.createElement("button");
         midiMapButton.className = "globalControlsButton inactive";
@@ -112,10 +151,22 @@ class GlobalControlsModule {
             " button and play the MIDI note to map. " +
             "Double Click on mapped button to delete.";
 
-        const darkModeButton = document.createElement("button");
-        darkModeButton.className = "globalControlsButton";
-        darkModeButton.innerHTML = "☾";
-        darkModeButton.title = "Switch to Dark/Light Mode";
+        this.darkModeButton = document.createElement("button");
+        this.darkModeButton.className = "globalControlsButton";
+        this.darkModeButton.innerHTML = "☾";
+        this.darkModeButton.title = "Switch to Dark/Light Mode";
+
+        const saveButton = document.createElement("button");
+        saveButton.className = "globalControlsButton";
+        saveButton.innerHTML = "⍗";
+        saveButton.style.textDecoration = "udnerline";
+        saveButton.title = "Save session";
+
+        const loadButton = document.createElement("button");
+        loadButton.className = "globalControlsButton";
+        loadButton.innerHTML = "⍐";
+        loadButton.style.textDecoration = "udnerline";
+        loadButton.title = "Load session";
 
         let overlayContainer = document.createElement("div");
         overlayContainer.id = "overlayContainer";
@@ -150,10 +201,12 @@ class GlobalControlsModule {
         helpDeleteButton.title = "Close the Help Screen";
 
         globalControlsModuleContainer.appendChild(helpButton);
-        globalControlsModuleContainer.appendChild(darkModeButton);
+        globalControlsModuleContainer.appendChild(this.darkModeButton);
         globalControlsModuleContainer.appendChild(fullscreenButton);
         globalControlsModuleContainer.appendChild(midiMapButton);
-        globalControlsModuleContainer.appendChild(positionButton);
+        globalControlsModuleContainer.appendChild(this.positionButton);
+        globalControlsModuleContainer.appendChild(saveButton);
+        globalControlsModuleContainer.appendChild(loadButton);
         helpContainer.appendChild(helpTitleDiv);
         helpContainer.appendChild(helpTextDiv);
         helpContainer.appendChild(helpBottomTextDiv);
@@ -163,11 +216,19 @@ class GlobalControlsModule {
         const mainCon = document.getElementById("mainContainer");
         mainCon.insertBefore(globalControlsModuleContainer, mainCon.childNodes[0]);
 
+        saveButton.addEventListener('click', function() {
+            this.saveSession(mainModule)}.bind(this));
+
+        loadButton.addEventListener('click', function() {
+            this.loadSession(mainModule)}.bind(this));
+
         helpDeleteButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));
 
-        positionButton.addEventListener("click", function() {
-            this.switchBarPosition(positionButton)}.bind(this));
+        this.positionButton.addEventListener("click", function() {
+            this.barPosition < 3 ? this.barPosition++ : this.barPosition = 0;
+            this.switchBarPosition(this.barPosition);
+        }.bind(this));
 
         midiMapButton.addEventListener("click", function() {
             this.mapMidi(mainModule, midiMapButton);
@@ -176,8 +237,8 @@ class GlobalControlsModule {
         helpButton.addEventListener('click', function() {
             this.showHelp()}.bind(this));
 
-        darkModeButton.addEventListener("click", function() {
-            this.switchDarkMode(!this.isDarkMode, darkModeButton);}.bind(this));
+            this.darkModeButton.addEventListener("click", function() {
+            this.switchDarkMode(!this.isDarkMode);}.bind(this));
 
         fullscreenButton.addEventListener("click", function() {
             this.switchFullScreen(fullscreenButton);
