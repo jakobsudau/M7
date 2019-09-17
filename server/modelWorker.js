@@ -50,9 +50,6 @@ function modelGenerate(data) {
 
 		console.log("generating with model " + data.model);
 
-		// const stepsPerQuarter = data.seq.quantizationInfo.stepsPerQuarter;
-		// const steps = (stepsPerQuarter * data.outputBars * 4)-1;
-
 		const chords = data.model == 0 ? data.chords : undefined;
 
 		const steps = stps_p_prog + (NUM_REPS-1)*stps_p_prog - 1;

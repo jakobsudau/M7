@@ -1,6 +1,7 @@
 // -------------------------------------------------------------------------
 // GlobalControls
 // -------------------------------------------------------------------------
+
 class GlobalControlsModule {
     constructor(mainModule, darkmode = false, barPosition = 0) {
         if (!!GlobalControlsModule.instance) {

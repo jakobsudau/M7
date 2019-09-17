@@ -94,8 +94,6 @@ app.on('ready', function() {
                 return;
             }
 
-            // fileName is a string that contains the path and
-            // filename created in the save file dialog.
             fs.writeFile(fileName + ".json", JSON.stringify(arg), (err) => {
                 if(err){
                     console.log("An error ocurred creating " +
