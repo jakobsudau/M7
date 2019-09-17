@@ -10,6 +10,7 @@ class Connector {
     }
 
     initialize(id) {
+        console.log("init id " + id + "from connector");
         return new Promise(function(resolve, reject) {
             if (this.isElectron) {
                 this.ipcRenderer = require('electron').ipcRenderer;

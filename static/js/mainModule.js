@@ -95,15 +95,11 @@ class MainModule {
     }
 
     setPersistentState(persistentState) {
-
-        for (let i = 0; i < this.generators.length; i++) {
-            this.generators[i].deleteModule();
+        while (this.generators.length != 0) {
+            this.generators[0].deleteModule();
         }
         this.generatorCounter = 1;
         this.sceneCounter = 0;
-        this.generators = [];
-        console.log("generators after deleting");
-        console.log(this.generators);
 
         // this.midiMapParams = persistentState[0];
         this.metronome.outputId = persistentState[1];
@@ -121,15 +117,14 @@ class MainModule {
                 savedGenerators[i].selectedOutputName,
                 savedGenerators[i].selectedInputName,
                 savedGenerators[i].outputBars, savedGenerators[i].inputBars,
-                savedGenerators[i].selectedModel, savedGenerators[i].heat, savedGenerators[i].keepMutating, savedGenerators[i].listening,
+                savedGenerators[i].selectedModel, savedGenerators[i].heat,
+                savedGenerators[i].keepMutating, savedGenerators[i].listening,
                 savedGenerators[i].generatedSeq, savedGenerators[i].title)
         }
 
         for (let i = 0; i < this.chords.length; i++) {
             this.chordInputs[i].value = this.chords[i];
         }
-
-        console.log(this.generators);
 
         this.updateUI();
     }
@@ -280,6 +275,7 @@ class MainModule {
     }
 
     startStopClick() {
+        console.log(this.generators);
         this.metronomeOn = !this.metronomeOn;
         this.metronome.playOutput = this.metronomeOn;
         this.metronome.startStop();

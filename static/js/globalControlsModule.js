@@ -98,16 +98,25 @@ class GlobalControlsModule {
         let input = document.createElement('input');
         input.type = 'file';
         input.addEventListener("change", function() {
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.addEventListener("load", function() {
-                var persistentState = JSON.parse(reader.result);
-                this.setPersistentState(persistentState[0]);
-                mainModule.setPersistentState(persistentState[1]);
+                let previouspersistentState = [this.getPersistentState(),
+                    mainModule.getPersistentState()];
+                let persistentState = JSON.parse(reader.result);
+                try {
+                    this.setPersistentState(persistentState[0]);
+                    mainModule.setPersistentState(persistentState[1]);
+                } catch(err) {
+                    this.setPersistentState(previouspersistentState[0]);
+                    mainModule.setPersistentState(previouspersistentState[1]);
+                    alert("Something went wrong while loading the file!");
+                }
             }.bind(this));
             reader.readAsText(input.files[0]);
         }.bind(this));
         input.click();
     }
+
 
     getPersistentState() {
         return [this.isDarkMode, this.barPosition];

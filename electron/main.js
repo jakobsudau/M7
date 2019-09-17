@@ -85,7 +85,7 @@ app.on('ready', function() {
     });
 
     ipcMain.on('initialize', (event, arg) => {
-        if (available.length < cpus) {createBackgroundProcessWindow()}
+        createBackgroundProcessWindow();
     });
 
     ipcMain.on('save', (event, arg) => {
