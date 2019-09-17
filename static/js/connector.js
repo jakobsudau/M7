@@ -16,9 +16,8 @@ class Connector {
                 this.ipcRenderer = require('electron').ipcRenderer;
                 if (id == 0) {
                     // support for native dark mode on macOS
-                    this.ipcRenderer.once('to-GlobalControlsModule', (evt, arg) => {
-                        console.log(this.parent);
-                        this.parent.switchDarkMode(arg)});
+                    this.ipcRenderer.once('to-GlobalControlsModule',
+                    (evt, arg) => { this.parent.switchDarkMode(arg)});
                     resolve({data: id});
                 } else {
                     this.ipcRenderer.send('initialize');
@@ -41,13 +40,16 @@ class Connector {
                             console.log("done loading");
                             this.socket = io();
                             this.socket.emit('initialize', 0);
-                            this.socket.on('initDone', function(msg){resolve(msg)});
+                            this.socket.on('initDone', function(msg){
+                                resolve(msg)});
                         }.bind(this));
-                        document.getElementById("mainContainer").appendChild(socketScript);
+                        document.getElementById("mainContainer")
+                            .appendChild(socketScript);
                     } else {
                         this.socket = io();
                         this.socket.emit('initialize', 0);
-                        this.socket.on('initDone', function(msg){resolve(msg)});
+                        this.socket.on('initDone', function(msg){
+                            resolve(msg)});
                     }
                 }
             }
@@ -75,7 +77,13 @@ class Connector {
         if (this.isElectron) {
             this.ipcRenderer.send('save', persistentState);
         } else {
-            alert("Saving only works within the desktop application!");
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(
+                JSON.stringify(persistentState, this.getCircularReplacer()));
+            let downloadLink = document.createElement('a');
+            downloadLink.setAttribute("href", dataStr);
+            downloadLink.setAttribute("download", "savedSession.json");
+            downloadLink.click();
+            downloadLink.remove();
         }
     }
 
@@ -87,4 +95,17 @@ class Connector {
         }
         delete this.socket;
     }
+
+    getCircularReplacer() {
+        const seen = new WeakSet();
+        return (key, value) => {
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) {
+              return;
+            }
+            seen.add(value);
+          }
+          return value;
+        };
+      }
 }

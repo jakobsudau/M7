@@ -1,7 +1,8 @@
 const {ipcMain, BrowserWindow, app, systemPreferences, dialog} = require('electron');
 const fs = require('fs');
 const cpus = require('os').cpus().length;
-console.log('cpus: ' + cpus);
+let backgroundWindows = [];
+console.log('cpus available: ' + cpus);
 
 // stack of available background threads
 var available = [];
@@ -18,7 +19,7 @@ function executeTask() {
     main.webContents.send('status', available.length, tasks.length);
 }
 
-// Create a hidden background window
+// create a hidden background window
 function createBackgroundProcessWindow() {
     result = new BrowserWindow({
         "show": false,
@@ -29,12 +30,14 @@ function createBackgroundProcessWindow() {
     });
     result.loadURL('file://' + __dirname + '/backgroundProcess.html');
     result.on('closed', () => {
-        console.log('background window closed')});
+        console.log('background window closed');
+        result = null;
+    });
     return result;
 }
 
 app.on('ready', function() {
-    // Create main window which contains the visible UI
+    // create main window which contains the visible UI
     main = new BrowserWindow({
         "width": 736,
         "height": 680,
@@ -50,8 +53,6 @@ app.on('ready', function() {
     main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/../static/html/index.html');
     main.show();
-    // main.webContents.on('did-finish-load', () => {
-    //     main.webContents.send('test','This is a test')});
     // call quit to exit, otherwise background windows keep app running
     main.on('closed', () => {app.quit()})
 
@@ -66,26 +67,24 @@ app.on('ready', function() {
         );
     }
 
-    // Main thread can receive directly from windows
+    // main thread can receive directly from windows
     ipcMain.on('to-main', (event, arg) => {
         console.log(arg);
     });
 
-    // Windows can talk to each other via main
+    // windows can talk to each other via main
     ipcMain.on('for-renderer', (event, arg) => {
-        console.log("got generated data from bg thread, send it to " +
-            "generator " + arg.id);
         main.webContents.send(('to-connector' + arg.id), arg);
     });
 
-    // music generation to be done in the background thread
+    // music generation to be done in background thread
     ipcMain.on('generate-sequence', (event, arg) => {
         tasks.push(['generate-task', arg]);
         executeTask();
     });
 
     ipcMain.on('initialize', (event, arg) => {
-        createBackgroundProcessWindow();
+        backgroundWindows.push(createBackgroundProcessWindow());
     });
 
     ipcMain.on('save', (event, arg) => {
@@ -95,10 +94,12 @@ app.on('ready', function() {
                 return;
             }
 
-            // fileName is a string that contains the path and filename created in the save file dialog.
+            // fileName is a string that contains the path and
+            // filename created in the save file dialog.
             fs.writeFile(fileName + ".json", JSON.stringify(arg), (err) => {
                 if(err){
-                    console.log("An error ocurred creating the file "+ err.message);
+                    console.log("An error ocurred creating " +
+                    "the file " + err.message);
                 }
 
                 console.log("The file has been succesfully saved");
@@ -108,6 +109,7 @@ app.on('ready', function() {
 
     ipcMain.on('delete', (event, arg) => {
         // delete bgWindow / thread
+        backgroundWindows.pop().close();
     });
 
     ipcMain.on('ready', (event, arg) => {

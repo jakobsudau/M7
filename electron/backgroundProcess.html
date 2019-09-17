@@ -5,11 +5,9 @@
 
 	const improvCheckpoint = '../assets/models/improv_rnn';
 	const melodyCheckpoint = '../assets/models/melody_rnn';
-	// const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
 
 	const models = [new mm.MusicRNN(improvCheckpoint),
-					new mm.MusicRNN(melodyCheckpoint),
-					/*new mm.MusicVAE(vaeCheckpoint)*/];
+					new mm.MusicRNN(melodyCheckpoint)];
 
 	function initializeModel(index) {
 		if (index > 0) {
@@ -65,9 +63,6 @@
 		let NUM_REPS = data.outputBars / 2;
 
 		log("generating with model " + data.model);
-
-		// const stepsPerQuarter = data.seq.quantizationInfo.stepsPerQuarter;
-		// const steps = (stepsPerQuarter * data.outputBars * 4)-1;
 
 		const chords = data.model == 0 ? data.chords : undefined;
 
