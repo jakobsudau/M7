@@ -107,7 +107,7 @@ app.on('ready', function() {
 
     ipcMain.on('delete', (event, arg) => {
         // delete bgWindow / thread
-        backgroundWindows.pop().close();
+        // backgroundWindows.pop().close();
     });
 
     ipcMain.on('ready', (event, arg) => {
