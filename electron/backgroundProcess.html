@@ -1,14 +1,17 @@
-<h1>BackgroundProcess</h1>
 <script type="text/javascript">
+	// ---------------------------------------------------------------------
+	// Music generation code
+	// ---------------------------------------------------------------------
+
+	// required modules and globals for music generation
 	const {ipcRenderer} = require('electron');
 	const mm = require('@magenta/music');
-
 	const improvCheckpoint = '../assets/models/improv_rnn';
 	const melodyCheckpoint = '../assets/models/melody_rnn';
-
 	const models = [new mm.MusicRNN(improvCheckpoint),
 					new mm.MusicRNN(melodyCheckpoint)];
 
+// initialize the models recursively, return success once finished
 	function initializeModel(index) {
 		if (index > 0) {
 			log("init model");
@@ -17,7 +20,6 @@
 			ready();
 		}
 	}
-
 	initializeModel(models.length);
 
 	// Send logs as messages to the main thread to show on the console
@@ -30,27 +32,24 @@
 		ipcRenderer.send('ready');
 	}
 
-	function generate(data) {
-		modelGenerate(data).then((seq) => {
-			// send data and message that generation is done
-			log('finished generating sequence on bg thread from ' +
-				'generator ' + data.id);
-			ready();
-			ipcRenderer.send('for-renderer', {data: seq, id: data.id});
-		});
-	}
-
-	// if message is received, pass it back to the renderer via the
-	// main thread
+	// if message is received, pass it back to the renderer via the main thread
 	ipcRenderer.on('message', (event, arg) => {
 		log('received ' + arg);
 		ipcRenderer.send('for-renderer', process.pid + ': reply to ' + arg);
 		ready();
 	});
 
+	// generate task
 	ipcRenderer.on('generate-task', (event, arg) => {
 		log('starting generation on bg thread from generator ' + arg.id);
 		generate(arg);
+		modelGenerate(arg).then((seq) => {
+			// send data and message that generation is done
+			log('finished generating sequence on bg thread from ' +
+				'generator ' + arg.id);
+			ready();
+			ipcRenderer.send('for-renderer', {data: seq, id: arg.id});
+		});
 	})
 
 	function modelGenerate(data) {
@@ -132,15 +131,7 @@
 			resolve(seq);
 		}
 
-		if (data.model == 2) {
-			log("generate with Music VAE!");
-			models[data.model].sample(steps).then((contSeq) => {
-				returnSeq(contSeq)});
-		} else {
-			models[data.model].continueSequence(
-				data.seq, steps, data.temp, chords).then((contSeq) => {
-					returnSeq(contSeq)});
-		}
-		});
+		models[data.model].continueSequence(data.seq, steps, data.temp, chords)
+			.then((contSeq) => {returnSeq(contSeq)})});
 	}
 </script>

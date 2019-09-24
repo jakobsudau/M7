@@ -29,7 +29,8 @@ class GlobalControlsModule {
                 this.positionButton.innerHTML = "◧";
                 globalControlsModuleContainer.className = "left";
                 mainSubCon.className = "modulesContainerLeftRight";
-                mainCon.insertBefore(globalControlsModuleContainer,mainCon.childNodes[0]);
+                mainCon.insertBefore(globalControlsModuleContainer,
+                    mainCon.childNodes[0]);
                 break;
             case "top":
                 this.positionButton.innerHTML = "⬒";
@@ -52,7 +53,8 @@ class GlobalControlsModule {
 
     showHelp() {
         const modulesContainer = document.getElementById("modulesContainer");
-        const globalControlsModuleContainer = document.getElementById("globalControlsModuleContainer");
+        const globalControlsModuleContainer =
+            document.getElementById("globalControlsModuleContainer");
         const overlayContainer = document.getElementById("overlayContainer");
         if (overlayContainer.style.display == "block") {
             overlayContainer.style.display = "none";
@@ -137,7 +139,8 @@ class GlobalControlsModule {
     createUIElements(mainModule) {
         const globalControlsModuleContainer = document.createElement("div");
         globalControlsModuleContainer.id = "globalControlsModuleContainer";
-        globalControlsModuleContainer.className = this.barPositions[this.barPosition];
+        globalControlsModuleContainer.className =
+            this.barPositions[this.barPosition];
 
         const helpButton = document.createElement("button");
         helpButton.className = "globalControlsButton";
@@ -224,7 +227,8 @@ class GlobalControlsModule {
         overlayContainer.appendChild(helpContainer);
         document.body.appendChild(overlayContainer);
         const mainCon = document.getElementById("mainContainer");
-        mainCon.insertBefore(globalControlsModuleContainer, mainCon.childNodes[0]);
+        mainCon.insertBefore(globalControlsModuleContainer,
+            mainCon.childNodes[0]);
 
         saveButton.addEventListener('click', function() {
             this.saveSession(mainModule)}.bind(this));

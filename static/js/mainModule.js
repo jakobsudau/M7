@@ -553,19 +553,13 @@ class MainModule {
         let clickClockText = document.createElement("div");
         clickClockText.innerHTML = "Clock";
         clickClockText.title = "Select whether MIDI Clock messages "
-            + "should be used (instead of regular MIDI messages)"
-            /*+ " and be in send or receive state"*/;
+            + "should be used (instead of regular MIDI messages)";
 
-        // this.clickClockSelect = document.createElement("select");
         this.clickClockSelect = document.createElement("input");
         this.clickClockSelect.setAttribute("type", "checkbox");
         this.clickClockSelect.id = "clickClockSelect";
         this.clickClockSelect.title = "Select whether MIDI Clock messages "
             + "should be used (instead of regular MIDI messages)"
-            /*+ " and be in send or receive state"*/;
-        // this.clickClockSelect.options[0] = new Option('none');
-        // this.clickClockSelect.options[1] = new Option('send');
-        // this.clickClockSelect.options[2] = new Option('receive');
 
         mainModuleContainer.appendChild(mainTitleDiv);
         mainModuleContainer.appendChild(chordContainer);
@@ -648,7 +642,6 @@ class MainModule {
         }.bind(this));
 
         this.clickClockSelect.addEventListener("change", function(e) {
-            // this.changeMidiClock(e.target[e.target.selectedIndex].text);
             this.changeMidiClock(e.target.checked);
         }.bind(this));
     }

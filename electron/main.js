@@ -1,3 +1,8 @@
+// -------------------------------------------------------------------------
+// Main Electron code
+// -------------------------------------------------------------------------
+
+// required modules and globals for the app
 const {ipcMain, BrowserWindow, app, systemPreferences, dialog} = require('electron');
 const fs = require('fs');
 const cpus = require('os').cpus().length;
@@ -10,7 +15,7 @@ var available = [];
 // queue of tasks to be done
 var tasks = [];
 
-// hand the tasks out to waiting threads
+// handing tasks out to waiting threads
 function executeTask() {
     while (available.length > 0 && tasks.length > 0) {
         var task = tasks.shift();
@@ -43,7 +48,6 @@ app.on('ready', function() {
         "height": 680,
         "minWidth": 414,
         "minHeight": 354,
-        //"icon": __dirname + "/icon/icon.icns",
         titleBarStyle: 'hidden',
         webPreferences: {
             nodeIntegration: true,
@@ -53,7 +57,6 @@ app.on('ready', function() {
     main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/../static/html/index.html');
     main.show();
-    // call quit to exit, otherwise background windows keep app running
     main.on('closed', () => {app.quit()})
 
     // support for native dark mode on macOS
@@ -67,12 +70,12 @@ app.on('ready', function() {
         );
     }
 
-    // main thread can receive directly from windows
+    // main thread can receive directly from background threads
     ipcMain.on('to-main', (event, arg) => {
         console.log(arg);
     });
 
-    // windows can talk to each other via main
+    // background threads can talk to each other via main
     ipcMain.on('for-renderer', (event, arg) => {
         main.webContents.send(('to-connector' + arg.id), arg);
     });
@@ -83,10 +86,12 @@ app.on('ready', function() {
         executeTask();
     });
 
+    // create background thread as hidden window
     ipcMain.on('initialize', (event, arg) => {
         backgroundWindows.push(createBackgroundProcessWindow());
     });
 
+    // save app state as JSON
     ipcMain.on('save', (event, arg) => {
         dialog.showSaveDialog((fileName) => {
             if (fileName === undefined){
@@ -105,11 +110,13 @@ app.on('ready', function() {
         });
     });
 
+    // on delete remove a background thread
     ipcMain.on('delete', (event, arg) => {
         // delete bgWindow / thread
         // backgroundWindows.pop().close();
     });
 
+    // if background thread is done, wait for next task
     ipcMain.on('ready', (event, arg) => {
         available.push(event.sender);
         console.log("bg thread is ready");

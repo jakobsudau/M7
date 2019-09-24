@@ -100,6 +100,7 @@ class Connector {
         delete this.socket;
     }
 
+    // JSON conversion helper function
     getCircularReplacer() {
         const seen = new WeakSet();
         return (key, value) => {

@@ -1,15 +1,17 @@
+// -------------------------------------------------------------------------
+// Music generation code
+// -------------------------------------------------------------------------
+
+// required modules and globals for music generation
 const { workerData, parentPort, isMainThread } = require("worker_threads");
 const id = workerData;
-
 const mm = require('@magenta/music');
 const improvCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv';
 const melodyCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn';
-// const vaeCheckpoint = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2';
-
 const models = [new mm.MusicRNN(improvCheckpoint),
-				new mm.MusicRNN(melodyCheckpoint),
-				/*new mm.MusicVAE(vaeCheckpoint)*/];
+				new mm.MusicRNN(melodyCheckpoint)];
 
+// initialize the models recursively, return success once finished
 function initializeModel(index) {
 	if (index > 0) {
 		console.log("init model");
@@ -21,11 +23,9 @@ function initializeModel(index) {
 			id: id});
 	}
 }
-
 initializeModel(models.length);
 
-// You can do any heavy stuff here, in a synchronous way
-// without blocking the "main thread"
+// generate task
 parentPort.on("message", message => {
     let data = JSON.parse(message);
 	modelGenerate(data).then((seq) => {
@@ -118,14 +118,6 @@ function modelGenerate(data) {
 			resolve(seq);
 		}
 
-		if (data.model == 2) {
-			console.log("generate with Music VAE!");
-			models[data.model].sample(steps).then((contSeq) => {
-				returnSeq(contSeq)});
-		} else {
-			models[data.model].continueSequence(
-				data.seq, steps, data.temp, chords).then((contSeq) => {
-					returnSeq(contSeq)});
-		}
-		});
+		models[data.model].continueSequence(data.seq, steps, data.temp, chords)
+		.then((contSeq) => {returnSeq(contSeq)})});
 	}

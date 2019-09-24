@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@magenta/music@../libs/magenta-js/music":
+"@magenta/music@file:../libs/magenta-js/music":
   version "1.8.0"
   dependencies:
     "@tensorflow/tfjs" "^1.1.2"

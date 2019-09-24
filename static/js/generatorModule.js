@@ -55,7 +55,6 @@ class GeneratorModule {
         this.shouldPlay = false;
         this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutputName);
         this.jzzPlayer;
-        // this.player = new mm.MIDIPlayer();
         this.inputSequence = {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
@@ -128,7 +127,6 @@ class GeneratorModule {
         delete this.shouldPlay;
         delete this.jzzMidiOut;
         delete this.jzzPlayer;
-        // delete this.player;
         delete this.inputSequence;
         delete this.stepsPerChord;
         delete this.stepsPerProg;
@@ -139,10 +137,6 @@ class GeneratorModule {
     }
 
     startStopNote(note, velocity, isStart) {
-        // console.log("note: " + note);
-        // console.log("velocity: " + velocity);
-        // console.log("isStart: " + isStart);
-
         const currentTime = Date.now();
         const bpm = 120;
         const stepsPerQuater = 4;
@@ -162,7 +156,6 @@ class GeneratorModule {
             }
         }
 
-        // console.log("played at: " + playedAt + "s");
         if (this.inputSequence.totalQuantizedSteps < playedAtQuantized) {
             this.inputSequence.totalQuantizedSteps = playedAtQuantized;
         }
@@ -201,8 +194,9 @@ class GeneratorModule {
                 id: this.id,
                 addBassProg: this.addBassProg,
                 model: this.modelSelect.selectedIndex}).then((data) => {
-                    console.log("generator " + this.id + ": generating on server " +
-                    "took: " + ((Date.now() - this.generationTime)/1000) + "s");
+                    console.log("generator " + this.id + ": generating on " +
+                    "server took: " + ((Date.now() - this.generationTime)/1000)
+                    + "s");
                     this.generatedSeq = data.data;
                     this.generatedSmf = this.convertToSmf(this.generatedSeq);
                     this.generateButton.disabled = false;
@@ -259,45 +253,6 @@ class GeneratorModule {
         }
     }
 
-    // playGeneratedSequence2() {
-    //     if (!this.playing && this.shouldPlay) {
-    //         this.player.requestMIDIAccess().then(() => {
-    //             if (this.keepMutating) {
-    //                 this.generateSequence();
-    //             }
-
-    //             this.playButton.disabled = true;
-    //             this.playing = true;
-    //             if (this.listening) {
-    //                 this.barCounter = 0;
-    //                 console.log(this.inputSequence);
-    //                 this.inputStartTime = Date.now();
-    //                 this.inputSequence.notes = [];
-    //                 this.inputSequence.totalQuantizedSteps = 1;
-    //             }
-    //             this.player.outputs = [this.selectedOutput];
-    //             // omitting player.outputs = message to all ports
-
-    //             this.player.start(this.generatedSeq,
-    //                 this.mainModule.metronome.bpm).then(() => {
-    //                 this.playButton.disabled = false;
-    //                 this.playing = false;
-
-    //                 if (!this.looping) {
-    //                     this.shouldPlay = false;
-    //                     this.stopButton.disabled = false;
-    //                     this.looping = true;
-    //                 }
-
-    //                 if (this.looping &&
-    //                     !this.mainModule.metronome.isPlaying) {
-    //                     this.playGeneratedSequence();
-    //                 }
-    //             });
-    //         });
-    //     }
-    // }
-
     playTick() {
         if (this.barCounter == 0) {
             if (this.shouldPlay) {
@@ -337,7 +292,6 @@ class GeneratorModule {
     }
 
     stopPlayback() {
-        // this.player.stop();
         this.jzzPlayer.stop();
         this.playButton.disabled = false;
         this.stopButton.disabled = false;
@@ -368,7 +322,6 @@ class GeneratorModule {
     }
 
     changeBpm(value) {
-        // this.player.setTempo(value);
         this.bpm = value;
     }
 
@@ -591,7 +544,6 @@ class GeneratorModule {
 
         this.modelSelect.add(new Option("ImprovRNN", "1"));
         this.modelSelect.add(new Option("MelodyRNN", "2"));
-        // this.modelSelect.add(new Option("MusicVAE", "3"));
         this.modelSelect.selectedIndex = this.selectedModel;
 
         let heatContainer = document.createElement("div");
