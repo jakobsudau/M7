@@ -42,7 +42,6 @@
 	// generate task
 	ipcRenderer.on('generate-task', (event, arg) => {
 		log('starting generation on bg thread from generator ' + arg.id);
-		generate(arg);
 		modelGenerate(arg).then((seq) => {
 			// send data and message that generation is done
 			log('finished generating sequence on bg thread from ' +
