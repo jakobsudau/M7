@@ -11,7 +11,7 @@ class MainModule {
         MainModule.instance = this;
         this.midiMapMode = false;
         this.midiMapSelection;
-        this.midiMapParams = new Map();
+        this.midiMapParams = {};
         this.clickButton;
         this.generateAllButton;
         this.stopAllButton;
@@ -68,9 +68,10 @@ class MainModule {
             }
         }
         // delete any mapped parameters
-        this.midiMapParams.forEach((noteAndInput, button) => {
-            if (!(document.body.contains(button))) {
-                this.midiMapParams.delete(button);
+        Object.keys(this.midiMapParams).forEach((key) => {
+            let button = document.getElementById(key);
+            if (button == undefined) {
+                delete this.midiMapParams[key];
             }
         });
 
@@ -100,18 +101,29 @@ class MainModule {
         }
         this.generatorCounter = 1;
         this.sceneCounter = 0;
-
-        // this.midiMapParams = persistentState[0];
+        this.midiMapParams = persistentState[0];
         this.metronome.outputId = persistentState[1];
         this.chords = persistentState[2];
         this.metronome.bpm = persistentState[3];
         this.metronome.midiClockStatus = persistentState[4];
         this.metronome.volume = persistentState[5];
-        console.log("set persistentState of MainModule: " + persistentState);
-        console.log(persistentState);
-
         let savedGenerators = persistentState[6];
 
+        // restore midi mappings to available midi ports
+        Object.keys(this.midiMapParams).forEach((key) => {
+            let found = false;
+            for (let i = 0; i < this.midi.availableInputs.length; i++) {
+                if (this.midiMapParams[key].inputId == this.midi.availableInputs[i].id) {
+                    this.midiMapParams[key].input = this.midi.availableInputs[i];
+                    found = true;
+                }
+            }
+
+            if (!found) {delete this.midiMapParams[key]}
+
+        });
+
+        // restore generator modules
         for (let i = 0; i < savedGenerators.length; i++) {
             this.addModule(this.generatorCounter,
                 savedGenerators[i].selectedOutputName,
@@ -157,8 +169,8 @@ class MainModule {
         if (this.midiMapMode) {
             if (isStart) {
                 this.midiMapSelection.childNodes[1].innerHTML = note;
-                this.midiMapParams.set(this.midiMapSelection,
-                    {note: note, input: input});
+                this.midiMapParams[this.midiMapSelection.id] =
+                    {note: note, input: input, inputId: input.id};
             }
         } else {
             for (let i = 0; i < this.generators.length; i++) {
@@ -169,10 +181,10 @@ class MainModule {
             }
 
             if (isStart) {
-                this.midiMapParams.forEach((noteAndInput, button) => {
-                    if (noteAndInput.note == note &&
-                        noteAndInput.input == input) {
-                        button.click();
+                Object.keys(this.midiMapParams).forEach((key) => {
+                    if (this.midiMapParams[key].note == note &&
+                        this.midiMapParams[key].input == input) {
+                        document.getElementById(key).click();
                     }
                 });
             }
@@ -275,7 +287,6 @@ class MainModule {
     }
 
     startStopClick() {
-        console.log(this.generators);
         this.metronomeOn = !this.metronomeOn;
         this.metronome.playOutput = this.metronomeOn;
         this.metronome.startStop();
@@ -386,7 +397,7 @@ class MainModule {
             if (this.midiMapMode) {
                 let btnOverlay = document.createElement("div");
                 btnOverlay.className = "btnOverlay";
-                const mapped = this.midiMapParams.get(button);
+                const mapped = this.midiMapParams[button.id];
                 if (mapped) {
                     btnOverlay.innerHTML = mapped.note;
                 }
@@ -404,7 +415,7 @@ class MainModule {
                 btnOverlay.addEventListener("dblclick", function(e) {
                     e.stopPropagation();
                     e.target.innerHTML = "";
-                    this.midiMapParams.delete(e.target.parentElement);
+                    delete this.midiMapParams[e.target.parentElement.id];
                 }.bind(this));
 
                 button.appendChild(btnOverlay);

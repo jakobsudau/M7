@@ -33,14 +33,14 @@ class GeneratorModule {
         this.id = id;
         this.title = title;
         this.selectedOutputName = selectedOutputName;
-        for (let i = 0; i < mainModule.midi.availableOutputs; i++) {
+        for (let i = 0; i < mainModule.midi.availableOutputs.length; i++) {
             if (this.selectedOutputName == mainModule.midi.availableOutputs[i].name) {
                 this.selectedOutput = mainModule.midi.availableOutputs[i];
                 break;
             }
         }
         this.selectedInputName = selectedInputName;
-        for (let i = 0; i < mainModule.midi.availableInputs; i++) {
+        for (let i = 0; i < mainModule.midi.availableInputs.length; i++) {
             if (this.selectedInputName == mainModule.midi.availableInputs[i].name) {
                 this.selectedInput = mainModule.midi.availableInputs[i];
                 break;
@@ -245,7 +245,6 @@ class GeneratorModule {
             }
 
             if (this.listening) {
-                console.log(this.inputSequence);
                 this.inputStartTime = Date.now();
                 this.inputSequence.notes = [];
                 this.inputSequence.totalQuantizedSteps = 1;
@@ -401,6 +400,7 @@ class GeneratorModule {
 
         this.generateButton = document.createElement("button");
         this.generateButton.className = "generateButton";
+        this.generateButton.id = "generateButton" + this.id;
         this.generateButton.innerHTML = "☰";
         this.generateButton.title = "Generate a sequence based on an " +
             "input sequence and chords";
@@ -412,12 +412,13 @@ class GeneratorModule {
 
         this.playButton = document.createElement("button");
         this.playButton.className = "playButton";
+        this.playButton.id = "playButton" + this.id;
         this.playButton.innerHTML = "►";
         this.playButton.title = "Play the generated sequence";
         this.playButton.disabled = true;
 
         this.stopButton = document.createElement("button");
-        this.stopButton.id = "stopButton";
+        this.stopButton.id = "stopButton" + this.id;
         this.stopButton.className = "stopButton";
         this.stopButton.innerHTML = "■";
         this.stopButton.title = "Stop playback of this Generator Module " +
@@ -425,6 +426,7 @@ class GeneratorModule {
 
         this.mutateButton = document.createElement("button");
         this.mutateButton.innerHTML = "↻";
+        this.mutateButton.id = "mutateButton" + this.id;
         this.mutateButton.title = "Keep generating new sequences";
         if (this.keepMutating) {
             this.mutateButton.className = "mutateButton enabled";
@@ -434,6 +436,7 @@ class GeneratorModule {
 
         this.listenButton = document.createElement("button");
         this.listenButton.innerHTML = "●";
+        this.listenButton.id = "listenButton" + this.id;
         this.listenButton.title = "Listen for input MIDI on the selected " +
             "MIDI In Port";
         if (this.listening) {
@@ -444,6 +447,7 @@ class GeneratorModule {
 
         let deleteButton = document.createElement("button");
         deleteButton.className = "deleteButton";
+        deleteButton.id = "deleteButton" + this.id;
         deleteButton.innerHTML = "X";
         deleteButton.title = "Delete this Generator Module";
 
