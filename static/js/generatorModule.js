@@ -227,10 +227,14 @@ class GeneratorModule {
     }
 
     playGeneratedSequence() {
+        if (this.jzzPlayer) {
+            this.jzzPlayer.stop();
+        }
         delete this.jzzPlayer;
         this.jzzPlayer = this.generatedSmf.player();
         this.jzzPlayer.connect(this.jzzMidiOut);
         if (!this.mainModule.metronome.isPlaying) {
+            trk.add(((this.outputBars*16)*96), JZZ.MIDI.smfEndOfTrack());
             this.jzzPlayer.loop(true);
         }
         this.jzzPlayer.play();
@@ -264,6 +268,8 @@ class GeneratorModule {
                 this.playing = false;
                 this.playButton.disabled = false;
                 this.stopButton.disabled = false;
+                this.looping = false;
+                this.stopPlayback();
             }
         }
         if (this.playing) {
@@ -296,7 +302,20 @@ class GeneratorModule {
         this.stopButton.disabled = false;
         this.playing = false;
         this.shouldPlay = false;
+        this.stopNext = true;
+        this.looping = false;
         this.playButton.style.background = "var(--moduleBackgroundColor)";
+    }
+
+    stopModule() {
+        if (this.mainModule.metronome.isPlaying) {
+            this.stopNext = true;
+            this.looping = false;
+            this.shouldPlay = false;
+            this.stopButton.disabled = true;
+        } else {
+            this.stopPlayback();
+        }
     }
 
     changeMidiPort(isInput, port) {
@@ -311,13 +330,6 @@ class GeneratorModule {
             this.jzzMidiOut =
                     JZZ().openMidiOut(this.selectedOutputName);
         }
-    }
-
-    stopModule() {
-        this.stopNext = true;
-        this.looping = false;
-        this.shouldPlay = false;
-        this.stopButton.disabled = true;
     }
 
     changeBpm(value) {
