@@ -222,7 +222,7 @@ class GeneratorModule {
             trk.add((note.quantizedEndStep*96),
                 JZZ.MIDI.noteOff(0, note.pitch, 127));
         });
-        trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
+        trk.add((((this.outputBars*16))*96), JZZ.MIDI.smfEndOfTrack());
         return smf;
     }
 
