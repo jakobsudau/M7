@@ -22,6 +22,7 @@ class GeneratorModule {
         this.generatedSmf;
         this.playButton;
         this.bpm = mainModule.metronome.bpm;
+        this.generatedBpm;
         this.generateButton;
         this.mutateButton;
         this.stopButton;
@@ -199,6 +200,7 @@ class GeneratorModule {
                     + "s");
                     this.generatedSeq = data.data;
                     this.generatedSmf = this.convertToSmf(this.generatedSeq);
+                    this.jzzPlayer = this.generatedSmf.player();
                     this.generateButton.disabled = false;
                     this.generateButton.style.background =
                         `hsla(${Math.random() * 360}, 80%, 70%, 0.3)`;
@@ -211,6 +213,7 @@ class GeneratorModule {
     }
 
     convertToSmf(seq) {
+        this.generatedBpm = this.bpm;
         let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter
         let trk = new JZZ.MIDI.SMF.MTrk();
         trk.add(0, JZZ.MIDI.smfSeqName('generatedSequence'));
@@ -232,9 +235,9 @@ class GeneratorModule {
         }
         delete this.jzzPlayer;
         this.jzzPlayer = this.generatedSmf.player();
+        this.jzzPlayer.speed(this.bpm/this.generatedBpm);
         this.jzzPlayer.connect(this.jzzMidiOut);
         if (!this.mainModule.metronome.isPlaying) {
-            // trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
             this.jzzPlayer.loop(true);
         }
         this.jzzPlayer.play();
@@ -333,6 +336,9 @@ class GeneratorModule {
     }
 
     changeBpm(value) {
+        if (this.isPlaying) {
+            this.jzzPlayer.speed(this.bpm/this.generatedBpm);
+        }
         this.bpm = value;
     }
 

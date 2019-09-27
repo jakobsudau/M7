@@ -316,6 +316,7 @@ class MainModule {
             this.metronome.bpm = value;
             for (let i = 0; i < this.generators.length; i++) {
                 this.generators[i].changeBpm(value);
+                console.log("yeah");
             }
         } else {
             if (value >= 60) {
@@ -640,7 +641,6 @@ class MainModule {
             this.saveBpm(e.target.value)}.bind(this));
         this.bpmTextfield.addEventListener('keypress', function(e) {
             if (e.keyCode == 13) {
-                this.saveBpm(e.target.value);
                 document.activeElement.blur();
             }}.bind(this));
         this.clickButton.addEventListener('click', function(){
