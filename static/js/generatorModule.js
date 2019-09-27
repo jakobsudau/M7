@@ -234,7 +234,7 @@ class GeneratorModule {
         this.jzzPlayer = this.generatedSmf.player();
         this.jzzPlayer.connect(this.jzzMidiOut);
         if (!this.mainModule.metronome.isPlaying) {
-            trk.add(((this.outputBars*16)*96), JZZ.MIDI.smfEndOfTrack());
+            // trk.add((((this.outputBars*16)-1)*96), JZZ.MIDI.smfEndOfTrack());
             this.jzzPlayer.loop(true);
         }
         this.jzzPlayer.play();

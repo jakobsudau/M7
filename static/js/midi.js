@@ -69,18 +69,18 @@ class Midi {
                 that.mainModule.startStopNote(
                     event.data[1], event.data[2], false, input);
                 return;
-            case 0xFA:
-                console.log("midi start msg"); // clock start
-                break;
-            case 0xFC:
-                    console.log("midi stop msg"); // clock stop
-                break;
-            case 0xF8:
-                    console.log("midi tick msg"); // clock tick, 24 / quarter
-                break;
-            case 0xF0:
-                console.log("midi ??? msg"); // 240, cubase tick?
-                break;
+            // case 0xFA:
+            //     console.log("midi start msg"); // clock start
+            //     break;
+            // case 0xFC:
+            //         console.log("midi stop msg"); // clock stop
+            //     break;
+            // case 0xF8:
+            //         console.log("midi tick msg"); // clock tick, 24 / quarter
+            //     break;
+            // case 0xF0:
+            //     console.log("midi ??? msg"); // 240, cubase tick?
+            //     break;
         }
     }
 
