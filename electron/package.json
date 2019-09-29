@@ -13,7 +13,7 @@
     "scripts": {
         "start": "electron .",
         "buildMac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/ --extraResource=./../assets/",
-        "buildWin": "electron-packager . MMAI --overwrite --asar=true --platform=win32 --arch=ia32 --icon=./../assets/icons/icon.icns --prune=true --out=./release-builds --extraResource=./../static/ --extraResource=./../assets/ --version-string.CompanyName=JFJS --version-string.FileDescription=JFJS --version-string.ProductName='MMAI'"
+        "buildWin": "electron-packager . --overwrite --platform=win32 --arch=ia32 --icon=./../assets/icons/icon.ico --prune=true --out=./release-builds --extraResource=./../static/ --extraResource=./../assets/"
     },
     "dependencies": {
         "@magenta/music": "libs/magenta-js/music",

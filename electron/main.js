@@ -54,7 +54,7 @@ app.on('ready', function() {
             backgroundThrottling: false,
         }
     });
-    main.webContents.openDevTools();
+    // main.webContents.openDevTools();
     main.loadURL('file://' + __dirname + '/../static/html/index.html');
     main.show();
     main.on('closed', () => {app.quit()})

@@ -75,43 +75,6 @@ function modelGenerate(data) {
 				seq.notes.push(note);
 				});
 
-			if (data.addBassProg) {
-				const roots = data.chords.map(
-					mm.chords.ChordSymbols.root);
-
-				for (var i=0; i<NUM_REPS; i++) {
-					// Add the bass progression.
-					seq.notes.push({
-						instrument: 1,
-						program: 32,
-						pitch: 36 + roots[0],
-						quantizedStartStep: i*stps_p_prog,
-						quantizedEndStep: i*stps_p_prog + stps_p_chrd
-					});
-					seq.notes.push({
-						instrument: 1,
-						program: 32,
-						pitch: 36 + roots[1],
-						quantizedStartStep: i*stps_p_prog + stps_p_chrd,
-						quantizedEndStep: i*stps_p_prog + 2*stps_p_chrd
-						});
-					seq.notes.push({
-						instrument: 1,
-						program: 32,
-						pitch: 36 + roots[2],
-						quantizedStartStep: i*stps_p_prog +2*stps_p_chrd,
-						quantizedEndStep: i*stps_p_prog +3*stps_p_chrd
-					});
-					seq.notes.push({
-						instrument: 1,
-						program: 32,
-						pitch: 36 + roots[3],
-						quantizedStartStep: i*stps_p_prog +3*stps_p_chrd,
-						quantizedEndStep: i*stps_p_prog +4*stps_p_chrd -1
-					});
-				}
-			}
-
 			// Set total sequence length.
 			seq.totalQuantizedSteps = (stps_p_prog * NUM_REPS) -1;
 

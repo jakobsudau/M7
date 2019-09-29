@@ -56,6 +56,7 @@ class GeneratorModule {
         this.shouldPlay = false;
         this.jzzMidiOut = JZZ().openMidiOut(this.selectedOutputName);
         this.jzzPlayer;
+        this.listeningStarted = false;
         this.inputSequence = {
             notes: [],
             quantizationInfo: {stepsPerQuarter: 4},
@@ -186,6 +187,13 @@ class GeneratorModule {
             this.generateButton.disabled = true;
             this.generationTime = Date.now();
 
+            if (this.listeningStarted) {
+                this.listeningStarted = false;
+                this.inputStartTime = Date.now();
+                this.inputSequence.notes = [];
+                this.inputSequence.totalQuantizedSteps = 1;
+            }
+
             this.connector.generateSequence({
                 cmd: "generate",
                 seq: this.inputSequence,
@@ -212,7 +220,7 @@ class GeneratorModule {
         }.bind(this));
     }
 
-    convertToSmf(seq) {
+    convertToSmf(seq, looped = false) {
         this.generatedBpm = this.bpm;
         let smf = new JZZ.MIDI.SMF(0, 96); // type 0, 96 ticks per quarter
         let trk = new JZZ.MIDI.SMF.MTrk();
@@ -225,7 +233,8 @@ class GeneratorModule {
             trk.add((note.quantizedEndStep*96),
                 JZZ.MIDI.noteOff(0, note.pitch, 127));
         });
-        trk.add((((this.outputBars*16))*96), JZZ.MIDI.smfEndOfTrack());
+        let loopInt = looped ? 0 : 1;
+        trk.add((((this.outputBars*16)-loopInt)*96), JZZ.MIDI.smfEndOfTrack());
         return smf;
     }
 
@@ -234,6 +243,9 @@ class GeneratorModule {
             this.jzzPlayer.stop();
         }
         delete this.jzzPlayer;
+        if (!this.mainModule.metronome.isPlaying) {
+            this.generatedSmf = this.convertToSmf(this.generatedSeq, true);
+        }
         this.jzzPlayer = this.generatedSmf.player();
         this.jzzPlayer.speed(this.bpm/this.generatedBpm);
         this.jzzPlayer.connect(this.jzzMidiOut);
@@ -385,6 +397,7 @@ class GeneratorModule {
 
     startStopListening() {
         this.listening = !this.listening;
+        this.listeningStarted = true;
         this.inputStartTime = Date.now();
         if (this.listening) {
             this.listenButton.className = "listenButton enabled";
