@@ -1,5 +1,7 @@
 # MMAI Masterthesis Project by Jakob Sudau
 
+![Screenshot](assets/hostprojects/MMAI.png)
+
 To install and run:
 
 1. clone this repository
