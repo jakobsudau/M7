@@ -1,4 +1,4 @@
-# MMAI Masterthesis Project by Jakob Sudau
+# MMAI Masterthesis Project by Jakob Sudau ([Download](https://github.com/jakobsudau/MMAI/releases))
 
 ![Screenshot](assets/hostprojects/MMAI.png)
 
